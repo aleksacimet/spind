@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import LegalPage from '../components/LegalPage.astro';
+import { getContent } from '../content/site';
+const t = getContent('en');
+const page = t.legal.privacy;
+---
+<Base title={`${page.title} | Spind`} description={page.description}>
+  <LegalPage title={page.title} backLabel={t.legal.back}>
+    <p>This page is a placeholder. The final privacy policy will be provided by Cimet before launch.</p>
+    <h2>Data we process</h2>
+    <p>TODO: legal text from Cimet (controller, data from the contact form and where it is sent, hosting on Cloudflare Pages, analytics if enabled, retention periods, rights of data subjects).</p>
+    <p>Technical note for the legal text: this site self-hosts its fonts, loads no third-party trackers and sets no cookies.</p>
+  </LegalPage>
+</Base>

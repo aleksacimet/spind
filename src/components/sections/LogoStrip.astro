@@ -1,0 +1,53 @@
+---
+import MockLogo from '../MockLogo.astro';
+import { getContent, flags } from '../../content/site';
+interface Props { locale?: string; wall?: boolean }
+const { locale, wall = false } = Astro.props;
+const t = getContent(locale);
+const logos = t.proof.logos;
+const titleId = wall ? 'logos-wall-title' : 'logos-title';
+---
+<!-- Social proof logos: a constant, infinite horizontal scroll (two identical sets, the second one hidden from screen readers). -->
+{flags.exampleProof && (
+  <section class:list={['logos', { 'logos--wall': wall }]} aria-labelledby={titleId}>
+    <div class="container logos-head">
+      <h2 id={titleId} class:list={[wall ? 'wall-title' : 'label']}>{t.customers.logosTitle}</h2>
+    </div>
+    <div class="marquee">
+      <div class="track">
+        {[0, 1].map((copy) => (
+          <ul role="list" class="set" aria-hidden={copy === 1 ? 'true' : undefined}>
+            {logos.map((l) => <li><MockLogo key={l.key} name={l.name} /></li>)}
+          </ul>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .logos { padding-block: 48px 64px; }
+  .logos-head { display: flex; justify-content: center; margin-bottom: 32px; }
+  .logos-head .label { color: var(--ink-muted-strong); }
+  .marquee { overflow: hidden; }
+  .track { display: flex; width: max-content; }
+  .set { display: flex; align-items: center; gap: 64px; padding-right: 64px; }
+  .set li { flex: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .track { animation: logos-scroll 40s linear infinite; }
+    .marquee:hover .track { animation-play-state: paused; }
+  }
+  /* Moving one full set to the left lands exactly on the start of the copy, so the loop has no seam. */
+  @keyframes logos-scroll { to { transform: translateX(-50%); } }
+  /* Without motion: one static, centred set. */
+  @media (prefers-reduced-motion: reduce) {
+    .track { width: auto; justify-content: center; }
+    .set { flex-wrap: wrap; justify-content: center; gap: 32px 56px; padding: 0 20px; }
+    .set[aria-hidden] { display: none; }
+  }
+
+  .logos--wall { padding-block: 0 100px; }
+  .logos--wall .logos-head { justify-content: flex-start; padding-block: 48px; margin: 0; }
+  .wall-title { font-size: var(--fs-title); line-height: var(--lh-title); }
+  .logos--wall .set { gap: 96px; padding-right: 96px; }
+</style>

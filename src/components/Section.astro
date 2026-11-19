@@ -1,0 +1,28 @@
+---
+interface Props {
+  id?: string;
+  title: string;
+  intro?: string;
+  shade?: boolean;
+  /** Centred heading: title above intro, both centred (Problem section in Figma). */
+  center?: boolean;
+  class?: string;
+}
+const { id, title, intro, shade = false, center = false, class: className = '' } = Astro.props;
+const headingId = `${id ?? title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-title`;
+---
+<section
+  id={id}
+  class:list={['section', { 'section--shade': shade }, className]}
+  aria-labelledby={headingId}
+  data-section={id}
+  data-snap
+>
+  <div class="container">
+    <header class:list={['section-head', { 'section-head--center': center }]} data-snap data-reveal>
+      <h2 id={headingId} data-split>{title}</h2>
+      {intro && <p class="intro">{intro}</p>}
+    </header>
+    <slot />
+  </div>
+</section>

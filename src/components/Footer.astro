@@ -1,0 +1,71 @@
+---
+import { getContent, showStories } from '../content/site';
+import { href } from '../content/links';
+
+interface Props { base?: string; locale?: string }
+const { base = '', locale = 'en' } = Astro.props;
+const t = getContent(locale);
+const prefix = locale === 'en' ? '' : `/${locale}`;
+const year = new Date().getFullYear();
+const to = (h: string) => href(h, base, prefix);
+// Footer groups mirror the header menus (Cora-style sitemap footer).
+const groups = t.nav.groups.map((g) => ({
+  label: g.label,
+  items: [
+    ...g.columns.flatMap((c) => c.items).filter((it) => g.id !== 'resources' || !['#modules', '#service'].includes(it.href)).filter((it, i, all) => all.findIndex((o) => o.href === it.href) === i),
+    ...(g.id === 'resources' && showStories ? [t.nav.customers] : []),
+  ],
+}));
+---
+<footer class="site-footer">
+  <svg class="footer-s" viewBox="0 0 494 571" aria-hidden="true" focusable="false"><g opacity="0.1" transform="translate(0 135)"><path d="M248.9 305.6c-22.6 0-41.85-4.33-57.75-12.97-15.9-8.65-28.32-20.93-37.25-36.83-8.65-15.9-13.81-35.02-15.48-57.34l59.85-2.93c1.67 12.56 4.88 23.16 9.63 31.81 4.74 8.65 10.74 15.07 17.99 19.25 7.26 4.19 15.9 6.28 25.95 6.28 8.93 0 16.46-1.26 22.6-3.77 6.42-2.51 11.3-6.14 14.65-10.88 3.35-5.02 5.02-11.02 5.02-18 0-7.53-1.81-14.23-5.44-20.09-3.63-5.86-10.05-11.16-19.25-15.9-8.93-4.74-21.62-9.21-38.09-13.39-19.81-5.02-36.27-11.02-49.38-18-12.84-6.97-22.32-15.9-28.46-26.78-6.14-10.88-9.21-24.55-9.21-41.01 0-18.14 3.91-33.9 11.72-47.29 8.09-13.67 19.67-24.13 34.74-31.39C206.08-1.17 224.64-4.93 246.4-4.93c21.2 0 39.34 3.9 54.41 11.72 15.07 7.81 26.79 19.11 35.16 33.9 8.65 14.79 13.67 32.78 15.07 53.99l-60.27 2.93c-1.4-10.32-4.05-19.25-7.95-26.79-3.91-7.53-9.21-13.25-15.9-17.16-6.42-3.9-14.09-5.86-23.02-5.86-12 0-21.62 3.07-28.88 9.21-6.98 6.14-10.46 14.51-10.46 25.11 0 6.98 1.67 12.97 5.02 18 3.63 5.02 9.77 9.49 18.42 13.39 8.93 3.91 21.06 7.95 36.41 12.14 22.6 5.3 40.46 12.28 53.57 20.93 13.11 8.65 22.46 18.83 28.04 30.55 5.58 11.72 8.37 25.39 8.37 41.01 0 17.86-4.19 33.34-12.56 46.46-8.37 12.83-20.51 22.88-36.41 30.13-15.62 7.25-34.46 10.88-56.5 10.88Z" fill="var(--ink-muted)"/><path fill-rule="evenodd" d="M56.3 97.74H0v337.8h493.34V305.52h-56.3v73.71H56.3V97.74Zm0-176.44v73.71H0V-135h493.34v330.25h-56.3V-78.7H56.3Z" fill="var(--ink-muted)"/></g></svg>
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <svg class="mark" viewBox="0 0 100 111" width="100" height="111" role="img" aria-label="Spind by Cimet">
+        <rect width="100" height="110.74" fill="var(--mark)" />
+        <path d="M50.31 76.99c-3.15 0-5.82-.6-8.04-1.8a12.6 12.6 0 0 1-5.18-5.13c-1.2-2.21-1.92-4.87-2.15-7.98l8.33-.41c.23 1.75.68 3.22 1.34 4.43.66 1.2 1.5 2.1 2.5 2.68 1.01.58 2.21.87 3.61.87 1.24 0 2.29-.17 3.15-.52.89-.35 1.57-.85 2.04-1.51.46-.7.7-1.54.7-2.51 0-1.05-.25-1.98-.76-2.8-.5-.81-1.4-1.55-2.68-2.21-1.24-.66-3.01-1.28-5.3-1.86-2.76-.7-5.05-1.54-6.87-2.5-1.79-.98-3.1-2.22-3.96-3.73-.85-1.52-1.28-3.42-1.28-5.71 0-2.52.54-4.72 1.63-6.58 1.13-1.9 2.74-3.36 4.84-4.37 2.13-1.05 4.71-1.57 7.74-1.57 2.95 0 5.48.54 7.57 1.63a11.02 11.02 0 0 1 4.9 4.72c1.2 2.06 1.9 4.56 2.1 7.51l-8.39.41c-.2-1.43-.56-2.68-1.1-3.73-.55-1.05-1.29-1.84-2.22-2.39-.89-.54-1.96-.81-3.2-.81-1.67 0-3.01.43-4.02 1.28-.97.85-1.46 2.02-1.46 3.5 0 .97.24 1.8.7 2.5.5.7 1.36 1.32 2.56 1.87 1.24.54 2.93 1.1 5.07 1.69 3.14.74 5.63 1.7 7.45 2.91 1.83 1.2 3.13 2.62 3.9 4.25.78 1.63 1.17 3.53 1.17 5.71 0 2.48-.58 4.64-1.75 6.47-1.16 1.78-2.85 3.18-5.07 4.19-2.17 1-4.79 1.51-7.86 1.51Z" fill="var(--mark-ink)" />
+        <path fill-rule="evenodd" d="M23.51 48.06h-7.84v47.01h68.66V76.98h-7.84v10.26H23.51V48.06Zm0-24.55v10.26h-7.84V15.67h68.66v45.96h-7.84V23.51H23.51Z" fill="var(--mark-ink)" />
+      </svg>
+    </div>
+
+    <div class="footer-navs">
+    {groups.map((g) => (
+      <nav aria-label={g.label}>
+        <p class="footer-title label">{g.label}</p>
+        <ul role="list" class="footer-links">
+          {g.items.map((it) => <li><a href={to(it.href)}>{it.label}</a></li>)}
+        </ul>
+      </nav>
+    ))}
+
+    <nav aria-label={t.footer.legalNav}>
+      <p class="footer-title label">{t.footer.legalNav}</p>
+      <ul role="list" class="footer-links">
+        <li><a href={`${prefix}/impressum`}>{t.footer.impressum}</a></li>
+        <li><a href={`${prefix}/privacy`}>{t.footer.privacy}</a></li>
+      </ul>
+    </nav>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>© {year} {t.footer.rights}</p>
+  </div>
+</footer>
+
+<style>
+  /* Figma: dark ink footer, yellow mark, light links, large faint "S" (Ink Muted at 10%) in the background. */
+  .site-footer { position: relative; overflow: hidden; background: var(--ink); color: var(--paper); padding-top: 100px; font-size: 16px; line-height: 24px; }
+  .footer-s { position: absolute; left: 68px; top: -135px; width: 494px; height: 571px; pointer-events: none; }
+  .footer-grid { position: relative; display: flex; flex-direction: column; gap: 48px; padding-bottom: 100px; }
+  .mark { display: block; width: 100px; height: auto; }
+  .footer-links { display: grid; gap: 4px; }
+  .footer-links a { color: var(--paper); text-decoration: none; font-weight: 400; }
+  .footer-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .footer-navs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; }
+  .footer-title { color: var(--line); margin-bottom: 16px; }
+  @media (min-width: 640px) { .footer-navs { grid-template-columns: repeat(4, 200px); gap: 40px 24px; } }
+  .footer-bottom { position: relative; height: 100px; display: flex; align-items: center; border-top: var(--hair) solid var(--navy-300); color: var(--paper); }
+  @media (min-width: 960px) {
+    .footer-grid { flex-direction: row; justify-content: space-between; }
+  }
+</style>

@@ -1,0 +1,89 @@
+---
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+const t = getContent(Astro.props.locale);
+const w = t.workflows;
+---
+<Section id="workflows" title={w.title} intro={w.intro}>
+  <ul class="tiles wf" role="list" data-fit>
+    {w.cards.map((c, i) => (
+      <li class:list={['tile tile--hover', { 'tile--alt': [1, 3, 5].includes(i) }]} data-reveal="drawer" style={`--d:${(i % 3) * 90 + Math.floor(i / 3) * 120}ms`}>
+        <h3><a class="wf-link" href={`/solutions/${c.slug}`}>{c.title}</a></h3>
+        <p>{c.text}</p>
+        <span class="wf-more" aria-hidden="true">{w.more}<span class="arrow">→</span></span>
+      </li>
+    ))}
+  </ul>
+
+  <div class="compare">
+    <div class="panel panel--today" data-reveal="drawer">
+      <div class="panel-head"><h3 class="panel-title">{w.today}</h3></div>
+      <ol class="rows" role="list">
+        {w.compare.map(([today]) => (
+          <li class="row">
+            <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 1.5C6.15 1.5 1.5 6.15 1.5 12S6.15 22.5 12 22.5 22.5 17.85 22.5 12 17.85 1.5 12 1.5Zm4.05 15.75L12 13.2l-4.05 4.05-1.2-1.2L10.8 12 6.75 7.95l1.2-1.2L12 10.8l4.05-4.05 1.2 1.2L13.2 12l4.05 4.05-1.2 1.2Z" fill="var(--danger)" /></svg>
+            <span class="txt"><s>{today}</s></span>
+          </li>
+        ))}
+      </ol>
+    </div>
+    <div class="panel panel--spind on-accent" data-reveal="drawer" style="--d:150ms">
+      <div class="panel-head"><h3 class="panel-title">{w.withLead} {w.withBrand}</h3></div>
+      <ol class="rows" role="list">
+        {w.compare.map(([, spind], i) => (
+          <li class="row" style={`--k:${i}`}>
+            <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M11.49 21.75c.29.16.66.16.96 0 8.01-4.3 8.58-12.71 8.57-15.1a1 1 0 0 0-.6-.9l-8.05-3.57a1 1 0 0 0-.81 0L3.57 5.75a1 1 0 0 0-.6.89c-.03 2.38.45 10.8 8.52 15.11ZM8.67 10.29l2.3 2.3 4.29-4.3 1.41 1.42-5.7 5.7-3.71-3.7 1.41-1.42Z" fill="var(--paper)" /></svg>
+            <span class="txt">{spind}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .wf .tile { grid-column: span 4; --rows: 2; }
+  .wf .tile { display: flex; flex-direction: column; }
+  .wf-link { text-decoration: none; }
+  .wf-link::after { content: ''; position: absolute; inset: 0; z-index: 2; }
+  .wf .tile:hover h3 { color: var(--accent-ink); }
+  .wf-more { margin-top: auto; padding-top: 16px; display: inline-flex; gap: 8px; font-family: var(--font-display); font-weight: 500; font-size: 16px; line-height: 24px; color: var(--accent-ink); }
+  .wf-more .arrow { transition: transform var(--dur-fast) var(--ease); }
+  .wf .tile:hover .wf-more .arrow { transform: translateX(4px); }
+  .tile--alt { background: var(--paper-shade); border-color: transparent; box-shadow: none; }
+  .tile--alt p { color: var(--ink); }
+  @media (min-width: 640px) { .wf .tile { grid-column: span 4; } }
+  @media (min-width: 960px) { .wf .tile { grid-column: span 4; } }
+
+  /* Comparison: two panels (Figma): 96px head, 56px rows with an icon. */
+  .compare {
+    margin-top: var(--cell);
+    display: grid;
+    grid-template-columns: repeat(var(--cols), var(--cell));
+    row-gap: var(--u);
+  }
+  .panel { grid-column: 1 / -1; }
+  .panel-head { height: 96px; padding: 16px 24px 40px; }
+  .panel-title { font-size: calc(var(--fs-subtitle) * 1.4); line-height: 40px; }
+  .rows { display: grid; grid-auto-rows: 76px; }
+  .row { display: flex; align-items: center; gap: 16px; padding: 0 24px; }
+  .ic { flex: none; width: 20px; height: 20px; margin: 2px; } /* 20px icon in a 24px box */
+  .panel--today { background: var(--surface); outline: var(--hair) solid var(--line); outline-offset: calc(var(--hair) * -1); }
+  .panel--today .panel-title, .panel--today .txt { color: var(--ink-muted-strong); }
+  .panel--today s { text-decoration-thickness: var(--hair); }
+  .panel--spind { background: var(--accent); color: #fff; }
+  .panel--spind .panel-title { color: #fff; }
+  .panel--spind .row { gap: 8px; padding: 0 28px; }
+  .panel--spind .txt { font-family: var(--font-display); font-weight: 500; }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .panel--spind .row { opacity: 0; transform: translateX(-12px); transition: opacity 500ms var(--ease), transform 600ms var(--ease-out); transition-delay: calc(500ms + var(--k) * 110ms); }
+    :global(.js) .panel--spind.is-visible .row { opacity: 1; transform: none; }
+  }
+
+  @media (min-width: 960px) {
+    .compare { row-gap: 0; }
+    .panel--today { grid-column: 1 / span 6; }
+    .panel--spind { grid-column: 7 / span 6; }
+  }
+  @media (min-width: 1280px) { .panel-title { font-size: 28px; } }
+</style>

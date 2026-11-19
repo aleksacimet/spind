@@ -1,0 +1,277 @@
+---
+/**
+ * Replica of the LISSA Asset "Smart Locker" screens (OLD Design System, Figma node 4346:1788):
+ * tab "Smart lockers" (4346:2) and tab "Recent requests" (4346:1174).
+ * Built at 1920 px design width in em (1em = 16 design px) and scaled with container query units.
+ * Decorative: hidden from assistive tech, the section text describes it.
+ */
+interface Props { label: string }
+const { label } = Astro.props;
+
+const lockers = [
+  { name: 'BW Britz-Süd', addr: 'Schlosserweg 3, 12351 Berlin', branch: 'Hamburg HQ (22)', sn: '2022000107', avail: 2, phones: 19, fill: 91 },
+  { name: 'Holzmarkt depot', addr: 'Holzmarktstraße 15, 10179 Berlin', branch: 'Bremen (22)', sn: '2022000106', avail: 12, phones: 10, fill: 91 },
+  { name: 'Lichtenberg yard', addr: 'Siegfriedstraße 30, 10365 Berlin', branch: 'Kiel (118)', sn: '2022000174', avail: 54, phones: 64, fill: 91 },
+];
+const requests = [
+  { type: 'Fill', locker: 'BW Britz-Süd', addr: 'Schlosserweg 3, 12351 Berlin', date: '28.10.2026', pin: 'qr', status: 'Pending' },
+  { type: 'Swap', locker: 'BW Britz-Süd', addr: 'Schlosserweg 3, 12351 Berlin', date: '01.07.2026', pin: '07722', status: 'Expired' },
+  { type: 'Empty', locker: 'Lichtenberg yard', addr: 'Siegfriedstraße 30, 10365 Berlin', date: '01.07.2026', pin: '26053', status: 'Expired' },
+  { type: 'Swap', locker: 'BW Britz-Süd', addr: 'Schlosserweg 3, 12351 Berlin', date: '04.05.2026', pin: '60050', status: 'Completed' },
+  { type: 'Empty', locker: 'Holzmarkt depot', addr: 'Holzmarktstraße 15, 10179 Berlin', date: '16.12.2025', pin: '49443', status: 'Cancelled' },
+  { type: 'Swap', locker: 'Holzmarkt depot', addr: 'Holzmarktstraße 15, 10179 Berlin', date: '16.12.2025', pin: '96601', status: 'Cancelled' },
+  { type: 'Fill', locker: 'Lichtenberg yard', addr: 'Siegfriedstraße 30, 10365 Berlin', date: '02.12.2025', pin: '39690', status: 'Completed' },
+];
+const nav = [
+  ['Dashboard', 'M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z'],
+  ['Branches', 'M3 21V5h10v16M13 9h8v12M6 8h2M6 12h2M6 16h2M16 13h2M16 17h2M2 21h20'],
+  ['Managers', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21c0-4 3-6 7-6M18 15a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9v2M18 15v2M15 13h-1M22 13h-1'],
+  ['Employees', 'M4 6h16v15H4zM9 3h6v4H9zM9 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 18c0-2 1.5-3 3-3s3 1 3 3M14 12h4M14 16h4'],
+  ['Devices', 'M7 2h10v20H7zM11 18h2'],
+  ['Break & Fix', 'M14 7l3-3 3 3-3 3zM4 20l9-9M15 15l5 5M3 7l4-4 4 4-4 4z'],
+  ['Orders', 'M2 3h3l3 12h11l2-8H6M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'],
+  ['Archive', 'M3 4h18v5H3zM5 9v11h14V9M10 13h4'],
+  ['Smart Locker', 'M3 3h18v18H3zM12 3v18M3 12h18'],
+];
+---
+<div class="mock" role="img" aria-label={label} data-mock data-tab="0">
+  <div class="screen" aria-hidden="true">
+    <aside class="side">
+      <div class="brand">
+        <svg viewBox="0 0 28 40" class="brand-mark"><path d="M14 2 26 8v6l-6-3v22l-6 5V2z" fill="#5757F5" /><path d="M14 2 2 8v24l12 6v-6L8 29V11l6-3z" fill="#5757F5" opacity="0.55" /></svg>
+        <span>ASSET</span>
+      </div>
+      <ul class="nav">
+        {nav.map(([name, d], i) => (
+          <li class:list={['nav-item', { on: i === nav.length - 1 }]}>
+            <svg viewBox="0 0 24 24" class="ic"><path d={d} /></svg>
+            {name}
+          </li>
+        ))}
+      </ul>
+    </aside>
+
+    <div class="main">
+      <header class="top">
+        <span class="page-title">Smart Locker</span>
+        <span class="user">
+          <svg viewBox="0 0 24 24" class="ic bell"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4" fill="#5757F5" stroke="none" /></svg>
+          <span class="avatar">RF</span>
+          <span class="uname">Robert Fox</span>
+          <svg viewBox="0 0 24 24" class="ic chev"><path d="m6 9 6 6 6-6" /></svg>
+        </span>
+      </header>
+      <nav class="tabs">
+        <span class="tab" data-mock-tab="0">Smart lockers</span>
+        <span class="tab" data-mock-tab="1">Recent requests</span>
+      </nav>
+
+      <div class="panes">
+        <!-- Tab: Smart lockers -->
+        <section class="pane pane-0">
+          <div class="toolbar">
+            <div class="field search">
+              <span class="flabel">Search</span>
+              <span class="ph">Search by name, location or serial number</span>
+              <svg viewBox="0 0 24 24" class="ic"><path d="M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zM15.5 15.5 20 20" /></svg>
+            </div>
+            <span class="views">
+              <span class="view on"><svg viewBox="0 0 24 24" class="ic"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" /></svg></span>
+              <span class="view"><svg viewBox="0 0 24 24" class="ic"><path d="M8 6h13M8 12h13M8 18h13M3 6h1M3 12h1M3 18h1" /></svg></span>
+            </span>
+          </div>
+          <div class="cards">
+            {lockers.map((l, i) => (
+              <article class="lcard" style={`--k:${i}`}>
+                <div class="lhead">
+                  <span class="lic"><svg viewBox="0 0 24 24" class="ic"><path d="M4 4h16v16H4zM12 4v16M4 12h16" /></svg></span>
+                  <div class="lmeta">
+                    <div class="lname">{l.name}</div>
+                    <div class="lline"><svg viewBox="0 0 24 24" class="ic sm"><path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" /></svg>{l.addr}</div>
+                    <div class="lline"><svg viewBox="0 0 24 24" class="ic sm"><path d="M4 21V5h9v16M13 10h7v11M7 9h2M7 13h2M7 17h2M2 21h20" /></svg>{l.branch}&nbsp;&nbsp;/&nbsp;&nbsp;SN: {l.sn}</div>
+                  </div>
+                  <span class="alldev"><svg viewBox="0 0 24 24" class="ic"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /></svg><u>All devices</u></span>
+                </div>
+                <div class="box">
+                  <div class="brow">
+                    <div>
+                      <div class="btitle">Available slots</div>
+                      <div class="bsub">Available devices in this locker</div>
+                    </div>
+                    <div class="avail"><b>{l.avail}</b><span>available</span></div>
+                  </div>
+                  <span class="chip"><svg viewBox="0 0 24 24" class="ic"><path d="M7 2h10v20H7z" /></svg>{l.phones} phones</span>
+                </div>
+                <div class="box">
+                  <div class="btitle">Capacity utilization</div>
+                  <div class="bsub cap">2 available slots / 22</div>
+                  <div class="bar"><span style={`--w:${l.fill}%`}></span></div>
+                </div>
+                <div class="acts">
+                  <span class="act"><svg viewBox="0 0 24 24" class="ic"><path d="M12 5v14M5 12h14" /></svg>Fill</span>
+                  <span class="act"><svg viewBox="0 0 24 24" class="ic"><path d="M5 12h14" /></svg>Empty</span>
+                  <span class="act"><svg viewBox="0 0 24 24" class="ic"><path d="M4 9h15l-4-4M20 15H5l4 4" /></svg>Swap</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <!-- Tab: Recent requests -->
+        <section class="pane pane-1">
+          <div class="toolbar filters">
+            {[['Lockers', 'All lockers'], ['Action type', 'All actions'], ['Status', 'All statuses']].map(([k, v]) => (
+              <div class="field sel"><span class="flabel">{k}</span><span class="ph">{v}</span><svg viewBox="0 0 24 24" class="ic"><path d="M7 10l5 5 5-5z" fill="#35354D" stroke="none" /></svg></div>
+            ))}
+            <div class="field sn"><span class="flabel">Search</span><span class="ph">Device serial number / IMEI</span><svg viewBox="0 0 24 24" class="ic"><path d="M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zM15.5 15.5 20 20" /></svg></div>
+            <span class="check"><span class="cb"></span>Expiring soon</span>
+          </div>
+          <div class="thead">
+            <span>Action type</span><span>Locker</span><span class="c-addr">Address</span><span class="c-date">Date created <svg viewBox="0 0 24 24" class="ic sm"><path d="m6 9 6 6 6-6" /></svg></span><span class="c-pin">QR and PIN</span><span>Status</span>
+          </div>
+          <div class="trows">
+            {requests.map((r, i) => (
+              <div class="trow" style={`--k:${i}`}>
+                <span class="atype"><span class="aic"><svg viewBox="0 0 24 24" class="ic"><path d="M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM12 9v4l2 2M5 3 2 6M19 3l3 3" /></svg></span>{r.type}</span>
+                <span>{r.locker}</span>
+                <span class="c-addr">{r.addr}</span>
+                <span class="c-date">{r.date}</span>
+                <span class="c-pin">{r.pin === 'qr'
+                  ? <svg viewBox="0 0 24 24" class="qr"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM5 5h3v3H5zM16 5h3v3h-3zM5 16h3v3H5zM14 14h3v3h-3zM18 18h3v3h-3zM14 19h2M19 14h2" /></svg>
+                  : r.pin}</span>
+                <span class:list={['st', `st-${r.status.toLowerCase()}`]}>{r.status}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mock {
+    container-type: inline-size;
+    outline: var(--hair) solid var(--line);
+    outline-offset: calc(var(--hair) * -1);
+    box-shadow: 0 40px 60px -36px rgba(22, 25, 30, 0.25);
+    background: #EEEEF2;
+    overflow: hidden;
+    /* LISSA tokens (OLD Design System) */
+    --l-action: #5757F5;
+    --l-subtle: #EEEEFE;
+    --l-washed: #BCBCFB;
+    --l-body: #35354D;
+    --l-head: #09090D;
+    --l-border: #CDCDD9;
+    --l-ph: #9B9BB3;
+    --l-page: #EEEEF2;
+    --l-ok: #25853C;
+  }
+  .mock.inter .screen, :global(html:not(.js)) .screen { font-family: 'Inter', var(--font-display); }
+  .screen {
+    /* 1em = 16 design px at 1920 px width */
+    font-size: calc(100cqw / 120);
+    width: 120em;
+    /* 16:9, the same 1920 x 1080 frame as the Figma screens. */
+    height: 67.6em; /* 1200 x 676 in Figma */
+    display: grid;
+    grid-template-columns: 15em 1fr;
+    /* Inter (48 KB) is only fetched when the mock comes near the viewport (main.ts adds .inter). */
+    font-family: var(--font-display);
+    font-weight: 500;
+    color: var(--l-head);
+    line-height: 1.5;
+    background: var(--l-page);
+    -webkit-font-smoothing: antialiased;
+  }
+  .ic { width: 1.25em; height: 1.25em; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .ic.sm { width: 1em; height: 1em; }
+
+  /* Sidebar */
+  .side { background: #fff; border-right: var(--hair) solid var(--l-border); padding: 0 0.5em; }
+  .brand { height: 8em; display: flex; align-items: center; justify-content: center; gap: 0.5em; font-family: var(--font-display); font-size: 1.25em; color: var(--l-body); letter-spacing: 0.02em; padding-bottom: 1.2em; }
+  .brand-mark { width: 1.6em; height: 2.2em; }
+  .nav { list-style: none; padding: 0; margin: 0; display: grid; gap: 1em; }
+  .nav-item { display: flex; align-items: center; gap: 0.75em; height: 3em; padding: 0 1em; color: var(--l-head); }
+  .nav-item .ic { color: var(--l-action); }
+  .nav-item.on { background: var(--l-action); color: #fff; }
+  .nav-item.on .ic { color: #fff; }
+
+  /* Main */
+  .main { display: grid; grid-template-rows: 4em 3.0625em 1fr; min-width: 0; }
+  .top { background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5em; border-bottom: var(--hair) solid var(--l-border); }
+  .page-title { font-family: var(--font-display); font-size: 1.25em; }
+  .user { display: flex; align-items: center; gap: 0.75em; }
+  .bell { color: var(--l-action); margin-right: 2em; }
+  .avatar { width: 2em; height: 2em; border-radius: 999px; background: var(--l-action); color: #fff; display: grid; place-items: center; font-size: 0.75em; width: 2.66em; height: 2.66em; }
+  .chev { color: var(--l-action); }
+  .tabs { background: #fff; display: flex; gap: 3em; padding: 0 1.5em; border-bottom: var(--hair) solid var(--l-border); }
+  .tab { position: relative; display: flex; align-items: center; color: var(--l-body); cursor: pointer; transition: color 300ms var(--ease); }
+  .tab::after { content: ''; position: absolute; left: 0; right: 0; bottom: calc(var(--hair) * -1); height: 3px; background: var(--l-action); transform: scaleX(0); transition: transform 400ms var(--ease-out); }
+  .mock[data-tab='0'] .tab[data-mock-tab='0'], .mock[data-tab='1'] .tab[data-mock-tab='1'] { color: var(--l-action); }
+  .mock[data-tab='0'] .tab[data-mock-tab='0']::after, .mock[data-tab='1'] .tab[data-mock-tab='1']::after { transform: scaleX(1); }
+
+  .panes { position: relative; overflow: hidden; }
+  .pane { position: absolute; inset: 0; padding: 1.5em 1.5em; transition: opacity 500ms var(--ease), transform 700ms var(--ease-out); }
+  .mock[data-tab='0'] .pane-1, .mock[data-tab='1'] .pane-0 { opacity: 0; transform: translateY(1.5em); pointer-events: none; }
+
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1em; height: 2.5em; margin-bottom: 2.5em; }
+  .field { position: relative; display: flex; align-items: center; justify-content: space-between; height: 2.5em; border: var(--hair) solid var(--l-border); border-radius: 0.25em; padding: 0 1em; color: var(--l-ph); background: var(--l-page); }
+  .flabel { position: absolute; top: -0.6em; left: 0.75em; font-size: 0.75em; line-height: 1; color: var(--l-body); background: var(--l-page); padding: 0 0.3em; }
+  .search { width: 26.25em; }
+  .search .ic { color: var(--l-body); }
+  .views { display: flex; gap: 0.5em; }
+  .view { width: 3em; height: 2.5em; display: grid; place-items: center; color: var(--l-action); border-radius: 0.25em; }
+  .view.on { background: #fff; border: var(--hair) solid var(--l-border); }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1em; }
+  .lcard { background: #fff; border: var(--hair) solid var(--l-border); border-radius: 0.25em; padding: 1.25em; display: grid; gap: 1em; }
+  .lhead { display: grid; grid-template-columns: 2.5em 1fr auto; gap: 1em; align-items: start; margin-bottom: 1.5em; }
+  .lic { width: 2.5em; height: 2.5em; border-radius: 999px; background: var(--l-subtle); display: grid; place-items: center; color: var(--l-action); }
+  .lname { font-family: var(--font-display); font-size: 1.25em; line-height: 1.6; }
+  .lline { display: flex; align-items: center; gap: 0.35em; color: var(--l-body); line-height: 1.75; }
+  .alldev { display: flex; align-items: center; gap: 0.5em; color: var(--l-action); }
+  .box { border: var(--hair) solid var(--l-border); border-radius: 0.25em; padding: 1em; }
+  .brow { display: flex; justify-content: space-between; }
+  .btitle { font-weight: 600; }
+  .bsub { color: var(--l-ph); margin-top: 0.25em; }
+  .bsub.cap { margin: 0.5em 0 0.75em; }
+  .avail { display: grid; justify-items: end; color: var(--l-ph); }
+  .avail b { color: var(--l-ok); font-size: 1.25em; font-weight: 500; line-height: 1.2; }
+  .chip { display: inline-flex; align-items: center; gap: 0.5em; margin-top: 0.75em; padding: 0.5em 0.85em; border-radius: 999px; background: var(--l-subtle); color: var(--l-action); }
+  .bar { height: 0.5em; background: var(--l-washed); }
+  .bar span { display: block; height: 100%; width: var(--w); background: var(--l-action); transform-origin: left; }
+  .acts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5em; margin-top: 1.5em; }
+  .act { display: flex; align-items: center; justify-content: center; gap: 0.5em; height: 2.5em; border: var(--hair) solid var(--l-border); border-radius: 0.25em; color: var(--l-action); }
+
+  .filters { justify-content: flex-start; margin-bottom: 2em; }
+  .sel { width: 12.5em; color: var(--l-ph); }
+  .sn { width: 17.5em; }
+  .sn .ic { color: var(--l-body); }
+  .check { display: flex; align-items: center; gap: 1em; margin-left: 1.5em; color: var(--l-body); }
+  .cb { width: 1.1em; height: 1.1em; border: 2px solid var(--l-body); border-radius: 0.2em; }
+  .thead, .trow { display: grid; grid-template-columns: 13.75em 26.6em 26.6em 12.5em 10em 1fr; align-items: center; padding: 0 1em; }
+  .thead { height: 3em; color: var(--l-body); text-transform: uppercase; }
+  .thead span { display: flex; align-items: center; gap: 0.25em; }
+  .trows { display: grid; gap: 0.5em; }
+  .trow { height: 4em; background: #fff; color: var(--l-body); }
+  .atype { display: flex; align-items: center; gap: 0.5em; }
+  .aic { width: 2.5em; height: 2.5em; border-radius: 999px; background: var(--l-subtle); display: grid; place-items: center; color: var(--l-action); }
+  .qr { width: 1.4em; height: 1.4em; fill: none; stroke: var(--l-action); stroke-width: 1.6; margin-left: 3em; }
+  .st-pending { color: #C26A00; }
+  .st-expired { color: var(--l-ph); }
+  .st-completed { color: var(--l-ok); }
+  .st-cancelled { color: #D92D20; }
+
+  /* Motion inside the mock */
+  @media (prefers-reduced-motion: no-preference) {
+    .mock .bar span { transform: scaleX(0); transition: transform 1200ms var(--ease-out); transition-delay: calc(300ms + var(--k, 0) * 120ms); }
+      .mock.is-live[data-tab='0'] .bar span { transform: none; }
+    .mock .trow { opacity: 0; transform: translateX(-1.5em); transition: opacity 400ms var(--ease), transform 600ms var(--ease-out); transition-delay: calc(var(--k) * 70ms); }
+    .mock.is-live[data-tab='1'] .trow { opacity: 1; transform: none; }
+    .mock .lcard { transition: transform 600ms var(--ease-out), opacity 400ms var(--ease); transition-delay: calc(var(--k) * 90ms); }
+    .mock:not(.is-live) .lcard { opacity: 0; transform: translateY(1.5em); }
+  }
+
+</style>

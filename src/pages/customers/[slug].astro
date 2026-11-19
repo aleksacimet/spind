@@ -1,0 +1,106 @@
+---
+import Base from '../../layouts/Base.astro';
+import MockLogo from '../../components/MockLogo.astro';
+import Quotes from '../../components/sections/Quotes.astro';
+import Contact from '../../components/sections/Contact.astro';
+import { getContent, showStories } from '../../content/site';
+import { solutionIcons } from '../../content/icons';
+
+export function getStaticPaths() {
+  return showStories ? getContent('en').proof.stories.map((s) => ({ params: { slug: s.slug } })) : [];
+}
+const t = getContent('en');
+const c = t.customers;
+const s = t.proof.stories.find((x) => x.slug === Astro.params.slug)!;
+const logoName = t.proof.logos.find((l) => l.key === s.logo)?.name ?? s.company;
+const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
+---
+<Base title={`${s.company} | ${c.title} | Spind`} description={s.summary}>
+  <article>
+    <header class="container st-hero">
+      <div class="st-brand"><MockLogo key={s.logo} name={logoName} /></div>
+      <h1>{s.headline}</h1>
+      <p class="intro">{s.summary}</p>
+    </header>
+
+    <section class="container st-metrics" aria-label={c.sections.results}>
+      <dl>
+        {s.metrics.map((m, i) => (
+          <div data-reveal="drawer" style={`--d:${i * 90}ms`}><dt>{m.label}</dt><dd class="tabular">{m.value}</dd></div>
+        ))}
+      </dl>
+    </section>
+
+    <div class="container st-body">
+      <aside class="facts" aria-label={s.company}>
+        <dl>
+          <div><dt class="label">{c.facts.industry}</dt><dd>{s.industry}</dd></div>
+          <div><dt class="label">{c.facts.sites}</dt><dd>{s.sites}</dd></div>
+          <div><dt class="label">{c.facts.lockers}</dt><dd>{s.lockers}</dd></div>
+          <div>
+            <dt class="label">{c.facts.solutions}</dt>
+            <dd><ul role="list" class="sol-links">
+              {s.solutions.map((k) => (
+                <li><a href={`/solutions/${k}`}><svg viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><path d={solutionIcons[k]} /></svg>{sol(k).title}</a></li>
+              ))}
+            </ul></dd>
+          </div>
+        </dl>
+      </aside>
+      <div class="text">
+        <section data-reveal><h2>{c.sections.challenge}</h2><p>{s.challenge}</p></section>
+        <section data-reveal><h2>{c.sections.solution}</h2><p>{s.solution}</p></section>
+        <figure class="big-quote" data-reveal="drawer">
+          <blockquote><p>“{s.quote.text}”</p></blockquote>
+          <figcaption><strong>{s.quote.name}</strong><span>{s.quote.role}</span></figcaption>
+        </figure>
+        <section data-reveal><h2>{c.sections.results}</h2><p>{s.results}</p></section>
+      </div>
+    </div>
+  </article>
+
+  <Quotes title={c.more} exclude={s.slug} />
+  <Contact locale="en" />
+</Base>
+
+<style>
+  .st-hero { padding-top: calc(var(--header-h) + 48px); padding-bottom: 48px; display: flex; flex-direction: column; gap: 24px; }
+  .st-brand { display: flex; align-items: center; gap: 16px; }
+  .st-hero h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; max-width: 840px; }
+  .intro { max-width: 600px; color: var(--ink-muted-strong); }
+
+  .st-metrics dl { display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--line); }
+  .st-metrics dl > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 8px; padding: 24px; background: var(--surface); border-top: var(--hair) solid var(--line); border-left: var(--hair) solid var(--line); }
+  .st-metrics dd { font-family: var(--font-display); font-weight: 500; font-size: 48px; line-height: 56px; letter-spacing: -0.03em; color: var(--ink); }
+  .st-metrics dt { color: var(--ink-muted-strong); }
+
+  .st-body { display: flex; flex-direction: column; gap: 48px; padding-block: 64px 100px; }
+  .facts dl { display: grid; gap: 24px; }
+  .facts dd { margin-top: 4px; font-family: var(--font-display); font-weight: 500; color: var(--ink); }
+  .sol-links { display: grid; gap: 8px; margin-top: 4px; }
+  .sol-links a { display: inline-flex; align-items: center; gap: 8px; color: var(--accent-ink); text-decoration: none; }
+  .sol-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .sol-links svg { fill: none; stroke: currentColor; stroke-width: 1.4; flex: none; }
+  .text { display: grid; gap: 48px; max-width: 720px; }
+  .text h2 { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); letter-spacing: 0; margin-bottom: 8px; }
+  .text p { color: var(--ink-muted-strong); }
+  .big-quote { margin: 0; padding: 32px; background: var(--accent); color: #fff; display: grid; gap: 24px; }
+  .big-quote blockquote p { font-family: var(--font-display); font-weight: 500; font-size: 28px; line-height: 40px; letter-spacing: -0.01em; color: #fff; }
+  .big-quote figcaption { display: grid; }
+  .big-quote figcaption span { color: #fff; }
+
+  @media (min-width: 960px) {
+    .st-metrics dl { grid-template-columns: repeat(3, 1fr); }
+    .st-metrics dl > div { min-height: 200px; padding: 32px; }
+    .st-metrics dd { font-size: 72px; line-height: 72px; letter-spacing: -0.04em; }
+    .st-body { flex-direction: row; justify-content: space-between; }
+    .facts { width: 300px; flex: none; }
+    .facts dl { position: sticky; top: calc(var(--header-h) + 32px); }
+    .text { width: 800px; max-width: none; }
+    .big-quote { padding: 48px; }
+  }
+  @media (min-width: 1280px) {
+    .st-hero { padding-top: 148px; }
+    .st-hero h1 { font-size: 56px; line-height: 64px; letter-spacing: -0.03em; }
+  }
+</style>

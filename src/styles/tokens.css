@@ -1,0 +1,109 @@
+/* Design tokens taken from the Spind pitch deck (light version). */
+:root {
+  /* Colour */
+  --paper: #F4F3EE;
+  --paper-shade: #E8E6DF;
+  --surface: #FFFFFF;
+  --surface-shade: #F2F1EC;
+  --grid-line: #ECEAE4; /* faint on purpose: the grid guides, it should not compete */
+  --line: #D2D0C7;
+  --ink: #16191E;
+  --ink-muted: #6B6F77;
+  --ink-muted-strong: #565A62; /* muted text on shaded backgrounds, keeps AA contrast */
+  --graphite: #2A2E35;
+  --navy-900: #1C2A38;
+  --navy-500: #30475E;
+  --navy-300: #7C93AB;
+  --accent: #2C74B3;      /* primary brand colour, solid, no gradients */
+  --accent-deep: #1F5A8F; /* hover and pressed states */
+  --accent-ink: #245F93;  /* accent used as text on light backgrounds, keeps AA contrast */
+  --accent-tint: #E4EEF7;
+  --glow: #DDDBD5;
+  --selection: #FF7100;   /* text selection background */
+  --danger: #E05B43;      /* "Today" cross icon */
+  --mark: #FFD369;        /* footer logo mark */
+  --mark-ink: #222831;
+  --lissa-border: #CDCDD9;
+  --hair: 0.5px;          /* every stroke, as in Figma */
+
+  /* Type */
+  --font-display: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Niramit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /*
+   * THE GRID
+   * Everything sits on one square grid. The container is exactly --cols cells wide and centred,
+   * the background lines are drawn from the page centre, so container edges are always grid lines.
+   * --u is a quarter cell: every line height, padding and gap is a multiple of it.
+   */
+  --cols: 4;
+  --gutter-min: 20px;
+  --cell: calc(min(100vw - var(--gutter-min) * 2, var(--cols) * 112px) / var(--cols));
+  --u: calc(var(--cell) / 4);
+  --container: calc(var(--cell) * var(--cols));
+
+  /* Type scale, line heights locked to --u */
+  --fs-hero: calc(var(--cell) * 0.46);
+  --lh-hero: calc(var(--u) * 2);
+  --fs-title: calc(var(--cell) * 0.34);
+  --lh-title: calc(var(--u) * 1.5);
+  --fs-subtitle: calc(var(--cell) * 0.21);
+  --lh-subtitle: var(--u);
+  --fs-body: 16px;
+  --lh-body: var(--u);
+  --fs-label: 12px;
+
+  --header-h: calc(var(--u) * 3);
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 300ms;
+  --dur: 500ms;
+  --dur-slow: 700ms;
+
+  --shadow-lift: 0 14px 32px -12px rgba(22, 25, 30, 0.14), 0 2px 6px rgba(22, 25, 30, 0.04);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --cols: 8;
+    --gutter-min: 32px;
+    --fs-hero: calc(var(--cell) * 0.6);
+    --lh-hero: calc(var(--u) * 3);
+    --fs-title: calc(var(--cell) * 0.42);
+    --lh-title: calc(var(--u) * 2);
+    --fs-subtitle: calc(var(--cell) * 0.22);
+    --fs-body: 17px;
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --cols: 12;
+    /* Side padding grows to 120px at 1440 (content 1200px = 12 columns of 100px), as in Figma. */
+    --gutter-min: clamp(40px, 8.334vw, 120px);
+    --fs-hero: calc(var(--cell) * 0.82);
+    --lh-hero: calc(var(--u) * 4);
+    --fs-title: calc(var(--cell) * 0.44);
+    --lh-title: calc(var(--u) * 2);
+    --fs-subtitle: calc(var(--cell) * 0.19);
+    --fs-body: clamp(16px, calc(var(--cell) * 0.16), 18px);
+    --fs-label: 13px;
+    --header-h: calc(var(--u) * 3);
+  }
+}
+
+/* From 1280px the type follows the Figma text styles exactly (Heading/H2, Heading/H4, Body/Default). */
+/* From 1280px everything follows the Figma text styles and the 4px baseline. */
+@media (min-width: 1280px) {
+  :root {
+    --fs-title: 48px;     /* Heading/H2 48/56 */
+    --lh-title: 56px;
+    --fs-subtitle: 20px;  /* Heading/H4 20/28 */
+    --lh-subtitle: 28px;
+    --fs-body: 16px;      /* Body/Default 16/28 */
+    --lh-body: 28px;
+    --fs-label: 12px;     /* UI/Label 12/16 */
+  }
+}

@@ -1,0 +1,232 @@
+---
+/**
+ * Front view of the Spind locker, drawn as SVG so it can animate.
+ * Geometry is locked to the page grid: every module is 2 cells wide, the locker is 3 cells tall.
+ * Modules: master, s24 (3 x 8), n8 (8 wide), m124 (3 x 4 small, then 4 wide).
+ */
+type ModuleKey = 'master' | 's24' | 'n8' | 'm124';
+
+interface Props {
+  modules?: ModuleKey[];
+  /** The drawer shown open (accent). Index is row-major within the module. */
+  accent?: { module: ModuleKey; index: number } | null;
+  /** Hero entrance animation plus random drawers opening (driven by main.ts). */
+  animate?: boolean;
+  /** Screen states for the how-it-works story (driven by main.ts via data-state). */
+  screen?: { request: string; code: string; open: string; logged: string } | null;
+  id: string;
+  label: string;
+  class?: string;
+}
+
+const {
+  modules = ['master', 's24', 'n8', 'm124'],
+  accent = { module: 's24', index: 7 },
+  animate = false,
+  screen = null,
+  id,
+  label,
+  class: className = '',
+} = Astro.props;
+
+const MW = 200; // module width = 2 cells
+const H = 300; // total height = 3 cells
+const BH = 288; // body height
+const PAD = 6;
+const DG = 3;
+const totalW = modules.length * MW;
+
+type Drawer = { x: number; y: number; w: number; h: number; accent: boolean; order: number; n: number };
+
+function drawersFor(key: ModuleKey, ox: number): Drawer[] {
+  const out: Drawer[] = [];
+  if (key === 'master') return out;
+  const innerW = MW - PAD * 2;
+  const innerH = BH - PAD * 2;
+  const rowH = (innerH - DG * 7) / 8;
+  const smallW = (innerW - DG * 2) / 3;
+  for (let r = 0; r < 8; r++) {
+    const y = PAD + r * (rowH + DG);
+    const small = key === 's24' || (key === 'm124' && r < 4);
+    if (small) for (let c = 0; c < 3; c++) out.push({ x: ox + PAD + c * (smallW + DG), y, w: smallW, h: rowH, accent: false, order: 0, n: 0 });
+    else out.push({ x: ox + PAD, y, w: innerW, h: rowH, accent: false, order: 0, n: 0 });
+  }
+  if (accent && accent.module === key && out[accent.index]) out[accent.index].accent = true;
+  return out;
+}
+
+const mods = modules.map((key, i) => ({ key, ox: i * MW, drawers: drawersFor(key, i * MW) }));
+const all = mods.flatMap((m) => m.drawers);
+all.forEach((d, i) => (d.n = i + 1));
+// Stagger order: diagonal sweep from top left to bottom right.
+[...all].sort((a, b) => a.x + a.y * 1.4 - (b.x + b.y * 1.4)).forEach((d, i) => (d.order = i));
+
+const r1 = (n: number) => Math.round(n * 10) / 10;
+const g = (s: string) => `${id}-${s}`;
+
+// QR pattern for the "code" screen state (fixed, decorative).
+const qrBits = '1110111100101110101111010001010111011101011011110111001010110111'.split('').map(Number);
+const accentDrawer = all.find((d) => d.accent);
+---
+<svg
+  class:list={['locker', className, { 'locker--animate': animate, 'locker--story': !!screen }]}
+  viewBox={`0 0 ${totalW} ${H}`}
+  role="img"
+  aria-label={label}
+  style={`--last:${all.length}`}
+  data-locker
+  data-state={screen ? '0' : undefined}
+>
+  <defs>
+    <linearGradient id={g('accent')} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2C74B3" />
+      <stop offset="1" stop-color="#2C74B3" />
+    </linearGradient>
+    <linearGradient id={g('screen')} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#30475E" />
+      <stop offset="1" stop-color="#30475E" />
+    </linearGradient>
+  </defs>
+
+  {mods.map((m) => (
+    <g class="mod" data-module={m.key} style={`--m:${mods.indexOf(m)}`}>
+      <rect class="body" x={m.ox} y="0" width={MW} height={BH} />
+      <rect class="foot" x={m.ox + 16} y={BH} width="20" height={H - BH} />
+      <rect class="foot" x={m.ox + MW - 36} y={BH} width="20" height={H - BH} />
+
+      {m.key === 'master' && (
+        <g class="master">
+          <rect x={m.ox + PAD} y={PAD} width={MW - PAD * 2} height="92" fill={`url(#${g('screen')})`} />
+          <rect class="scanline" x={m.ox + PAD} y={PAD} width={MW - PAD * 2} height="2" />
+          {!screen && (
+            <g>
+              <line class="screen-line" x1={m.ox + 16} y1="18" x2={m.ox + 76} y2="18" />
+              <line class="screen-line" x1={m.ox + 16} y1="24" x2={m.ox + 52} y2="24" />
+            </g>
+          )}
+          {screen && (
+            <g class="screens">
+              <g class="scr scr-0">
+                <text x={m.ox + 16} y="28" class="scr-t">{screen.request}</text>
+                <rect class="scr-bar" x={m.ox + 16} y="40" width="110" height="5" />
+                <rect class="scr-bar scr-bar--dim" x={m.ox + 16} y="51" width="80" height="5" />
+                <rect class="scr-cursor" x={m.ox + 16} y="66" width="44" height="14" />
+              </g>
+              <g class="scr scr-1">
+                <rect x={m.ox + 16} y="16" width="66" height="66" fill="#fff" />
+                {qrBits.map((b, k) => b ? <rect x={m.ox + 20 + (k % 8) * 7.25} y={20 + Math.floor(k / 8) * 7.25} width="7.25" height="7.25" fill="#1C2A38" /> : null)}
+                <text x={m.ox + 94} y="34" class="scr-t">{screen.code}</text>
+                {[0, 1, 2, 3, 4].map((k) => <rect class="pin-dot" x={m.ox + 94 + k * 14} y="50" width="9" height="9" style={`--k:${k}`} />)}
+              </g>
+              <g class="scr scr-2">
+                <text x={m.ox + 16} y="28" class="scr-t">{screen.open}</text>
+                <rect class="scr-bar scr-accent" x={m.ox + 16} y="40" width="150" height="5" />
+                <text x={m.ox + 16} y="76" class="scr-big">08</text>
+              </g>
+              <g class="scr scr-3">
+                <circle cx={m.ox + 32} cy="52" r="16" class="scr-ok" />
+                <path d={`M${m.ox + 24} 52 l6 6 l11 -12`} class="scr-check" />
+                <text x={m.ox + 58} y="57" class="scr-t">{screen.logged}</text>
+              </g>
+            </g>
+          )}
+          <circle class="scanner" cx={m.ox + 20} cy="118" r="7" />
+          <rect class="pin" x={m.ox + 34} y="113" width="50" height="9" />
+          <line class="pin-line" x1={m.ox + 37} y1="117.5" x2={m.ox + 81} y2="117.5" />
+          <rect class="service" x={m.ox + PAD} y="150" width={MW - PAD * 2} height={BH - 150 - PAD} />
+          {[0, 1, 2, 3, 4, 5].map((k) => (
+            <line class="vent" x1={m.ox + 110} y1={178 + k * 12} x2={m.ox + 182} y2={178 + k * 12} />
+          ))}
+        </g>
+      )}
+
+      {m.drawers.map((d) => (
+        <g
+          class:list={['dr', { 'dr--accent': d.accent, 'dr--target': !!screen && d.accent }]}
+          style={`--i:${d.order}`}
+          data-drawer={d.n}
+        >
+          <rect class="dr-base" x={r1(d.x)} y={r1(d.y)} width={r1(d.w)} height={r1(d.h)} />
+          <rect class="dr-fill" x={r1(d.x)} y={r1(d.y)} width={r1(d.w)} height={r1(d.h)} style={`fill:url(#${g('accent')})`} />
+          <line class="handle" x1={r1(d.x + d.w - 14)} y1={r1(d.y + d.h - 5)} x2={r1(d.x + d.w - 5)} y2={r1(d.y + d.h - 5)} />
+        </g>
+      ))}
+    </g>
+  ))}
+  {screen && accentDrawer && (
+    <g class="badge" transform={`translate(${r1(accentDrawer.x + accentDrawer.w - 4)} ${r1(accentDrawer.y - 4)})`}>
+      <circle r="9" class="badge-c" />
+      <path d="M-4 0 l3 3 l5 -6" class="badge-p" />
+    </g>
+  )}
+</svg>
+
+<style>
+  .locker { width: 100%; height: auto; overflow: visible; }
+  /* Bodies sit on the module boundary, so neighbouring modules share one 0.5px line. */
+  .locker :global(.body) { fill: var(--surface); stroke: var(--line); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.foot) { fill: var(--graphite); }
+  .locker :global(.dr-base) { fill: var(--surface); stroke: var(--line); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.dr-fill) { opacity: 0; transition: opacity 400ms var(--ease); }
+  .locker :global(.handle) { stroke: var(--ink); stroke-width: var(--hair); vector-effect: non-scaling-stroke; transition: stroke 350ms var(--ease); }
+  .locker :global(.screen-line) { stroke: var(--navy-300); stroke-width: 2; }
+  .locker :global(.scanner) { fill: var(--surface); stroke: var(--ink-muted); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.pin) { fill: var(--navy-900); }
+  .locker :global(.pin-line) { stroke: var(--accent); stroke-width: 2; }
+  .locker :global(.service) { fill: var(--surface); stroke: var(--line); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.vent) { stroke: var(--line); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.scanline) { fill: var(--navy-300); opacity: 0; }
+
+  /* Drawer states */
+  .locker :global(.dr) { transform-box: fill-box; transform-origin: center; }
+  /* Open drawers change colour only, they keep their size. */
+  .locker :global(.dr--accent:not(.dr--target) .dr-fill),
+  .locker :global(.dr.is-open .dr-fill) { opacity: 1; }
+  .locker :global(.dr--accent:not(.dr--target) .handle),
+  .locker :global(.dr.is-open .handle) { stroke: #fff; opacity: 0.9; }
+
+  .locker :global(.mod) { transition: opacity var(--dur) var(--ease), transform 700ms var(--ease-out); }
+
+  /* Story screens (how it works) */
+  .locker :global(.scr) { opacity: 0; transition: opacity 400ms var(--ease); }
+  .locker :global(.scr-t) { fill: #fff; font-family: var(--font-display); font-weight: 500; font-size: 11px; }
+  .locker :global(.scr-big) { fill: #fff; font-family: var(--font-display); font-weight: 500; font-size: 30px; }
+  .locker :global(.scr-bar) { fill: var(--navy-300); }
+  .locker :global(.scr-bar--dim) { opacity: 0.5; }
+  .locker :global(.scr-accent) { fill: #7FB0DC; }
+  .locker :global(.scr-cursor) { fill: var(--accent); }
+  .locker :global(.pin-dot) { fill: #fff; opacity: 0.25; }
+  .locker :global(.scr-ok) { fill: #2F9E6B; }
+  .locker :global(.scr-check), .locker :global(.badge-p) { fill: none; stroke: #fff; stroke-width: 2.4; }
+  .locker :global(.badge) { opacity: 0; transition: opacity 400ms var(--ease); }
+  .locker :global(.badge-c) { fill: #2F9E6B; }
+
+  .locker--story[data-state='0'] :global(.scr-0),
+  .locker--story[data-state='1'] :global(.scr-1),
+  .locker--story[data-state='2'] :global(.scr-2),
+  .locker--story[data-state='3'] :global(.scr-3) { opacity: 1; }
+  .locker--story[data-state='1'] :global(.pin-dot) { animation: pin 1.6s var(--ease) infinite; animation-delay: calc(var(--k) * 140ms); }
+  .locker--story[data-state='2'] :global(.dr--target .dr-fill) { opacity: 1; }
+  .locker--story[data-state='2'] :global(.dr--target .handle) { stroke: #fff; opacity: 0.9; }
+  .locker--story[data-state='3'] :global(.badge) { opacity: 1; }
+  .locker--story[data-state='3'] :global(.dr--target .dr-fill) { opacity: 0.25; }
+  .locker--story[data-state='1'] :global(.scanline) { opacity: 0.8; animation: scan 1.6s var(--ease) infinite; }
+
+  @keyframes pin { 0%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+  @keyframes scan { from { transform: translateY(0); } to { transform: translateY(90px); } }
+
+  @media (max-width: 400px) {
+    .locker :global(.handle) { display: none; }
+  }
+
+  /* Hero entrance: body rises, drawers stagger in, accent drawer pulls out. */
+  @media (prefers-reduced-motion: no-preference) {
+    .locker--animate { animation: locker-rise 800ms var(--ease-out) both; }
+    .locker--animate :global(.dr) { animation: drawer-in 360ms var(--ease) both; animation-delay: calc(250ms + var(--i) * 15ms); }
+    .locker--animate :global(.master) { animation: drawer-in 500ms var(--ease) 200ms both; }
+    .locker--animate :global(.dr--accent .dr-fill) { animation: fill-in 500ms var(--ease) calc(350ms + var(--last) * 15ms) both; }
+  }
+  @keyframes locker-rise { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: none; } }
+  @keyframes drawer-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fill-in { from { opacity: 0; } to { opacity: 1; } }
+</style>

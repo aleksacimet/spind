@@ -1,0 +1,28 @@
+---
+import { LOGO_PATHS, LOGO_VIEWBOX } from './logo-path';
+
+interface Props {
+  /** Visual height in px. Width follows the aspect ratio (8342 x 3687). */
+  height?: number;
+  class?: string;
+  /** Accessible name. Pass "" when visible text next to it already says Spind. */
+  title?: string;
+}
+const { height = 40, class: className = '', title = 'Spind by Cimet' } = Astro.props;
+const width = Math.round((height * 8342) / 3687);
+---
+<svg
+  class:list={['logo', className]}
+  viewBox={LOGO_VIEWBOX}
+  width={width}
+  height={height}
+  fill="currentColor"
+  role={title ? 'img' : undefined}
+  aria-label={title || undefined}
+  aria-hidden={title ? undefined : 'true'}
+  focusable="false"
+>
+  {LOGO_PATHS.map((p) => (
+    <path d={p.d} fill-rule={p.evenodd ? 'evenodd' : undefined} clip-rule={p.evenodd ? 'evenodd' : undefined} />
+  ))}
+</svg>

@@ -1,0 +1,301 @@
+/* Reset */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: var(--header-h);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+img, svg { display: block; max-width: 100%; }
+input, button, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Grain over everything, as in the deck. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Type */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--ink);
+  text-wrap: balance;
+}
+h1 { font-size: var(--fs-hero); line-height: var(--lh-hero); letter-spacing: -0.035em; }
+h2 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.025em; }
+h3 { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); letter-spacing: -0.01em; }
+p { text-wrap: pretty; }
+.muted { color: var(--ink-muted); }
+.label {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--fs-label);
+  line-height: var(--u);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+a { color: inherit; }
+/* Selected text: orange background, dark text keeps AA contrast (6.9:1). */
+::selection { background: var(--selection); color: var(--ink); }
+::-moz-selection { background: var(--selection); color: var(--ink); }
+strong { font-weight: 500; }
+.accent-text { color: var(--accent-ink); }
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Layout: container is exactly N cells wide. */
+.container {
+  width: var(--container);
+  margin-inline: auto;
+}
+.cols {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--cell));
+}
+/* Column spans per breakpoint: data-span="mobile tablet desktop" is set via classes below. */
+.span-all { grid-column: 1 / -1; }
+
+.section { position: relative; padding-block: 0 var(--cell); }
+.section--shade { background-color: color-mix(in srgb, var(--paper-shade) 70%, transparent); }
+.section--shade, .on-tint, .panel--today, .tile--shade { --ink-muted: var(--ink-muted-strong); }
+.section--strong-intro .section-head .intro { color: var(--ink-muted-strong); }
+
+/* Section head: title left, intro right, both on the grid. */
+.section-head {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--cell));
+  align-items: center;
+  row-gap: calc(var(--u) * 0.5);
+  padding-block: calc(var(--u) * 0.5);
+}
+.section-head h2 { grid-column: 1 / -1; }
+.section-head .intro { grid-column: 1 / -1; color: var(--ink-muted); }
+@media (min-width: 960px) {
+  .section-head h2 { grid-column: 1 / span 8; }
+  .section-head:not(:has(.intro)) h2 { grid-column: 1 / -1; }
+  .section-head .intro { grid-column: 9 / span 4; }
+}
+.section-head--center { display: flex; flex-direction: column; align-items: center; text-align: center; row-gap: 8px; }
+.section-head--center .intro { max-width: 528px; }
+
+/* Buttons. Zero radius. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: calc(var(--u) * 2);
+  padding: 0 var(--u);
+  border: var(--hair) solid transparent;
+  border-radius: 0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
+}
+.btn--primary {
+  color: #fff;
+  background-color: var(--accent);
+}
+.btn--primary:hover { background-color: var(--accent-deep); }
+/* Secondary: ink fill slides in like a drawer. */
+.btn--secondary { color: var(--ink); border-color: var(--ink); background: transparent; }
+.btn--secondary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease-out);
+}
+.btn--secondary:hover { color: var(--paper); }
+.btn--secondary:hover::before { transform: scaleX(1); }
+.btn--light { background: #fff; color: var(--accent-deep); }
+.btn .arrow { transition: transform var(--dur-fast) var(--ease); }
+.btn:hover .arrow { transform: translateX(4px); }
+.btn--sm { height: calc(var(--u) * 1.5); font-size: 15px; padding: 0 calc(var(--u) * 0.75); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.on-accent :focus-visible { outline-color: #fff; }
+
+/*
+ * Tiles: cards placed on the (invisible) layout grid.
+ * Lines belong to tiles only: each tile draws its top and left border and a hairline shadow
+ * right and bottom, which lands on the neighbour's border, so shared edges stay single.
+ */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--cell));
+  grid-auto-rows: var(--cell);
+}
+.tile {
+  position: relative;
+  background: var(--surface);
+  border-top: var(--hair) solid var(--line);
+  border-left: var(--hair) solid var(--line);
+  padding: calc(var(--u) - var(--hair)) var(--u) var(--u) calc(var(--u) - var(--hair));
+  grid-row: span var(--rows, 2);
+  min-width: 0;
+  overflow: hidden;
+  box-shadow: var(--hair) var(--hair) 0 0 var(--line);
+}
+.tile h3 { margin-bottom: calc(var(--u) * 0.5); }
+.tile p { color: var(--ink-muted); }
+.tile--accent { background: var(--accent); color: #fff; border-color: transparent; box-shadow: none; }
+.tile--accent h3 { color: #fff; }
+.tile--accent p, .tile--accent .label { color: #fff; }
+.tile--tint { background: var(--accent-tint); }
+.tile--shade { background: var(--surface-shade); }
+.tile--ghost { background: transparent; }
+
+/* Hover: the tile lifts a hair. */
+.tile--hover { transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+.tile--hover:hover { transform: translateY(-2px); box-shadow: var(--hair) var(--hair) 0 0 var(--line), var(--shadow-lift); z-index: 2; }
+.tile--accent.tile--hover:hover { box-shadow: var(--shadow-lift); }
+
+/* Accessibility helpers */
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}
+.skip-link {
+  position: fixed;
+  top: 8px; left: 8px;
+  z-index: 1000;
+  padding: 12px 18px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+
+/*
+ * Reveal. Tiles open like drawers (clip from the left), text rises out of a mask.
+ * Content is only hidden when JS runs and motion is allowed.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 600ms var(--ease), transform 700ms var(--ease-out);
+    transition-delay: var(--d, 0ms);
+  }
+  .js [data-reveal='drawer'] {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 750ms var(--ease-out);
+    transition-delay: var(--d, 0ms);
+  }
+  .js [data-reveal].is-visible { opacity: 1; transform: none; }
+  .js [data-reveal='drawer'].is-visible { clip-path: inset(0 0 0 0); }
+  .js .tile--hover[data-reveal].is-visible {
+    transition: opacity var(--dur-slow) var(--ease) var(--d, 0ms), clip-path 750ms var(--ease-out) var(--d, 0ms), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  }
+
+  /* Line mask reveal for big titles (lines are wrapped by main.ts). */
+  .js [data-split] .line { display: block; overflow: hidden; }
+  .js [data-split] .line > span { display: block; transform: translateY(105%); transition: transform 800ms var(--ease-out); transition-delay: calc(var(--d, 0ms) + var(--li, 0) * 70ms); }
+  .js [data-split].is-visible .line > span { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* ===== Figma 1:1 from 1280px: 4px baseline, whole numbers ===== */
+@media (min-width: 1280px) {
+  h1 { letter-spacing: -0.03em; }  /* Display/Hero -3% */
+  h2 { letter-spacing: -0.02em; }  /* Heading/H2 -2% */
+  h3 { letter-spacing: 0; }
+  .label { font-size: 12px; line-height: 16px; letter-spacing: 0.08em; } /* UI/Label 8% */
+  .section-head { padding-block: 48px; }
+  .section-head:not(.section-head--center):has(.intro) h2 { max-width: 440px; } /* Figma title width next to an intro */
+  .tile { padding: 24px; }
+  .btn { height: 60px; padding: 0 28px; gap: 12px; font-size: 16px; line-height: 20px; }
+  .btn--sm { height: 44px; padding: 0 24px; font-size: 16px; }
+}
+/* Hero secondary button: white with a hairline border, as in Figma */
+.btn--secondary { background: var(--surface); border-color: var(--lissa-border); }
+/* Yellow action (Pricing, Contact in Figma) */
+.btn--mark { background: var(--mark); color: var(--ink); }
+.btn--mark:hover { background: #f5c450; }
+
+/* Page to page: a short cross-fade instead of a white flash (cross-document view transitions). */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root) { animation: vt-out 180ms var(--ease) both; }
+  ::view-transition-new(root) { animation: vt-in 320ms var(--ease-out) both; }
+  .site-header { view-transition-name: site-header; }
+}
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(8px); } }
+
+
+/*
+ * The page grid, drawn very faintly behind everything: square cells of --cell (100px at 1440),
+ * aligned so the container edges fall on grid lines. Sections and tiles with a fill cover it.
+ */
+body { position: relative; }
+body::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  --grid-line: color-mix(in srgb, var(--line) 38%, transparent);
+  background-image:
+    linear-gradient(to right, var(--grid-line) var(--hair), transparent var(--hair)),
+    linear-gradient(to bottom, var(--grid-line) var(--hair), transparent var(--hair));
+  background-size: var(--cell) var(--cell);
+  /* A % position is relative to (width - tile width), hence the extra half cell: lines land on the container edges. */
+  background-position: calc(50% - var(--container) / 2 + var(--cell) / 2) 0;
+}
+@media print { body::before { display: none; } }

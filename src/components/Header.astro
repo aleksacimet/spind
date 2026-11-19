@@ -1,0 +1,297 @@
+---
+import Logo from './Logo.astro';
+import { getContent } from '../content/site';
+
+interface Props {
+  /** Home page: header starts transparent over the accent band. */
+  overlay?: boolean;
+  /** Prefix for anchor links, "" on the home page, "/" elsewhere. */
+  base?: string;
+  locale?: string;
+}
+const { overlay = false, base = '', locale = 'en' } = Astro.props;
+const t = getContent(locale);
+const home = locale === 'en' ? '/' : `/${locale}/`;
+import { showStories } from '../content/site';
+import { href as resolve } from '../content/links';
+import { iconForHref } from '../content/icons';
+const prefix = locale === 'en' ? '' : `/${locale}`;
+const to = (h: string) => resolve(h, base, prefix);
+// Customer stories join the Resources menu once client names may be shown.
+const groups = t.nav.groups.map((g) =>
+  g.id === 'resources' && showStories
+    ? { ...g, columns: g.columns.map((c, i) => (i === 0 ? { ...c, items: [...c.items, t.nav.customers] } : c)) }
+    : g
+);
+---
+<header class:list={['site-header', { 'is-overlay': overlay }]} data-header>
+  <div class="container header-inner">
+    <a class="brand" href={home} aria-label="Spind, home">
+      <Logo height={40} title="" />
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <ul role="list" class="nav-list">
+        {groups.map((g) => (
+          <li class="nav-item" data-dd>
+            <button class="nav-link nav-trigger" type="button" aria-expanded="false" aria-controls={`dd-${g.id}`} data-dd-trigger>
+              {g.label}<span class="chev" aria-hidden="true"></span>
+            </button>
+            <div class="dd" id={`dd-${g.id}`} data-dd-panel hidden>
+              <div class="container dd-inner">
+                {g.columns.map((c) => (
+                  <div class="dd-col">
+                    <p class="label dd-title">{c.title}</p>
+                    <ul role="list" class="dd-list">
+                      {c.items.map((it) => (
+                        <li>
+                          <a class:list={['dd-link', { 'has-icon': !!iconForHref(it.href) }]} href={to(it.href)} data-nav-item>
+                            {iconForHref(it.href) && <svg class="dd-icon" viewBox="0 0 22 22" width="24" height="24" aria-hidden="true"><path d={iconForHref(it.href)} /></svg>}
+                            <span class="dd-label">{it.label}</span>
+                            <span class="dd-text">{it.text}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                <a class="dd-feature" href={to(g.feature.href)}>
+                  <span class="label dd-feature-label">{g.feature.label}</span>
+                  <span class="dd-feature-title">{g.feature.title}</span>
+                  <span class="dd-feature-text">{g.feature.text}</span>
+                  <span class="dd-feature-cta">{g.feature.cta}<span class="arrow" aria-hidden="true">→</span></span>
+                </a>
+              </div>
+            </div>
+          </li>
+        ))}
+        {t.nav.links.map((l) => (
+          <li class="nav-item"><a class="nav-link" href={to(l.href)} data-nav={l.id}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <a class="btn btn--primary btn--sm header-cta" href={to('#contact')}>{t.nav.cta}</a>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      data-menu-toggle
+    >
+      <span class="sr-only" data-menu-label data-open={t.nav.menu} data-close={t.nav.close}>{t.nav.menu}</span>
+      <span class="bars" aria-hidden="true"><span></span><span></span></span>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu" data-menu hidden>
+    <nav class="container" aria-label="Mobile">
+      <ul role="list" class="mobile-list">
+        {groups.map((g, i) => (
+          <li style={`--k:${i}`}>
+            <details class="m-group">
+              <summary>{g.label}<span class="chev" aria-hidden="true"></span></summary>
+              <ul role="list" class="m-sub">
+                {g.columns.flatMap((c) => c.items).map((it) => (
+                  <li><a href={to(it.href)} data-menu-link>{it.label}<span>{it.text}</span></a></li>
+                ))}
+              </ul>
+            </details>
+          </li>
+        ))}
+        {t.nav.links.map((l, i) => (
+          <li style={`--k:${groups.length + i}`}><a class="m-top" href={to(l.href)} data-nav={l.id} data-menu-link>{l.label}</a></li>
+        ))}
+      </ul>
+      <a class="btn btn--primary" href={to('#contact')} data-menu-link>{t.nav.cta}</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    height: var(--header-h);
+    color: var(--ink);
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    border-bottom: var(--hair) solid var(--line);
+    backdrop-filter: saturate(1.2) blur(8px);
+    -webkit-backdrop-filter: saturate(1.2) blur(8px);
+    transition: background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  }
+  /* Over the hero band: transparent and white until the page scrolls. */
+  .site-header.is-overlay:not(.is-scrolled) {
+    background: transparent;
+    border-bottom-color: transparent;
+    color: #fff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .header-inner { height: 100%; display: flex; align-items: center; gap: 32px; }
+  .brand { display: inline-flex; color: inherit; flex: none; }
+  .brand :global(.logo) { height: calc(var(--u) * 1.5); width: auto; }
+
+  .nav { margin-left: auto; align-self: stretch; }
+  .nav-list { display: flex; gap: clamp(14px, 1.8vw, 28px); height: 100%; }
+  /* Links fill the header height so the indicator sits on the header's bottom line, not under the text. */
+  .nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0;
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1;
+    text-decoration: none;
+    color: inherit;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: calc(var(--hair) * -1);
+    height: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-fast) var(--ease);
+  }
+  .site-header.is-scrolled .nav-link::after, .site-header:not(.is-overlay) .nav-link::after { background: var(--accent); }
+  .nav-link:hover::after, .nav-link.is-active::after, .nav-trigger[aria-expanded='true']::after { transform: scaleX(1); }
+  .nav-trigger { gap: 8px; border: 0; background: none; cursor: pointer; }
+  .chev { width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform var(--dur-fast) var(--ease); }
+  [aria-expanded='true'] > .chev, .m-group[open] .chev { transform: translateY(1px) rotate(-135deg); }
+
+  /* Mega menu: full-width panel under the header, columns on the page grid, a featured card on the right. */
+  .dd {
+    position: absolute;
+    left: 0; right: 0; top: 100%;
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 24px 48px -24px rgba(22, 25, 30, 0.18);
+  }
+  .dd[hidden] { display: none; }
+  /* While a menu (or the mobile menu) is open, header and panel are one white surface. */
+  .site-header.dd-open, :global(html.menu-open) .site-header.site-header {
+    background: var(--surface);
+    border-bottom-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .dd-inner { display: grid; grid-template-columns: repeat(var(--cols), var(--cell)); padding-block: 32px 40px; }
+  .dd-col { grid-column: span 4; padding-right: 32px; }
+  .dd-title { margin-bottom: 12px; }
+  .dd-list { display: grid; gap: 4px; }
+  .dd-link { display: grid; gap: 4px; padding: 12px 16px; margin-inline: -16px; text-decoration: none; transition: background-color var(--dur-fast) var(--ease); }
+  .dd-link:hover, .dd-link:focus-visible { background: var(--paper); }
+  .dd-link.has-icon { grid-template-columns: 24px 1fr; column-gap: 16px; }
+  .dd-link.has-icon .dd-label, .dd-link.has-icon .dd-text { grid-column: 2; }
+  .dd-icon { grid-row: 1 / span 2; width: 24px; height: 24px; fill: none; stroke: var(--accent-ink); stroke-width: 1.4; }
+  .dd-link:hover .dd-label { color: var(--accent-ink); }
+  .dd-label { font-family: var(--font-display); font-weight: 500; font-size: 16px; line-height: 24px; color: var(--ink); }
+  .dd-text { font-size: 16px; line-height: 24px; color: var(--ink-muted-strong); }
+  .dd-feature {
+    grid-column: 9 / span 4;
+    display: flex; flex-direction: column; gap: 8px;
+    min-height: 224px;
+    padding: 24px;
+    background: var(--graphite);
+    color: var(--surface);
+    text-decoration: none;
+    transition: background-color var(--dur-fast) var(--ease);
+  }
+  .dd-feature:hover { background: var(--accent-ink); }
+  .dd-feature-label { color: var(--line); }
+  .dd-feature-title { margin-top: auto; font-family: var(--font-display); font-weight: 500; font-size: 20px; line-height: 28px; }
+  .dd-feature-text { font-size: 16px; line-height: 24px; color: var(--paper); }
+  .dd-feature-cta { display: inline-flex; gap: 8px; margin-top: 8px; font-family: var(--font-display); font-weight: 500; font-size: 16px; line-height: 24px; }
+  .dd-feature:hover .arrow { transform: translateX(4px); }
+  .dd-feature .arrow { transition: transform var(--dur-fast) var(--ease); }
+  @media (prefers-reduced-motion: no-preference) {
+    .dd:not([hidden]) { animation: dd-in 360ms var(--ease-out) both; }
+    .dd:not([hidden]) .dd-col, .dd:not([hidden]) .dd-feature { animation: dd-item 420ms var(--ease-out) both; }
+    .dd:not([hidden]) .dd-col:nth-child(2) { animation-delay: 50ms; }
+    .dd:not([hidden]) .dd-feature { animation-delay: 100ms; }
+  }
+  /* Opens like a drawer: the panel slides out from under the header line. */
+  @keyframes dd-in { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes dd-item { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+  .site-header:not(.is-overlay) .nav-link.is-active,
+  .site-header.is-scrolled .nav-link.is-active { color: var(--accent-ink); }
+
+  .is-overlay:not(.is-scrolled) .header-cta {
+    background: #fff;
+    color: var(--accent-deep);
+  }
+  .is-overlay:not(.is-scrolled) :focus-visible { outline-color: #fff; }
+
+  .menu-toggle {
+    display: none;
+    margin-left: auto;
+    width: 48px;
+    height: 48px;
+    border: var(--hair) solid currentColor;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    align-items: center;
+    justify-content: center;
+  }
+  .bars { display: grid; gap: 6px; width: 20px; }
+  .bars span { display: block; height: 1.5px; background: currentColor; transition: transform var(--dur-fast) var(--ease); }
+  .menu-toggle[aria-expanded='true'] .bars span:first-child { transform: translateY(3.75px) rotate(45deg); }
+  .menu-toggle[aria-expanded='true'] .bars span:last-child { transform: translateY(-3.75px) rotate(-45deg); }
+
+  .mobile-menu {
+    position: fixed;
+    inset: var(--header-h) 0 0 0;
+    z-index: 49;
+    background: var(--surface);
+    color: var(--ink);
+    overflow-y: auto;
+    padding-block: 32px 48px;
+  }
+  .mobile-menu[hidden] { display: none; }
+  .mobile-list { margin-bottom: 32px; }
+  .mobile-list a {
+    display: block;
+    padding: 14px 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+  .mobile-list a.is-active { color: var(--accent-ink); }
+  .m-group summary, .mobile-list .m-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0;
+    font-family: var(--font-display); font-weight: 500; font-size: 28px; line-height: 36px; letter-spacing: -0.01em;
+    list-style: none; cursor: pointer;
+  }
+  .m-group summary::-webkit-details-marker { display: none; }
+  .m-group .chev { width: 10px; height: 10px; }
+  .m-sub { display: grid; padding: 0 0 16px; }
+  .mobile-list .m-sub a { display: grid; gap: 0; padding: 8px 0; border: 0; font-size: 18px; line-height: 24px; letter-spacing: 0; }
+  .m-sub a span { font-family: var(--font-body); font-weight: 300; font-size: 16px; line-height: 24px; color: var(--ink-muted-strong); }
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-menu:not([hidden]) li { animation: menu-in 400ms var(--ease) both; animation-delay: calc(var(--k) * 40ms); }
+  }
+  @keyframes menu-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  /* While the menu is open the header is solid. */
+  :global(html.menu-open) .site-header { color: var(--ink); }
+  :global(html.menu-open) { overflow: hidden; }
+
+  @media (max-width: 959px) {
+    .nav, .header-cta { display: none; }
+    .menu-toggle { display: inline-flex; }
+  }
+</style>

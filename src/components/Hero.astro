@@ -1,0 +1,119 @@
+---
+import LockerDrawing from './LockerDrawing.astro';
+import { getContent } from '../content/site';
+
+interface Props { locale?: string }
+const t = getContent(Astro.props.locale);
+---
+<!-- Centred hero, as designed in Figma: locker, headline, facts, buttons. The band ends at the locker's middle. -->
+<section class="hero" aria-labelledby="hero-title" data-snap>
+  <div class="band on-accent" aria-hidden="true"></div>
+
+  <div class="container hero-inner">
+    <div class="hero-locker">
+      <LockerDrawing id="hero" modules={['master', 's24', 'n8']} animate label={t.hero.lockerLabel} />
+    </div>
+
+    <h1 id="hero-title" class="hero-title">{t.hero.title}</h1>
+
+    <dl class="hero-facts">
+      {t.hero.facts.map((f, i) => (
+        <div class="fact" style={`--k:${i}`}>
+          <dt>{f.k}</dt>
+          <dd>{f.v}</dd>
+        </div>
+      ))}
+    </dl>
+
+    <div class="hero-actions">
+      <a class="btn btn--primary" href="#contact">{t.hero.primary}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--secondary" href="#how-it-works">{t.hero.secondary}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    /* Locker width; its height is half of it (3 modules, 600 x 300 viewBox). */
+    --lw: calc(var(--cell) * 4);
+    --locker-top: var(--cell);
+    padding-bottom: var(--u);
+  }
+
+  .band {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: calc(var(--locker-top) + var(--lw) / 4);
+    background: var(--accent);
+  }
+
+  .hero-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: var(--locker-top);
+  }
+  .hero-locker { width: var(--lw); filter: drop-shadow(0 30px 30px rgba(22, 25, 30, 0.1)); }
+
+  .hero-title { margin-top: calc(var(--u) * 1.5); max-width: calc(var(--cell) * 7); }
+
+  .hero-facts {
+    margin-top: var(--u);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: calc(var(--u) * 0.5);
+  }
+  .fact { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 24px; }
+  .fact + .fact { border-left: var(--hair) solid var(--line); }
+  .fact dt {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .fact dd { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-subtitle); line-height: 22px; color: var(--ink); }
+
+  .hero-actions { margin-top: var(--u); display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+
+  @media (max-width: 639px) {
+    .fact { padding: 0 12px; }
+    .fact dd { font-size: 16px; }
+    .hero-actions { width: 100%; }
+    .hero-actions .btn { flex: 1 1 100%; }
+  }
+  @media (min-width: 640px) {
+    .hero { --lw: calc(var(--cell) * 5); }
+  }
+  @media (min-width: 960px) {
+    .hero-title { font-size: calc(var(--cell) * 0.62); line-height: calc(var(--u) * 3); }
+    .fact { width: calc(var(--cell) * 2); padding: 0; }
+  }
+  @media (min-width: 1280px) {
+    /* Figma: header 84 + 48 gap, locker 516 x 258, band 260, gaps 16 / 32 / 32, bottom 56 */
+    .hero { --lw: 516px; --locker-top: 132px; padding-bottom: 56px; }
+    .band { height: 260px; }
+    .hero-title { font-size: 68px; line-height: 84px; letter-spacing: -0.03em; max-width: 776px; margin-top: 16px; }
+    .hero-facts { margin-top: 32px; gap: 8px; }
+    .fact { width: 224px; }
+    .fact + .fact { padding-left: 8px; }
+    .fact dt { font-size: 12px; line-height: 16px; letter-spacing: 0.08em; }
+    .fact dd { font-size: 20px; line-height: 24px; }
+    .hero-actions { margin-top: 32px; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-title, .hero-facts, .hero-actions { animation: hero-up 700ms var(--ease-out) both; }
+    .hero-title { animation-delay: 120ms; }
+    .hero-facts { animation-delay: 220ms; }
+    .hero-actions { animation-delay: 320ms; }
+  }
+  /* Starts at 0.01, not 0, so the text still counts as painted (LCP). */
+  @keyframes hero-up { from { opacity: 0.01; transform: translateY(var(--u)); } to { opacity: 1; transform: none; } }
+</style>

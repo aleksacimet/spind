@@ -1,0 +1,50 @@
+---
+import MockLogo from './MockLogo.astro';
+import { getContent } from '../content/site';
+interface Props { slug: string; featured?: boolean; i?: number }
+const { slug, featured = false, i = 0 } = Astro.props;
+const t = getContent('en');
+const s = t.proof.stories.find((x) => x.slug === slug)!;
+const logoName = t.proof.logos.find((l) => l.key === s.logo)?.name ?? s.company;
+---
+<article class:list={['story', { 'story--featured': featured }]} data-industry={s.industry} data-reveal="drawer" style={`--d:${i * 80}ms`}>
+  <div class="story-top">
+    <MockLogo key={s.logo} name={logoName} />
+  </div>
+  <p class="label">{featured ? `${t.customers.featured} · ${s.industry}` : s.industry}</p>
+  <h3><a href={`/customers/${s.slug}`}>{s.headline}</a></h3>
+  <p class="sum">{s.summary}</p>
+  {featured && (
+    <dl class="metrics">
+      {s.metrics.map((m) => <div><dt>{m.label}</dt><dd class="tabular">{m.value}</dd></div>)}
+    </dl>
+  )}
+  <span class="more" aria-hidden="true">{t.customers.read}<span class="arrow">→</span></span>
+</article>
+
+<style>
+  .story { position: relative; display: flex; flex-direction: column; gap: 16px; padding: 24px; background: var(--surface); border-top: var(--hair) solid var(--line); border-left: var(--hair) solid var(--line); transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+  .story:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); z-index: 2; }
+  .story-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+  .story h3 a { text-decoration: none; }
+  .story h3 a::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+  .story:hover h3 { color: var(--accent-ink); }
+  .sum { color: var(--ink-muted-strong); }
+  .more { margin-top: auto; padding-top: 16px; display: inline-flex; gap: 8px; font-family: var(--font-display); font-weight: 500; color: var(--accent-ink); }
+  .more .arrow { transition: transform var(--dur-fast) var(--ease); }
+  .story:hover .more .arrow { transform: translateX(4px); }
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding-top: 16px; }
+  .metrics div { display: flex; flex-direction: column-reverse; gap: 4px; }
+  .metrics dd { font-family: var(--font-display); font-weight: 500; font-size: 32px; line-height: 40px; letter-spacing: -0.03em; color: var(--ink); }
+  .metrics dt { font-size: 16px; line-height: 24px; color: var(--ink-muted-strong); }
+  .story--featured { background: var(--graphite); }
+  .story--featured :global(.mock-logo), .story--featured h3, .story--featured .metrics dd, .story--featured .more { color: var(--surface); }
+  .story--featured .label, .story--featured .sum, .story--featured .metrics dt { color: var(--line); }
+  .story--featured:hover h3 { color: var(--surface); }
+  .story[hidden] { display: none; }
+  @media (min-width: 960px) {
+    .story { min-height: 360px; padding: 32px; }
+    .story--featured h3 { font-size: 28px; line-height: 40px; max-width: 640px; }
+    .metrics dd { font-size: 48px; line-height: 56px; }
+  }
+</style>

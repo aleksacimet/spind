@@ -1,0 +1,25 @@
+---
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+const t = getContent(Astro.props.locale);
+const p = t.problem;
+---
+<Section id="problem" title={p.title} intro={p.intro} center class="section--problem">
+  <ul class="tiles pains" role="list" data-fit>
+    {p.cards.map((c, i) => (
+      <li class="tile tile--hover" data-reveal="drawer" style={`--d:${i * 80}ms`}>
+        <h3>{c.title}</h3>
+        <p>{c.text}</p>
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<style>
+  :global(.section--problem) { padding-block: 64px; }
+  :global(.section--problem .section-head) { padding: 0 0 32px; }
+  .pains .tile { grid-column: span 2; --rows: 2; }
+  .pains .label { display: block; margin-bottom: calc(var(--u) * 0.5); }
+  @media (min-width: 640px) { .pains .tile { grid-column: span 4; } }
+  @media (min-width: 960px) { .pains .tile { grid-column: span 3; } }
+</style>

@@ -1,0 +1,93 @@
+---
+/**
+ * Rollout checklist, open and printable (save as PDF from the print dialog).
+ * TODO: to collect emails for it (as competitors do), put it behind a short form once PUBLIC_FORM_ENDPOINT exists.
+ */
+import Base from '../../layouts/Base.astro';
+import { getContent } from '../../content/site';
+const t = getContent('en');
+const c = t.checklist;
+let n = 0;
+---
+<Base title={`${c.title} | Spind`} description={c.intro}>
+  <article class="cl container" aria-labelledby="cl-title">
+    <header class="cl-head">
+      <h1 id="cl-title">{c.heading}</h1>
+      <p class="intro">{c.intro}</p>
+      <button class="btn btn--secondary no-print" type="button" data-print>{c.print}</button>
+    </header>
+
+    <div class="phases">
+      {c.phases.map((ph, i) => (
+        <section class="phase" aria-labelledby={`ph-${i}`} data-reveal style={`--d:${i * 80}ms`}>
+          <p class="label">{String(i + 1).padStart(2, '0')}</p>
+          <h2 id={`ph-${i}`}>{ph.title}</h2>
+          <ul role="list">
+            {ph.items.map((it) => {
+              n += 1;
+              return (
+                <li>
+                  <input type="checkbox" id={`cl-${n}`} />
+                  <label for={`cl-${n}`}>{it}</label>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+    </div>
+
+    <div class="cl-foot no-print">
+      <a class="btn btn--primary" href="/#contact">{c.cta}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="back" href="/">{c.back}</a>
+    </div>
+  </article>
+</Base>
+
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+</script>
+
+<style>
+  .cl { padding-top: calc(var(--header-h) + 48px); padding-bottom: 100px; }
+  .cl-head { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; padding-bottom: 48px; }
+  .cl h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; }
+  .intro { max-width: 520px; color: var(--ink-muted-strong); }
+
+  .phases { display: grid; gap: 24px; }
+  .phase { background: var(--surface); padding: 24px; display: grid; gap: 8px; align-content: start; }
+  .phase h2 { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); letter-spacing: 0; margin-bottom: 8px; }
+  .phase ul { display: grid; gap: 16px; }
+  .phase li { display: flex; gap: 16px; align-items: flex-start; }
+  .phase label { color: var(--ink); cursor: pointer; }
+  input[type='checkbox'] {
+    -webkit-appearance: none; appearance: none; flex: none;
+    width: 20px; height: 20px; margin-top: 4px;
+    border: var(--hair) solid var(--ink-muted); background: var(--surface); cursor: pointer;
+    display: grid; place-items: center;
+    transition: background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  }
+  input[type='checkbox']::after { content: ''; width: 8px; height: 8px; background: var(--surface); transform: rotate(45deg) scale(0); transition: transform var(--dur-fast) var(--ease-out); }
+  input[type='checkbox']:checked { background: var(--accent); border-color: var(--accent); }
+  input[type='checkbox']:checked::after { transform: rotate(45deg) scale(1); }
+  input[type='checkbox']:checked + label { color: var(--ink-muted-strong); }
+
+  .cl-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; padding-top: 48px; }
+  .back { color: var(--accent-ink); }
+
+  @media (min-width: 960px) {
+    .phases { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 1280px) {
+    .cl { padding-top: 148px; }
+    .cl h1 { font-size: 56px; line-height: 64px; letter-spacing: -0.03em; }
+  }
+  @media print {
+    :global(.site-header), :global(.site-footer), :global(.skip-link), .no-print { display: none !important; }
+    :global(body) { background: #fff; }
+    :global(body::after) { display: none; }
+    .cl { padding: 0; width: auto; }
+    .phase { padding: 16px 0; break-inside: avoid; }
+    .phases { grid-template-columns: 1fr 1fr; }
+  }
+</style>

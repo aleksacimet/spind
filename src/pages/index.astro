@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import LogoStrip from '../components/sections/LogoStrip.astro';
+import Quotes from '../components/sections/Quotes.astro';
+import Problem from '../components/sections/Problem.astro';
+import HowItWorks from '../components/sections/HowItWorks.astro';
+import Modules from '../components/sections/Modules.astro';
+import Workflows from '../components/sections/Workflows.astro';
+import Platform from '../components/sections/Platform.astro';
+import Service from '../components/sections/Service.astro';
+import Clients from '../components/sections/Clients.astro';
+import BusinessCase from '../components/sections/BusinessCase.astro';
+import Pricing from '../components/sections/Pricing.astro';
+import Faq from '../components/sections/Faq.astro';
+import Contact from '../components/sections/Contact.astro';
+import { flags } from '../content/site';
+
+const locale = 'en';
+---
+<Base home locale={locale}>
+  <Hero locale={locale} />
+  <LogoStrip locale={locale} />
+  <Problem locale={locale} />
+  <HowItWorks locale={locale} />
+  <Modules locale={locale} />
+  <Workflows locale={locale} />
+  <Platform locale={locale} />
+  <Service locale={locale} />
+  {flags.showClients && <Clients locale={locale} />}
+  <Quotes locale={locale} />
+  <BusinessCase locale={locale} />
+  <Pricing locale={locale} />
+  <Faq locale={locale} />
+  <Contact locale={locale} />
+</Base>

@@ -1,0 +1,53 @@
+---
+import Section from '../Section.astro';
+import MockLogo from '../MockLogo.astro';
+import { getContent, flags } from '../../content/site';
+interface Props { locale?: string; exclude?: string; title?: string }
+const { locale, exclude, title } = Astro.props;
+const t = getContent(locale);
+const stories = t.proof.stories.filter((s) => s.slug !== exclude).slice(0, 3);
+const logoName = (key: string) => t.proof.logos.find((l) => l.key === key)?.name ?? '';
+---
+{flags.exampleProof && (
+  <Section id="stories" title={title ?? t.customers.quotesTitle}>
+    <ul class="quotes" role="list">
+      {stories.map((s, i) => (
+        <li class:list={['q-card', { 'q-card--accent': i === 0 }]} data-reveal="drawer" style={`--d:${i * 100}ms`}>
+          <div class="q-top">
+            <MockLogo key={s.logo} name={logoName(s.logo)} />
+          </div>
+          <blockquote>
+            <p>“{s.quote.text}”</p>
+          </blockquote>
+          <div class="q-foot">
+            <p class="who"><strong>{s.quote.name}</strong><span>{s.quote.role}</span></p>
+            <a class="q-link" href={`/customers/${s.slug}`}>{t.customers.read}<span class="sr-only">: {s.company}</span><span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <p class="q-all"><a href="/customers">{t.customers.quotesCta}<span class="arrow" aria-hidden="true">→</span></a></p>
+  </Section>
+)}
+
+<style>
+  .quotes { display: grid; gap: 0; box-shadow: var(--hair) var(--hair) 0 0 var(--line); }
+  .q-card { display: flex; flex-direction: column; gap: 32px; padding: 24px; background: var(--surface); border-top: var(--hair) solid var(--line); border-left: var(--hair) solid var(--line); }
+  .q-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  blockquote p { font-family: var(--font-display); font-weight: 500; font-size: 20px; line-height: 28px; color: var(--ink); text-wrap: pretty; }
+  .q-foot { margin-top: auto; display: grid; gap: 16px; }
+  .who { display: grid; }
+  .who strong { color: var(--ink); }
+  .who span { color: var(--ink-muted-strong); }
+  .q-link, .q-all a { display: inline-flex; gap: 8px; width: fit-content; font-family: var(--font-display); font-weight: 500; color: var(--accent-ink); text-decoration: none; }
+  .q-link .arrow, .q-all .arrow { transition: transform var(--dur-fast) var(--ease); }
+  .q-link:hover .arrow, .q-all a:hover .arrow { transform: translateX(4px); }
+  .q-card--accent { background: var(--accent); border-color: transparent; }
+  .q-card--accent blockquote p, .q-card--accent .who strong, .q-card--accent .who span, .q-card--accent .q-link { color: #fff; }
+  .q-card--accent :global(.mock-logo) { color: #fff; }
+  .q-all { margin-top: 32px; }
+  @media (min-width: 960px) {
+    .quotes { grid-template-columns: repeat(3, 1fr); }
+    .q-card { min-height: 400px; }
+  }
+</style>

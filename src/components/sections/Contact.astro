@@ -1,0 +1,39 @@
+---
+import ContactForm from '../ContactForm.astro';
+import { getContent, contact } from '../../content/site';
+const t = getContent(Astro.props.locale);
+---
+<!-- Figma: blue (Accent Ink) band, info 520px left, white form 680px right, 88px top and bottom. -->
+<section id="contact" class="section contact on-accent" aria-labelledby="contact-title" data-section="contact">
+  <div class="container contact-grid">
+    <div class="contact-info" data-reveal>
+      <h2 id="contact-title" data-split>{t.contact.title}</h2>
+      <p class="intro">{t.contact.intro}</p>
+      <address class="person">
+        <strong>{contact.name}</strong>
+        <a href={`mailto:${contact.email}`}>{contact.email}</a>
+        <a href={`tel:${contact.phoneHref}`}>{contact.phone}</a>
+      </address>
+    </div>
+    <div class="contact-form" data-reveal="drawer">
+      <ContactForm />
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact { background: var(--accent-ink); color: var(--paper); padding-block: 88px; }
+  .contact-grid { display: flex; flex-direction: column; gap: 48px; }
+  .contact-info { display: flex; flex-direction: column; gap: 28px; padding-top: 8px; }
+  .contact-info h2 { color: #fff; }
+  .intro { max-width: 360px; color: var(--paper); }
+  .person { font-style: normal; display: grid; gap: 4px; }
+  .person strong { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-subtitle); line-height: 28px; color: var(--paper); }
+  .person a { color: var(--paper); text-decoration: none; width: fit-content; line-height: 28px; }
+  .person a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  @media (min-width: 960px) {
+    .contact-grid { flex-direction: row; justify-content: space-between; gap: 0; }
+    .contact-info { width: 520px; }
+    .contact-form { width: 680px; }
+  }
+</style>

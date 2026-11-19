@@ -1,0 +1,61 @@
+---
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+const t = getContent(Astro.props.locale);
+const p = t.pricing;
+---
+<!-- Figma: two 600px cards, price at the bottom left, included list with diamond ticks and a yellow button. -->
+<Section id="pricing" title={p.title} intro={p.intro} class="section--strong-intro">
+  <div class="price">
+    <div class="tile price-tile" data-reveal="drawer">
+      <p class="amount tabular" data-count={p.price}>{p.price}</p>
+      <div class="unit">
+        <p class="unit-name">{p.unit}</p>
+        <p class="note">{p.note}</p>
+      </div>
+    </div>
+    <div class="tile inc-tile" data-reveal="drawer" style="--d:120ms">
+      <div class="inc-top">
+        <h3>{p.includedTitle}</h3>
+        <ul role="list" class="inc">
+          {p.included.map((item) => <li><span class="tick" aria-hidden="true"></span>{item}</li>)}
+        </ul>
+      </div>
+      <a class="btn btn--mark" href="#contact">{p.cta}<span class="arrow" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .price {
+    display: grid;
+    grid-template-columns: 1fr;
+    box-shadow: var(--hair) var(--hair) 0 0 var(--line);
+  }
+  .price .tile { grid-row: auto; min-height: 0; display: flex; flex-direction: column; }
+  .price-tile { justify-content: flex-end; gap: 16px; min-height: 280px; }
+  .amount {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 72px;          /* Display/Stat 72/72 -4% */
+    line-height: 72px;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+  }
+  .unit { display: grid; gap: 8px; }
+  .unit-name { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-subtitle); line-height: 28px; color: var(--ink-muted-strong); }
+  .note { color: var(--ink-muted-strong); }
+
+  .inc-tile { justify-content: space-between; gap: 24px; }
+  .inc-top { display: grid; gap: 16px; }
+  .inc { display: grid; }
+  .inc li { display: flex; align-items: center; gap: 16px; height: 44px; color: var(--ink); }
+  .inc li + li { margin-top: 8px; }
+  .tick { flex: none; width: 8px; height: 8px; background: var(--accent); transform: rotate(45deg); }
+  .inc-tile .btn--mark { align-self: flex-start; }
+
+  @media (min-width: 960px) {
+    .price { grid-template-columns: 1fr 1fr; }
+    .price .tile { height: 418px; }
+  }
+</style>

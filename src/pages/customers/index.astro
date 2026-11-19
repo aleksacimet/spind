@@ -1,0 +1,75 @@
+---
+/**
+ * Customer stories, like cora.tech/customer-stories: logo wall, industry filter, featured story, cards.
+ * Built when showStories is true. While flags.exampleProof is on, everything here is fictional and labelled "Example".
+ */
+import Base from '../../layouts/Base.astro';
+import StoryCard from '../../components/StoryCard.astro';
+import LogoStrip from '../../components/sections/LogoStrip.astro';
+import Contact from '../../components/sections/Contact.astro';
+import { getContent } from '../../content/site';
+const t = getContent('en');
+const c = t.customers;
+const stories = t.proof.stories;
+const industries = [...new Set(stories.map((s) => s.industry))];
+---
+<Base title={`${c.title} | Spind`} description={c.intro}>
+  <header class="container cs-hero">
+    <h1>{c.title}</h1>
+    <p class="intro">{c.intro}</p>
+    <p class="note">{c.exampleNote}</p>
+  </header>
+
+  <section class="container cs-list" aria-labelledby="cs-list-title">
+    <h2 id="cs-list-title" class="sr-only">{c.title}</h2>
+    <div class="filters" role="group" aria-label={c.filterLabel} data-filters>
+      <button type="button" class="chip" aria-pressed="true" data-filter="">{c.all}</button>
+      {industries.map((ind) => <button type="button" class="chip" aria-pressed="false" data-filter={ind}>{ind}</button>)}
+    </div>
+    <div class="grid" data-stories>
+      <StoryCard slug={stories[0].slug} featured />
+      {stories.slice(1).map((s, i) => <StoryCard slug={s.slug} i={i + 1} />)}
+    </div>
+    <p class="sr-only" aria-live="polite" data-filter-status></p>
+  </section>
+
+  <LogoStrip wall />
+  <Contact locale="en" />
+</Base>
+
+<script>
+  const wrap = document.querySelector<HTMLElement>('[data-filters]');
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-stories] [data-industry]')];
+  const status = document.querySelector<HTMLElement>('[data-filter-status]');
+  wrap?.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((b) =>
+    b.addEventListener('click', () => {
+      const f = b.dataset.filter;
+      wrap.querySelectorAll('[data-filter]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      let n = 0;
+      cards.forEach((c) => { const show = !f || c.dataset.industry === f; c.hidden = !show; if (show) { n++; c.classList.add('is-visible'); } });
+      if (status) status.textContent = `${n} ${n === 1 ? 'story' : 'stories'}`;
+    })
+  );
+</script>
+
+<style>
+  .cs-hero { padding-top: calc(var(--header-h) + 48px); padding-bottom: 48px; display: flex; flex-direction: column; gap: 24px; }
+  .cs-hero h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; }
+  .intro { max-width: 560px; color: var(--ink-muted-strong); }
+  .note { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; color: var(--ink-muted-strong); }
+
+  .cs-list { padding-bottom: 100px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+  .chip { height: 40px; padding: 0 16px; border: var(--hair) solid var(--line); background: var(--surface); color: var(--ink); font-family: var(--font-display); font-weight: 500; font-size: 16px; line-height: 24px; cursor: pointer; transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .chip:hover { border-color: var(--ink-muted); }
+  .chip[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+  .grid { display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--line); }
+  @media (min-width: 960px) {
+    .grid { grid-template-columns: repeat(3, 1fr); }
+    .grid > :global(.story--featured) { grid-column: 1 / -1; }
+  }
+  @media (min-width: 1280px) {
+    .cs-hero { padding-top: 148px; }
+    .cs-hero h1 { font-size: 56px; line-height: 64px; letter-spacing: -0.03em; }
+  }
+</style>

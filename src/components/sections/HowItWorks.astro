@@ -1,0 +1,76 @@
+---
+import Section from '../Section.astro';
+import LockerDrawing from '../LockerDrawing.astro';
+import { getContent } from '../../content/site';
+const t = getContent(Astro.props.locale);
+const h = t.how;
+---
+<!-- Figma: steps on the left (compact 120px cards, big number), locker on the right. -->
+<Section id="how-it-works" title={h.title} intro={h.intro} shade>
+  <div class="story" data-story>
+    <div class="story-stage">
+      <div class="stage-inner">
+        <LockerDrawing
+          id="story"
+          modules={['master', 's24']}
+          accent={{ module: 's24', index: 7 }}
+          screen={h.screen}
+          label={h.lockerLabel}
+        />
+        <div class="stage-progress" aria-hidden="true">
+          {h.steps.map((_, i) => <span style={`--k:${i}`}></span>)}
+        </div>
+      </div>
+    </div>
+    <ol class="story-steps" role="list">
+      {h.steps.map((s, i) => (
+        <li class="story-step" data-step={i}>
+          <span class="num tabular" aria-hidden="true" data-num={String(i + 1).padStart(2, '0')}></span>
+          <div class="step-body">
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</Section>
+
+<style>
+  .story { display: flex; flex-direction: column; gap: 24px; }
+  .story-stage { position: sticky; top: var(--header-h); z-index: 2; background: color-mix(in srgb, var(--paper-shade) 92%, transparent); padding-bottom: 16px; }
+  .stage-inner { width: 100%; max-width: 576px; }
+  .stage-progress { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 32px; height: 4px; }
+  .stage-progress span { background: var(--line); position: relative; overflow: hidden; }
+  .stage-progress span::after { content: ''; position: absolute; inset: 0; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 500ms var(--ease-out); }
+  .stage-progress span.on::after { transform: scaleX(1); }
+
+  .story-steps { list-style: none; padding: 0; display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--line); }
+  .story-step {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-height: 120px;
+    padding: 32px 24px;
+    background: var(--surface);
+    border-top: var(--hair) solid var(--line);
+    border-left: var(--hair) solid var(--line);
+    transition: background-color var(--dur) var(--ease);
+  }
+  /* Decorative step number (drawn with CSS, light Line colour as in Figma) */
+  .num::before { content: attr(data-num); }
+  .num { flex: none; min-width: 32px; font-family: var(--font-display); font-weight: 500; font-size: 28px; line-height: 40px; color: var(--line); transition: color var(--dur) var(--ease); }
+  .step-body { display: grid; gap: 4px; }
+  .story-step h3 { color: var(--ink); }
+  .story-step p { color: var(--ink-muted-strong); }
+  /* Active step (Figma): graphite card, light text */
+  .story-step.is-active { background: var(--graphite); border-color: transparent; }
+  .story-step.is-active .num, .story-step.is-active h3, .story-step.is-active p { color: var(--surface); }
+
+  @media (min-width: 960px) {
+    .story { flex-direction: row-reverse; justify-content: space-between; align-items: flex-start; gap: 48px; }
+    .story-stage { width: 576px; flex: none; top: calc(var(--header-h) + 24px); background: none; padding: 0; }
+    .story-steps { width: 576px; flex: none; }
+    .story-step { height: 120px; }
+  }
+</style>

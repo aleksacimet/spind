@@ -1,0 +1,22 @@
+---
+interface Props { title: string; backLabel: string; backHref?: string }
+const { title, backLabel, backHref = '/' } = Astro.props;
+---
+<article class="section legal" style="padding-top: var(--cell)">
+  <div class="container">
+    <h1>{title}</h1>
+    <div class="legal-body">
+      <p class="todo"><strong>TODO: legal text from Cimet</strong></p>
+      <slot />
+      <p><a href={backHref}>{backLabel}</a></p>
+    </div>
+  </div>
+</article>
+
+<style>
+  .legal h1 { font-size: var(--fs-title); line-height: 1.1; margin-bottom: 40px; }
+  .legal-body { max-width: 68ch; display: grid; gap: 20px; color: var(--ink-muted); }
+  .legal-body :global(h2) { font-size: var(--fs-subtitle); margin-top: 16px; }
+  .legal-body a { color: var(--accent-ink); }
+  .todo { padding: 16px 20px; background: var(--accent-tint); color: var(--accent-deep); border-left: 3px solid var(--accent); }
+</style>
