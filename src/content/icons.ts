@@ -7,5 +7,5 @@ export const solutionIcons: Record<string, string> = {
   offboarding: 'M5 5h9v13H5zM14 11h6M17 8l3 3-3 3',
   'multi-site': 'M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM3 11h16M11 3c3 3 3 13 0 16M11 3c-3 3-3 13 0 16',
 };
-/** Icon for a menu or tile link, from its /solutions/<slug> href. */
-export const iconForHref = (href: string) => solutionIcons[href.replace('/solutions/', '')];
+/** Icon for a menu or tile link, from its /use-cases/<slug> href. */
+export const iconForHref = (href: string) => solutionIcons[href.replace('/use-cases/', '')];

@@ -9,7 +9,7 @@ const SITE = process.env.SITE_URL || 'https://example.com';
 export default defineConfig({
   site: SITE,
   output: 'static',
-  // Solution pages and legal pages load before the click (hover or in view), so navigation feels instant.
+  // Use case pages and legal pages load before the click (hover or in view), so navigation feels instant.
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   trailingSlash: 'ignore',
   build: { format: 'directory', inlineStylesheets: 'always' },

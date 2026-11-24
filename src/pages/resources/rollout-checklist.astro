@@ -38,7 +38,7 @@ let n = 0;
     </div>
 
     <div class="cl-foot no-print">
-      <a class="btn btn--primary" href="/#contact">{c.cta}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--cta" href="/#contact">{c.cta}<span class="arrow" aria-hidden="true">→</span></a>
       <a class="back" href="/">{c.back}</a>
     </div>
   </article>
@@ -49,31 +49,31 @@ let n = 0;
 </script>
 
 <style>
-  .cl { padding-top: calc(var(--header-h) + 48px); padding-bottom: 100px; }
-  .cl-head { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; padding-bottom: 48px; }
+  .cl { padding-top: calc(var(--header-h) + var(--spacing-padding-section-xs)); padding-bottom: var(--spacing-padding-section-xl); }
+  .cl-head { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-gap-general-object-lg); padding-bottom: var(--spacing-padding-section-xs); }
   .cl h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; }
-  .intro { max-width: 520px; color: var(--ink-muted-strong); }
+  .intro { max-width: 520px; color: var(--text-neutral-body); }
 
-  .phases { display: grid; gap: 24px; }
-  .phase { background: var(--surface); padding: 24px; display: grid; gap: 8px; align-content: start; }
+  .phases { display: grid; gap: var(--spacing-gap-general-object-lg); }
+  .phase { background: var(--surface-neutral-default); padding: var(--spacing-padding-container-lg); display: grid; gap: var(--spacing-gap-text-md); align-content: start; }
   .phase h2 { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); letter-spacing: 0; margin-bottom: 8px; }
-  .phase ul { display: grid; gap: 16px; }
-  .phase li { display: flex; gap: 16px; align-items: flex-start; }
-  .phase label { color: var(--ink); cursor: pointer; }
+  .phase ul { display: grid; gap: var(--spacing-gap-general-object-md); }
+  .phase li { display: flex; gap: var(--spacing-gap-general-object-md); align-items: flex-start; }
+  .phase label { color: var(--text-neutral-headings); cursor: pointer; }
   input[type='checkbox'] {
     -webkit-appearance: none; appearance: none; flex: none;
     width: 20px; height: 20px; margin-top: 4px;
-    border: var(--hair) solid var(--ink-muted); background: var(--surface); cursor: pointer;
+    border: var(--hair) solid var(--border-neutral-strong); background: var(--surface-neutral-default); cursor: pointer;
     display: grid; place-items: center;
     transition: background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
   }
-  input[type='checkbox']::after { content: ''; width: 8px; height: 8px; background: var(--surface); transform: rotate(45deg) scale(0); transition: transform var(--dur-fast) var(--ease-out); }
-  input[type='checkbox']:checked { background: var(--accent); border-color: var(--accent); }
+  input[type='checkbox']::after { content: ''; width: 8px; height: 8px; background: var(--surface-neutral-default); transform: rotate(45deg) scale(0); transition: transform var(--dur-fast) var(--ease-out); }
+  input[type='checkbox']:checked { background: var(--surface-action-default); border-color: var(--border-action-default); }
   input[type='checkbox']:checked::after { transform: rotate(45deg) scale(1); }
-  input[type='checkbox']:checked + label { color: var(--ink-muted-strong); }
+  input[type='checkbox']:checked + label { color: var(--text-neutral-body); }
 
-  .cl-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; padding-top: 48px; }
-  .back { color: var(--accent-ink); }
+  .cl-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-gap-general-object-md) var(--spacing-gap-general-group-lg); padding-top: var(--spacing-padding-section-xs); }
+  .back { color: var(--text-action-default); }
 
   @media (min-width: 960px) {
     .phases { grid-template-columns: 1fr 1fr; }
@@ -84,10 +84,10 @@ let n = 0;
   }
   @media print {
     :global(.site-header), :global(.site-footer), :global(.skip-link), .no-print { display: none !important; }
-    :global(body) { background: #fff; }
+    :global(body) { background: var(--surface-neutral-default); }
     :global(body::after) { display: none; }
     .cl { padding: 0; width: auto; }
-    .phase { padding: 16px 0; break-inside: avoid; }
+    .phase { padding: var(--spacing-padding-container-sm) 0; break-inside: avoid; }
     .phases { grid-template-columns: 1fr 1fr; }
   }
 </style>

@@ -113,7 +113,7 @@ const accentDrawer = all.find((d) => d.accent);
                 <rect class="scr-cursor" x={m.ox + 16} y="66" width="44" height="14" />
               </g>
               <g class="scr scr-1">
-                <rect x={m.ox + 16} y="16" width="66" height="66" fill="#fff" />
+                <rect x={m.ox + 16} y="16" width="66" height="66" fill="var(--icon-neutral-onsurface)" />
                 {qrBits.map((b, k) => b ? <rect x={m.ox + 20 + (k % 8) * 7.25} y={20 + Math.floor(k / 8) * 7.25} width="7.25" height="7.25" fill="#1C2A38" /> : null)}
                 <text x={m.ox + 94} y="34" class="scr-t">{screen.code}</text>
                 {[0, 1, 2, 3, 4].map((k) => <rect class="pin-dot" x={m.ox + 94 + k * 14} y="50" width="9" height="9" style={`--k:${k}`} />)}
@@ -164,18 +164,18 @@ const accentDrawer = all.find((d) => d.accent);
 <style>
   .locker { width: 100%; height: auto; overflow: visible; }
   /* Bodies sit on the module boundary, so neighbouring modules share one 0.5px line. */
-  .locker :global(.body) { fill: var(--surface); stroke: var(--line); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
-  .locker :global(.foot) { fill: var(--graphite); }
-  .locker :global(.dr-base) { fill: var(--surface); stroke: var(--line); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.body) { fill: var(--icon-neutral-onsurface); stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.foot) { fill: var(--icon-neutral-dark); }
+  .locker :global(.dr-base) { fill: var(--icon-neutral-onsurface); stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
   .locker :global(.dr-fill) { opacity: 0; transition: opacity 400ms var(--ease); }
-  .locker :global(.handle) { stroke: var(--ink); stroke-width: var(--hair); vector-effect: non-scaling-stroke; transition: stroke 350ms var(--ease); }
-  .locker :global(.screen-line) { stroke: var(--navy-300); stroke-width: 2; }
-  .locker :global(.scanner) { fill: var(--surface); stroke: var(--ink-muted); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
-  .locker :global(.pin) { fill: var(--navy-900); }
-  .locker :global(.pin-line) { stroke: var(--accent); stroke-width: 2; }
-  .locker :global(.service) { fill: var(--surface); stroke: var(--line); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
-  .locker :global(.vent) { stroke: var(--line); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
-  .locker :global(.scanline) { fill: var(--navy-300); opacity: 0; }
+  .locker :global(.handle) { stroke: var(--icon-neutral-default); stroke-width: var(--hair); vector-effect: non-scaling-stroke; transition: stroke 350ms var(--ease); }
+  .locker :global(.screen-line) { stroke: var(--illustration-light); stroke-width: 2; }
+  .locker :global(.scanner) { fill: var(--icon-neutral-onsurface); stroke: var(--icon-neutral-subtle); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.pin) { fill: var(--illustration-deep); }
+  .locker :global(.pin-line) { stroke: var(--icon-action-default); stroke-width: 2; }
+  .locker :global(.service) { fill: var(--icon-neutral-onsurface); stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.vent) { stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.scanline) { fill: var(--illustration-light); opacity: 0; }
 
   /* Drawer states */
   .locker :global(.dr) { transform-box: fill-box; transform-origin: center; }
@@ -183,21 +183,21 @@ const accentDrawer = all.find((d) => d.accent);
   .locker :global(.dr--accent:not(.dr--target) .dr-fill),
   .locker :global(.dr.is-open .dr-fill) { opacity: 1; }
   .locker :global(.dr--accent:not(.dr--target) .handle),
-  .locker :global(.dr.is-open .handle) { stroke: #fff; opacity: 0.9; }
+  .locker :global(.dr.is-open .handle) { stroke: var(--icon-neutral-onsurface); opacity: 0.9; }
 
   .locker :global(.mod) { transition: opacity var(--dur) var(--ease), transform 700ms var(--ease-out); }
 
   /* Story screens (how it works) */
   .locker :global(.scr) { opacity: 0; transition: opacity 400ms var(--ease); }
-  .locker :global(.scr-t) { fill: #fff; font-family: var(--font-display); font-weight: 500; font-size: 11px; }
-  .locker :global(.scr-big) { fill: #fff; font-family: var(--font-display); font-weight: 500; font-size: 30px; }
-  .locker :global(.scr-bar) { fill: var(--navy-300); }
+  .locker :global(.scr-t) { fill: var(--icon-neutral-onsurface); font-family: var(--font-display); font-weight: 500; font-size: 11px; }
+  .locker :global(.scr-big) { fill: var(--icon-neutral-onsurface); font-family: var(--font-display); font-weight: 500; font-size: 30px; }
+  .locker :global(.scr-bar) { fill: var(--illustration-light); }
   .locker :global(.scr-bar--dim) { opacity: 0.5; }
   .locker :global(.scr-accent) { fill: #7FB0DC; }
-  .locker :global(.scr-cursor) { fill: var(--accent); }
-  .locker :global(.pin-dot) { fill: #fff; opacity: 0.25; }
+  .locker :global(.scr-cursor) { fill: var(--icon-action-default); }
+  .locker :global(.pin-dot) { fill: var(--icon-neutral-onsurface); opacity: 0.25; }
   .locker :global(.scr-ok) { fill: #2F9E6B; }
-  .locker :global(.scr-check), .locker :global(.badge-p) { fill: none; stroke: #fff; stroke-width: 2.4; }
+  .locker :global(.scr-check), .locker :global(.badge-p) { fill: none; stroke: var(--icon-neutral-onsurface); stroke-width: 2.4; }
   .locker :global(.badge) { opacity: 0; transition: opacity 400ms var(--ease); }
   .locker :global(.badge-c) { fill: #2F9E6B; }
 
@@ -207,7 +207,7 @@ const accentDrawer = all.find((d) => d.accent);
   .locker--story[data-state='3'] :global(.scr-3) { opacity: 1; }
   .locker--story[data-state='1'] :global(.pin-dot) { animation: pin 1.6s var(--ease) infinite; animation-delay: calc(var(--k) * 140ms); }
   .locker--story[data-state='2'] :global(.dr--target .dr-fill) { opacity: 1; }
-  .locker--story[data-state='2'] :global(.dr--target .handle) { stroke: #fff; opacity: 0.9; }
+  .locker--story[data-state='2'] :global(.dr--target .handle) { stroke: var(--icon-neutral-onsurface); opacity: 0.9; }
   .locker--story[data-state='3'] :global(.badge) { opacity: 1; }
   .locker--story[data-state='3'] :global(.dr--target .dr-fill) { opacity: 0.25; }
   .locker--story[data-state='1'] :global(.scanline) { opacity: 0.8; animation: scan 1.6s var(--ease) infinite; }

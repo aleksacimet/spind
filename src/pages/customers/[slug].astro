@@ -41,7 +41,7 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
             <dt class="label">{c.facts.solutions}</dt>
             <dd><ul role="list" class="sol-links">
               {s.solutions.map((k) => (
-                <li><a href={`/solutions/${k}`}><svg viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><path d={solutionIcons[k]} /></svg>{sol(k).title}</a></li>
+                <li><a href={`/use-cases/${k}`}><svg viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><path d={solutionIcons[k]} /></svg>{sol(k).title}</a></li>
               ))}
             </ul></dd>
           </div>
@@ -64,40 +64,40 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
 </Base>
 
 <style>
-  .st-hero { padding-top: calc(var(--header-h) + 48px); padding-bottom: 48px; display: flex; flex-direction: column; gap: 24px; }
-  .st-brand { display: flex; align-items: center; gap: 16px; }
+  .st-hero { padding-top: calc(var(--header-h) + var(--spacing-padding-section-xs)); padding-bottom: var(--spacing-padding-section-xs); display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
+  .st-brand { display: flex; align-items: center; gap: var(--spacing-gap-general-object-md); }
   .st-hero h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; max-width: 840px; }
-  .intro { max-width: 600px; color: var(--ink-muted-strong); }
+  .intro { max-width: 600px; color: var(--text-neutral-body); }
 
-  .st-metrics dl { display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--line); }
-  .st-metrics dl > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 8px; padding: 24px; background: var(--surface); border-top: var(--hair) solid var(--line); border-left: var(--hair) solid var(--line); }
-  .st-metrics dd { font-family: var(--font-display); font-weight: 500; font-size: 48px; line-height: 56px; letter-spacing: -0.03em; color: var(--ink); }
-  .st-metrics dt { color: var(--ink-muted-strong); }
+  .st-metrics dl { display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
+  .st-metrics dl > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--spacing-gap-text-md); padding: var(--spacing-padding-container-lg); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); }
+  .st-metrics dd { font-family: var(--font-display); font-weight: 500; font-size: 48px; line-height: 56px; letter-spacing: -0.03em; color: var(--text-neutral-headings); }
+  .st-metrics dt { color: var(--text-neutral-body); }
 
-  .st-body { display: flex; flex-direction: column; gap: 48px; padding-block: 64px 100px; }
-  .facts dl { display: grid; gap: 24px; }
-  .facts dd { margin-top: 4px; font-family: var(--font-display); font-weight: 500; color: var(--ink); }
-  .sol-links { display: grid; gap: 8px; margin-top: 4px; }
-  .sol-links a { display: inline-flex; align-items: center; gap: 8px; color: var(--accent-ink); text-decoration: none; }
+  .st-body { display: flex; flex-direction: column; gap: var(--spacing-gap-general-section-md); padding-block: var(--spacing-padding-section-md) var(--spacing-padding-section-xl); }
+  .facts dl { display: grid; gap: var(--spacing-gap-general-object-lg); }
+  .facts dd { margin-top: 4px; font-family: var(--font-display); font-weight: 500; color: var(--text-neutral-headings); }
+  .sol-links { display: grid; gap: var(--spacing-gap-text-md); margin-top: 4px; }
+  .sol-links a { display: inline-flex; align-items: center; gap: var(--spacing-gap-text-md); color: var(--text-action-default); text-decoration: none; }
   .sol-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
   .sol-links svg { fill: none; stroke: currentColor; stroke-width: 1.4; flex: none; }
-  .text { display: grid; gap: 48px; max-width: 720px; }
+  .text { display: grid; gap: var(--spacing-gap-general-section-md); max-width: 720px; }
   .text h2 { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); letter-spacing: 0; margin-bottom: 8px; }
-  .text p { color: var(--ink-muted-strong); }
-  .big-quote { margin: 0; padding: 32px; background: var(--accent); color: #fff; display: grid; gap: 24px; }
-  .big-quote blockquote p { font-family: var(--font-display); font-weight: 500; font-size: 28px; line-height: 40px; letter-spacing: -0.01em; color: #fff; }
+  .text p { color: var(--text-neutral-body); }
+  .big-quote { margin: 0; padding: var(--spacing-padding-container-2xl); background: var(--surface-action-default); color: var(--text-neutral-onsurface); display: grid; gap: var(--spacing-gap-general-object-lg); }
+  .big-quote blockquote p { font-family: var(--font-display); font-weight: 500; font-size: 28px; line-height: 40px; letter-spacing: -0.01em; color: var(--text-neutral-onsurface); }
   .big-quote figcaption { display: grid; }
-  .big-quote figcaption span { color: #fff; }
+  .big-quote figcaption span { color: var(--text-neutral-onsurface); }
 
   @media (min-width: 960px) {
     .st-metrics dl { grid-template-columns: repeat(3, 1fr); }
-    .st-metrics dl > div { min-height: 200px; padding: 32px; }
+    .st-metrics dl > div { min-height: 200px; padding: var(--spacing-padding-container-2xl); }
     .st-metrics dd { font-size: 72px; line-height: 72px; letter-spacing: -0.04em; }
     .st-body { flex-direction: row; justify-content: space-between; }
     .facts { width: 300px; flex: none; }
     .facts dl { position: sticky; top: calc(var(--header-h) + 32px); }
     .text { width: 800px; max-width: none; }
-    .big-quote { padding: 48px; }
+    .big-quote { padding: var(--spacing-padding-section-xs); }
   }
   @media (min-width: 1280px) {
     .st-hero { padding-top: 148px; }

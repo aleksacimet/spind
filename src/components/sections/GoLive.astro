@@ -1,0 +1,29 @@
+---
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+const t = getContent(Astro.props.locale);
+const g = t.goLive;
+---
+<!-- Figma "go live": section head, then four phase tiles (label + title + body), 3 columns each. -->
+<Section id="go-live" title={g.title} intro={g.intro}>
+  <ol class="tiles phases" role="list" data-fit>
+    {g.phases.map((ph, i) => (
+      <li class="tile tile--hover" data-reveal="drawer" style={`--d:${i * 80}ms`}>
+        <p class="label phase-label">{ph.label}</p>
+        <div class="title-body">
+          <h3>{ph.title}</h3>
+          <p>{ph.text}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+</Section>
+
+<style>
+  .phases { padding: 0; }
+  .phases .tile { grid-column: span 2; --rows: 2; display: flex; flex-direction: column; gap: var(--spacing-gap-text-lg); }
+  .phase-label { color: var(--text-action-default); }
+  .phases .tile h3 { margin: 0; }
+  @media (min-width: 640px) { .phases .tile { grid-column: span 4; } }
+  @media (min-width: 960px) { .phases .tile { grid-column: span 3; } }
+</style>

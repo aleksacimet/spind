@@ -1,15 +1,15 @@
 ---
 // Self-hosted fonts (no Google Fonts CDN, GDPR). Latin subset covers German umlauts too.
 import '@fontsource/geist/latin-500.css';
-import '@fontsource/niramit/latin-300.css';
-import '@fontsource/niramit/latin-400.css';
+import '@fontsource/hanken-grotesk/latin-300.css';
+import '@fontsource/hanken-grotesk/latin-400.css';
 // Inter is used only inside the LISSA Asset mockup, as in the product's design system.
 import '@fontsource/inter/latin-500.css';
 import '@fontsource/inter/latin-600.css';
 import '../styles/tokens.css';
 import '../styles/global.css';
 import geist500 from '@fontsource/geist/files/geist-latin-500-normal.woff2?url';
-import niramit300 from '@fontsource/niramit/files/niramit-latin-300-normal.woff2?url';
+import hanken300 from '@fontsource/hanken-grotesk/files/hanken-grotesk-latin-300-normal.woff2?url';
 
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -41,12 +41,12 @@ const base = home ? '' : locale === 'en' ? '/' : `/${locale}/`;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#F4F3EE" />
+    <meta name="theme-color" content="#F7F9FB" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <link rel="preload" href={geist500} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={niramit300} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={hanken300} as="font" type="font/woff2" crossorigin />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />

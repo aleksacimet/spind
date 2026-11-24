@@ -26,8 +26,8 @@ const t = getContent(Astro.props.locale);
     </dl>
 
     <div class="hero-actions">
-      <a class="btn btn--primary" href="#contact">{t.hero.primary}<span class="arrow" aria-hidden="true">→</span></a>
-      <a class="btn btn--secondary" href="#how-it-works">{t.hero.secondary}</a>
+      <a class="btn btn--cta" href="#contact">{t.hero.primary}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--secondary" href="#video">{t.hero.secondary}</a>
     </div>
   </div>
 </section>
@@ -45,7 +45,23 @@ const t = getContent(Astro.props.locale);
     position: absolute;
     inset: 0 0 auto 0;
     height: calc(var(--locker-top) + var(--lw) / 4);
-    background: var(--accent);
+    overflow: hidden;
+    /* Figma hero band: dark space, indigo and blue nebula glows (radial layers over Ice/1100). */
+    background:
+      radial-gradient(34% 130% at 72% 25%, color-mix(in srgb, var(--indigo-500) 55%, transparent), transparent 70%),
+      radial-gradient(30% 120% at 22% 95%, color-mix(in srgb, var(--blue-700) 60%, transparent), transparent 70%),
+      radial-gradient(16% 70% at 48% 60%, color-mix(in srgb, var(--blue-600) 25%, transparent), transparent 70%),
+      var(--ice-1100);
+  }
+  /* Fine white dither (hides banding) plus sparse star specks. */
+  .band::before, .band::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+  .band::before {
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.3' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.6 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .band::after {
+    opacity: 0.55;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 9 -7.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
   }
 
   .hero-inner {
@@ -67,8 +83,8 @@ const t = getContent(Astro.props.locale);
     justify-content: center;
     row-gap: calc(var(--u) * 0.5);
   }
-  .fact { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 24px; }
-  .fact + .fact { border-left: var(--hair) solid var(--line); }
+  .fact { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-text-md); padding: 0 var(--spacing-padding-container-lg); }
+  .fact + .fact { border-left: var(--hair) solid var(--border-neutral-default); }
   .fact dt {
     font-family: var(--font-body);
     font-weight: 400;
@@ -76,14 +92,14 @@ const t = getContent(Astro.props.locale);
     line-height: 14px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--ink);
+    color: var(--text-neutral-headings);
   }
-  .fact dd { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-subtitle); line-height: 22px; color: var(--ink); }
+  .fact dd { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-subtitle); line-height: 22px; color: var(--text-neutral-headings); }
 
-  .hero-actions { margin-top: var(--u); display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .hero-actions { margin-top: var(--u); display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-gap-general-object-md); }
 
   @media (max-width: 639px) {
-    .fact { padding: 0 12px; }
+    .fact { padding: 0 var(--spacing-padding-container-xs); }
     .fact dd { font-size: 16px; }
     .hero-actions { width: 100%; }
     .hero-actions .btn { flex: 1 1 100%; }
@@ -97,12 +113,12 @@ const t = getContent(Astro.props.locale);
   }
   @media (min-width: 1280px) {
     /* Figma: header 84 + 48 gap, locker 516 x 258, band 260, gaps 16 / 32 / 32, bottom 56 */
-    .hero { --lw: 516px; --locker-top: 132px; padding-bottom: 56px; }
+    .hero { --lw: 516px; --locker-top: 132px; padding-bottom: var(--spacing-padding-section-sm); }
     .band { height: 260px; }
     .hero-title { font-size: 68px; line-height: 84px; letter-spacing: -0.03em; max-width: 776px; margin-top: 16px; }
-    .hero-facts { margin-top: 32px; gap: 8px; }
+    .hero-facts { margin-top: 32px; gap: var(--spacing-gap-text-md); }
     .fact { width: 224px; }
-    .fact + .fact { padding-left: 8px; }
+    .fact + .fact { padding-left: var(--spacing-padding-container-2xs); }
     .fact dt { font-size: 12px; line-height: 16px; letter-spacing: 0.08em; }
     .fact dd { font-size: 20px; line-height: 24px; }
     .hero-actions { margin-top: 32px; }

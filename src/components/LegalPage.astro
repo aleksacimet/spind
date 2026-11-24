@@ -15,8 +15,8 @@ const { title, backLabel, backHref = '/' } = Astro.props;
 
 <style>
   .legal h1 { font-size: var(--fs-title); line-height: 1.1; margin-bottom: 40px; }
-  .legal-body { max-width: 68ch; display: grid; gap: 20px; color: var(--ink-muted); }
+  .legal-body { max-width: 68ch; display: grid; gap: 20px; color: var(--text-neutral-subtle); }
   .legal-body :global(h2) { font-size: var(--fs-subtitle); margin-top: 16px; }
-  .legal-body a { color: var(--accent-ink); }
-  .todo { padding: 16px 20px; background: var(--accent-tint); color: var(--accent-deep); border-left: 3px solid var(--accent); }
+  .legal-body a { color: var(--text-action-default); }
+  .todo { padding: var(--spacing-padding-container-sm) var(--spacing-padding-container-md); background: var(--surface-action-washed); color: var(--text-action-hover); border-left: 3px solid var(--border-action-default); }
 </style>

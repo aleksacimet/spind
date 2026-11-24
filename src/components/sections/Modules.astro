@@ -56,10 +56,10 @@ const keys = ['master', 's24', 'n8', 'm124'] as const;
     font-weight: 500;
     font-size: var(--fs-subtitle);
     line-height: var(--u);
-    color: var(--ink);
+    color: var(--text-neutral-headings);
     transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
   }
-  .module-label:hover, .module-label[aria-pressed='true'] { color: var(--accent-ink); border-bottom-color: var(--accent); }
+  .module-label:hover, .module-label[aria-pressed='true'] { color: var(--text-action-default); border-bottom-color: var(--border-action-default); }
 
   @media (min-width: 1280px) { .module-labels { height: 56px; } }
   .mod-figure :global(.locker) { filter: drop-shadow(0 24px 24px rgba(22, 25, 30, 0.08)); }
@@ -72,16 +72,16 @@ const keys = ['master', 's24', 'n8', 'm124'] as const;
     :global(.js) .mod-figure[data-active] .mod-locker.is-visible :global(.mod:not(.is-active)) { opacity: 0.25; transition-delay: 0ms; }
   }
 
-  .fit-head { grid-column: span 4; --rows: 1; background: var(--graphite); border-color: transparent; box-shadow: none; }
-  .fit-head h3 { color: var(--surface); }
+  .fit-head { grid-column: span 4; --rows: 1; background: var(--surface-neutral-dark); border-color: transparent; box-shadow: none; }
+  .fit-head h3 { color: var(--text-neutral-onsurface); }
   .fit-item { grid-column: span 2; --rows: 2; display: flex; flex-direction: column; }
   /* Two example devices: each takes the remaining half next to the title tile on desktop. */
   .dev { margin-bottom: calc(var(--u) * 0.5); }
-  .dims { display: flex; gap: 24px; margin-top: 8px; }
-  .dims > div { display: grid; gap: 4px; }
+  .dims { display: flex; gap: var(--spacing-gap-general-object-lg); margin-top: 8px; }
+  .dims > div { display: grid; gap: var(--spacing-gap-text-sm); }
   .dims dt { font-size: 11px; line-height: 1.2; }
-  .dims dd { color: var(--ink); line-height: var(--u); font-size: 15px; }
-  .res { margin-top: auto; color: var(--accent-ink); font-family: var(--font-display); font-weight: 500; line-height: var(--u); }
+  .dims dd { color: var(--text-neutral-headings); line-height: var(--u); font-size: 15px; }
+  .res { margin-top: auto; color: var(--text-action-default); font-family: var(--font-display); font-weight: 500; line-height: var(--u); }
 
   @media (min-width: 640px) {
     .fit-head { grid-column: span 8; }

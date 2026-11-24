@@ -37,40 +37,40 @@ const h = t.how;
 </Section>
 
 <style>
-  .story { display: flex; flex-direction: column; gap: 24px; }
-  .story-stage { position: sticky; top: var(--header-h); z-index: 2; background: color-mix(in srgb, var(--paper-shade) 92%, transparent); padding-bottom: 16px; }
+  .story { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
+  .story-stage { position: sticky; top: var(--header-h); z-index: 2; background: color-mix(in srgb, var(--surface-neutral-page-shade) 92%, transparent); padding-bottom: var(--spacing-padding-container-sm); }
   .stage-inner { width: 100%; max-width: 576px; }
-  .stage-progress { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 32px; height: 4px; }
-  .stage-progress span { background: var(--line); position: relative; overflow: hidden; }
-  .stage-progress span::after { content: ''; position: absolute; inset: 0; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 500ms var(--ease-out); }
+  .stage-progress { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-gap-text-sm); margin-top: 32px; height: 4px; }
+  .stage-progress span { background: var(--surface-neutral-track); position: relative; overflow: hidden; }
+  .stage-progress span::after { content: ''; position: absolute; inset: 0; background: var(--surface-action-default); transform: scaleX(0); transform-origin: left; transition: transform 500ms var(--ease-out); }
   .stage-progress span.on::after { transform: scaleX(1); }
 
-  .story-steps { list-style: none; padding: 0; display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--line); }
+  .story-steps { list-style: none; padding: 0; display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
   .story-step {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: var(--spacing-gap-general-object-lg);
     min-height: 120px;
-    padding: 32px 24px;
-    background: var(--surface);
-    border-top: var(--hair) solid var(--line);
-    border-left: var(--hair) solid var(--line);
+    padding: var(--spacing-padding-container-2xl) var(--spacing-padding-container-lg);
+    background: var(--surface-neutral-default);
+    border-top: var(--hair) solid var(--border-neutral-default);
+    border-left: var(--hair) solid var(--border-neutral-default);
     transition: background-color var(--dur) var(--ease);
   }
   /* Decorative step number (drawn with CSS, light Line colour as in Figma) */
   .num::before { content: attr(data-num); }
-  .num { flex: none; min-width: 32px; font-family: var(--font-display); font-weight: 500; font-size: 28px; line-height: 40px; color: var(--line); transition: color var(--dur) var(--ease); }
-  .step-body { display: grid; gap: 4px; }
-  .story-step h3 { color: var(--ink); }
-  .story-step p { color: var(--ink-muted-strong); }
+  .num { flex: none; min-width: 32px; font-family: var(--font-display); font-weight: 500; font-size: 28px; line-height: 40px; color: var(--text-neutral-decorative); transition: color var(--dur) var(--ease); }
+  .step-body { display: grid; gap: var(--spacing-gap-text-sm); }
+  .story-step h3 { color: var(--text-neutral-headings); }
+  .story-step p { color: var(--text-neutral-body); }
   /* Active step (Figma): graphite card, light text */
-  .story-step.is-active { background: var(--graphite); border-color: transparent; }
-  .story-step.is-active .num, .story-step.is-active h3, .story-step.is-active p { color: var(--surface); }
+  .story-step.is-active { background: var(--surface-neutral-dark); border-color: transparent; }
+  .story-step.is-active .num, .story-step.is-active h3, .story-step.is-active p { color: var(--text-neutral-onsurface); }
 
   @media (min-width: 960px) {
-    .story { flex-direction: row-reverse; justify-content: space-between; align-items: flex-start; gap: 48px; }
-    .story-stage { width: 576px; flex: none; top: calc(var(--header-h) + 24px); background: none; padding: 0; }
-    .story-steps { width: 576px; flex: none; }
+    .story { flex-direction: row-reverse; justify-content: space-between; align-items: flex-start; gap: var(--spacing-column); }
+    .story-stage { width: 500px; flex: none; top: calc(var(--header-h) + 24px); background: none; padding: 0; }
+    .story-steps { width: 600px; flex: none; }
     .story-step { height: 120px; }
   }
 </style>

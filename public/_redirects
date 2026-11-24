@@ -1,0 +1,3 @@
+# Use case pages moved from /solutions to /use-cases (Nov 2026).
+/solutions /#workflows 301
+/solutions/* /use-cases/:splat 301

@@ -1,7 +1,6 @@
-/** Business case calculator: same formula as BusinessCase.astro renders without JS. */
+/** Business case calculator, IT time only: same formula as BusinessCase.astro renders without JS. */
 export function initCalc() {
   document.querySelectorAll<HTMLFormElement>('[data-calc]').forEach((form) => {
-    const price = Number(form.dataset.price);
     const fmt = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
     const get = (k: string) => Number((form.elements.namedItem(k) as HTMLInputElement).value);
     const motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -30,20 +29,13 @@ export function initCalc() {
         const out = form.querySelector<HTMLOutputElement>(`[data-out="${r.name}"]`);
         if (out) out.textContent = r.value;
       });
-      const lockers = get('lockers');
-      const handovers = lockers * get('handovers');
-      const rate = get('rate');
-      const today = (handovers * get('minutesToday')) / 60 * rate;
-      const withSpind = (handovers * get('minutesSpind')) / 60 * rate + lockers * price;
-      const hours = (handovers * Math.max(0, get('minutesToday') - get('minutesSpind'))) / 60;
-      const diff = today - withSpind;
+      const handovers = get('lockers') * get('handovers');
+      const today = (handovers * get('minutesToday')) / 60;
+      const withSpind = (handovers * get('minutesSpind')) / 60;
       set('today', today);
       set('with', withSpind);
-      set('hours', hours);
-      set('diff', Math.abs(diff));
-      const sign = form.querySelector<HTMLElement>('[data-res="sign"]');
-      if (sign) sign.textContent = diff >= 0 ? sign.dataset.pos! : sign.dataset.neg!;
-      form.classList.toggle('is-negative', diff < 0);
+      set('handovers', handovers);
+      set('saved', Math.max(0, today - withSpind));
     };
     form.addEventListener('input', update);
     update();

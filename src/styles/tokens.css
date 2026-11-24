@@ -1,34 +1,165 @@
-/* Design tokens taken from the Spind pitch deck (light version). */
+/*
+ * Design tokens, mirrored 1:1 from the Figma variables (Branding file, collections Primitive > Alias > Mapped).
+ * Names follow the Figma variable names; each Figma variable has this CSS name set as its Web code syntax.
+ * Components only use the MAPPED layer. Change a colour in Primitive, re-point a role in Alias or Mapped.
+ */
 :root {
-  /* Colour */
-  --paper: #F4F3EE;
-  --paper-shade: #E8E6DF;
-  --surface: #FFFFFF;
-  --surface-shade: #F2F1EC;
-  --grid-line: #ECEAE4; /* faint on purpose: the grid guides, it should not compete */
-  --line: #D2D0C7;
-  --ink: #16191E;
-  --ink-muted: #6B6F77;
-  --ink-muted-strong: #565A62; /* muted text on shaded backgrounds, keeps AA contrast */
-  --graphite: #2A2E35;
-  --navy-900: #1C2A38;
-  --navy-500: #30475E;
-  --navy-300: #7C93AB;
-  --accent: #2C74B3;      /* primary brand colour, solid, no gradients */
-  --accent-deep: #1F5A8F; /* hover and pressed states */
-  --accent-ink: #245F93;  /* accent used as text on light backgrounds, keeps AA contrast */
-  --accent-tint: #E4EEF7;
-  --glow: #DDDBD5;
-  --selection: #FF7100;   /* text selection background */
-  --danger: #E05B43;      /* "Today" cross icon */
-  --mark: #FFD369;        /* footer logo mark */
-  --mark-ink: #222831;
+  /* ===== 1. Primitive: raw values ===== */
+  --blue-25: #F4F9FF;  --blue-50: #E8F2FF;  --blue-75: #D6E8FF;  --blue-100: #C2DDFF;
+  --blue-200: #94C4FF; --blue-300: #5EA8FF; --blue-400: #2E8EFF; --blue-500: #0079FF;
+  --blue-600: #0066D6; --blue-700: #0052AD; --blue-800: #003F85; --blue-900: #002D5F;
+  --blue-1000: #001E40; --blue-1100: #001229;
+
+  /* Ice: neutrals with a very light blue tint */
+  --ice-25: #F7F9FB;  --ice-50: #F0F3F7;  --ice-75: #E7ECF2;  --ice-100: #DAE1E9;
+  --ice-200: #C3CCD7; --ice-300: #A4AFBD; --ice-400: #8591A1; --ice-500: #677385;
+  --ice-600: #525D6D; --ice-700: #3E4755; --ice-800: #2B323D; --ice-900: #20262F;
+  --ice-1000: #161A21; --ice-1100: #0D1015;
+  --ice-white: #FFFFFF; --ice-black: #000000; --ice-white-20: rgba(255, 255, 255, 0.2);
+
+  --red-50: #FDECEA; --red-500: #E05B43; --red-700: #A83A27;
+
+  /* CTA yellow and the indigo of the primary button (LISSA action colour) */
+  --yellow-500: #FFDA1F; --yellow-600: #F2C800; --yellow-700: #D9B300;
+  --indigo-500: #5757F5; --indigo-600: #4343D9; --indigo-700: #3333B8;
+  --ice-1000-10: rgba(22, 26, 33, 0.1);
+
+  --scale-none: 0px; --scale-3xs: 0.5px; --scale-2xs: 1px; --scale-xs: 2px; --scale-sm: 4px;
+  --scale-md: 8px; --scale-lg: 12px; --scale-xl: 16px; --scale-2xl: 20px; --scale-3xl: 24px;
+  --scale-4xl: 28px; --scale-5xl: 32px; --scale-6xl: 36px; --scale-7xl: 40px; --scale-8xl: 48px;
+  --scale-9xl: 56px; --scale-10xl: 64px; --scale-11xl: 80px; --scale-12xl: 96px; --scale-13xl: 100px;
+  --scale-14xl: 120px; --scale-max: 999px;
+
+  /* ===== 2. Alias: roles of the palette ===== */
+  --primary-25: var(--blue-25);   --primary-50: var(--blue-50);   --primary-75: var(--blue-75);
+  --primary-100: var(--blue-100); --primary-200: var(--blue-200); --primary-300: var(--blue-300);
+  --primary-400: var(--blue-400); --primary-500: var(--blue-500); --primary-600: var(--blue-600);
+  --primary-700: var(--blue-700); --primary-800: var(--blue-800); --primary-900: var(--blue-900);
+  --primary-1000: var(--blue-1000); --primary-1100: var(--blue-1100);
+
+  --neutral-25: var(--ice-25);   --neutral-50: var(--ice-50);   --neutral-75: var(--ice-75);
+  --neutral-100: var(--ice-100); --neutral-200: var(--ice-200); --neutral-300: var(--ice-300);
+  --neutral-400: var(--ice-400); --neutral-500: var(--ice-500); --neutral-600: var(--ice-600);
+  --neutral-700: var(--ice-700); --neutral-800: var(--ice-800); --neutral-900: var(--ice-900);
+  --neutral-1000: var(--ice-1000); --neutral-1100: var(--ice-1100);
+  --neutral-white: var(--ice-white); --neutral-black: var(--ice-black); --neutral-white-20: var(--ice-white-20);
+
+  --error-50: var(--red-50); --error-500: var(--red-500); --error-700: var(--red-700);
+  --highlight-500: var(--yellow-500); --highlight-600: var(--yellow-600); --highlight-700: var(--yellow-700);
+  --accent-500: var(--indigo-500); --accent-600: var(--indigo-600); --accent-700: var(--indigo-700);
+  --neutral-grid: var(--ice-1000-10);
+
+  --border-width-none: var(--scale-none);
+  --border-width-hair: var(--scale-3xs);
+  --border-width-default: var(--scale-2xs);
+  --border-radius-none: var(--scale-none);
+
+  /* ===== 3. Mapped: what components use ===== */
+  /* Surface */
+  --surface-neutral-page: var(--neutral-25);
+  --surface-neutral-page-shade: var(--neutral-75);
+  --surface-neutral-default: var(--neutral-white);
+  --surface-neutral-track: var(--neutral-100);
+  --surface-neutral-dark: var(--neutral-900);
+  --surface-neutral-darkest: var(--neutral-1000);
+  --surface-action-default: var(--primary-500);
+  --surface-action-hover: var(--primary-700);
+  --surface-action-strong: var(--primary-600);
+  --surface-action-washed: var(--primary-50);
+  /* Text */
+  --text-neutral-headings: var(--neutral-1000);
+  --text-neutral-body: var(--neutral-600);
+  --text-neutral-subtle: var(--neutral-500);
+  --text-neutral-decorative: var(--neutral-200);
+  --text-neutral-onsurface: var(--neutral-white);
+  --text-neutral-ondark: var(--neutral-50);
+  --text-action-default: var(--primary-600);
+  --text-action-hover: var(--primary-700);
+  --text-action-ondark: var(--primary-300);
+  /* Icon */
+  --icon-neutral-default: var(--neutral-1000);
+  --icon-neutral-dark: var(--neutral-900);
+  --icon-neutral-body: var(--neutral-600);
+  --icon-neutral-subtle: var(--neutral-500);
+  --icon-neutral-onsurface: var(--neutral-white);
+  --icon-neutral-ondark: var(--neutral-50);
+  --icon-action-default: var(--primary-500);
+  --icon-action-strong: var(--primary-600);
+  --icon-status-error: var(--error-500);
+  /* Border */
+  --border-neutral-default: var(--neutral-100);
+  --border-neutral-strong: var(--neutral-500);
+  --border-neutral-dark: var(--neutral-1000);
+  --border-neutral-white: var(--neutral-white);
+  --border-neutral-ondark: var(--neutral-white-20);
+  --border-action-default: var(--primary-500);
+  --border-neutral-grid: var(--neutral-grid);
+  --border-focus: var(--primary-500);
+  --border-width-focus: var(--scale-xs);
+  --border-status-error: var(--error-500);
+  --text-status-error: var(--error-700);
+  /* Buttons (Figma component "Button") */
+  --surface-cta-default: var(--highlight-500);
+  --surface-cta-hover: var(--highlight-600);
+  --surface-cta-pressed: var(--highlight-700);
+  --text-cta-default: var(--neutral-black);
+  --icon-cta-default: var(--neutral-black);
+  --surface-button-primary-default: var(--accent-500);
+  --surface-button-primary-hover: var(--accent-600);
+  --surface-button-primary-pressed: var(--accent-700);
+  --text-button-primary-default: var(--neutral-white);
+  --surface-button-secondary-default: var(--neutral-white);
+  --surface-button-secondary-hover: var(--neutral-1000);
+  --surface-button-secondary-pressed: var(--neutral-1100);
+  --text-button-secondary-default: var(--neutral-1000);
+  --text-button-secondary-hover: var(--neutral-white);
+  --border-button-secondary-default: var(--neutral-200);
+  --border-button-secondary-hover: var(--neutral-1000);
+  --surface-disabled: var(--neutral-75);
+  --text-disabled: var(--neutral-300);
+  --border-disabled: var(--neutral-100);
+  /* Illustration (locker drawings) */
+  --illustration-deep: var(--neutral-900);
+  --illustration-mid: var(--neutral-700);
+  --illustration-light: var(--neutral-300);
+
+  /* Spacing */
+  --spacing-margin: var(--scale-14xl);
+  --spacing-column: var(--scale-13xl);
+  --spacing-gutter: var(--scale-none);
+  --spacing-padding-section-xs: var(--scale-8xl);
+  --spacing-padding-section-sm: var(--scale-9xl);
+  --spacing-padding-section-md: var(--scale-10xl);
+  --spacing-padding-section-lg: var(--scale-11xl);
+  --spacing-padding-section-xl: var(--scale-13xl);
+  --spacing-padding-container-3xs: var(--scale-sm);
+  --spacing-padding-container-2xs: var(--scale-md);
+  --spacing-padding-container-xs: var(--scale-lg);
+  --spacing-padding-container-sm: var(--scale-xl);
+  --spacing-padding-container-md: var(--scale-2xl);
+  --spacing-padding-container-lg: var(--scale-3xl);
+  --spacing-padding-container-xl: var(--scale-4xl);
+  --spacing-padding-container-2xl: var(--scale-5xl);
+  --spacing-padding-container-3xl: var(--scale-7xl);
+  --spacing-gap-text-sm: var(--scale-sm);
+  --spacing-gap-text-md: var(--scale-md);
+  --spacing-gap-text-lg: var(--scale-lg);
+  --spacing-gap-general-object-md: var(--scale-xl);
+  --spacing-gap-general-object-lg: var(--scale-3xl);
+  --spacing-gap-general-group-md: var(--scale-4xl);
+  --spacing-gap-general-group-lg: var(--scale-5xl);
+  --spacing-gap-general-section-sm: var(--scale-7xl);
+  --spacing-gap-general-section-md: var(--scale-8xl);
+  --spacing-gap-general-section-lg: var(--scale-10xl);
+  --spacing-gap-general-section-xl: var(--scale-12xl);
+
+  /* LISSA app mockup keeps its own colours (it shows another product) */
   --lissa-border: #CDCDD9;
-  --hair: 0.5px;          /* every stroke, as in Figma */
+  --hair: var(--border-width-hair); /* every stroke, as in Figma */
 
   /* Type */
   --font-display: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-body: 'Niramit', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Hanken Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /*
    * THE GRID
@@ -82,7 +213,7 @@
   :root {
     --cols: 12;
     /* Side padding grows to 120px at 1440 (content 1200px = 12 columns of 100px), as in Figma. */
-    --gutter-min: clamp(40px, 8.334vw, 120px);
+    --gutter-min: clamp(40px, 8.334vw, var(--spacing-margin));
     --fs-hero: calc(var(--cell) * 0.82);
     --lh-hero: calc(var(--u) * 4);
     --fs-title: calc(var(--cell) * 0.44);
@@ -105,5 +236,6 @@
     --fs-body: 16px;      /* Body/Default 16/28 */
     --lh-body: 28px;
     --fs-label: 12px;     /* UI/Label 12/16 */
+    --header-h: 84px;     /* Figma header bar */
   }
 }

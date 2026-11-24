@@ -62,24 +62,24 @@ const action = endpoint || mailto;
   </div>
 
   <div class="actions">
-    <button class="btn btn--mark" type="submit">{f.submit}<span class="arrow" aria-hidden="true">→</span></button>
+    <button class="btn btn--cta" type="submit">{f.submit}<span class="arrow" aria-hidden="true">→</span></button>
     <p class="status" role="status" aria-live="polite" data-form-status></p>
   </div>
 </form>
 
 <style>
   /* Form on the grid: fields are 2u tall, labels and errors 1u. */
-  .form { background: var(--surface); outline: var(--hair) solid var(--line); outline-offset: calc(var(--hair) * -1); padding: var(--u); display: grid; }
+  .form { background: var(--surface-neutral-default); outline: var(--hair) solid var(--border-neutral-default); outline-offset: calc(var(--hair) * -1); padding: var(--u); display: grid; }
   .row.two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--u); }
   .field { display: grid; grid-template-rows: var(--u) calc(var(--u) * 2) var(--u); align-content: start; }
   .field--area { grid-template-rows: var(--u) auto; }
-  label { font-family: var(--font-body); font-weight: 400; font-size: 15px; line-height: var(--u); color: var(--ink); }
-  .opt { color: var(--ink-muted); font-weight: 300; }
+  label { font-family: var(--font-body); font-weight: 400; font-size: 15px; line-height: var(--u); color: var(--text-neutral-headings); }
+  .opt { color: var(--text-neutral-subtle); font-weight: 300; }
   input, textarea {
     width: 100%;
-    border: var(--hair) solid var(--line);
+    border: var(--hair) solid var(--border-neutral-default);
     border-radius: 0;
-    background: var(--paper);
+    background: var(--surface-neutral-page);
     padding: 0 calc(var(--u) * 0.5);
     font-family: var(--font-body);
     font-weight: 400;
@@ -90,25 +90,25 @@ const action = endpoint || mailto;
     appearance: none;
   }
   textarea { resize: none; height: calc(var(--u) * 4); padding-top: calc(var(--u) * 0.4); line-height: var(--u); }
-  .form { color: var(--ink); }
-  input, textarea { color: var(--ink); } /* typed text is dark, even inside the blue Contact section */
-  input::placeholder, textarea::placeholder { color: var(--ink-muted); opacity: 1; }
-  input:hover, textarea:hover { border-color: var(--ink-muted); }
-  input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-color: var(--accent); background: var(--surface); }
+  .form { color: var(--text-neutral-headings); }
+  input, textarea { color: var(--text-neutral-headings); } /* typed text is dark, even inside the blue Contact section */
+  input::placeholder, textarea::placeholder { color: var(--text-neutral-subtle); opacity: 1; }
+  input:hover, textarea:hover { border-color: var(--border-neutral-strong); }
+  input:focus-visible, textarea:focus-visible { outline: 2px solid var(--border-action-default); outline-offset: -2px; border-color: var(--border-action-default); background: var(--surface-neutral-default); }
   input[aria-invalid='true'] { border-color: #B42318; background: #FEF3F2; }
   .err { font-size: 13px; color: #B42318; font-weight: 400; line-height: var(--u); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 0 var(--u); margin-top: var(--u); min-height: calc(var(--u) * 2); }
   .status { font-weight: 400; font-size: 15px; line-height: var(--u); }
   .status.is-error { color: #B42318; }
-  .status.is-ok { color: var(--accent-deep); }
+  .status.is-ok { color: var(--text-action-hover); }
   /* Figma: 56px fields and a 112px message box with 16px inner padding */
-  input, textarea { padding-left: 16px; padding-right: 16px; }
-  textarea { padding-top: 16px; padding-bottom: 16px; }
+  input, textarea { padding-left: var(--spacing-padding-container-sm); padding-right: var(--spacing-padding-container-sm); }
+  textarea { padding-top: var(--spacing-padding-container-sm); padding-bottom: var(--spacing-padding-container-sm); }
   @media (min-width: 1280px) {
-    .form { gap: 28px; padding: 28px; }
-    .row.two { gap: 28px; }
-    .field { grid-template-rows: 24px 56px; gap: 4px; } /* error text adds its own row only when shown */
+    .form { gap: var(--spacing-gap-general-group-md); padding: var(--spacing-padding-container-xl); }
+    .row.two { gap: var(--spacing-gap-general-group-md); }
+    .field { grid-template-rows: 24px 56px; gap: var(--spacing-gap-text-sm); } /* error text adds its own row only when shown */
     .err:empty { display: none; }
     .actions { margin-top: 0; }
     .field--area { grid-template-rows: 24px auto; }

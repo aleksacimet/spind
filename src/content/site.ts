@@ -69,85 +69,63 @@ const en = {
         ],
         feature: {
           label: 'Pricing',
-          title: '590 EUR per Spind per month',
-          text: 'One published price per locker, excluding VAT.',
-          cta: 'See what is included',
+          title: 'Pricing that fits your setup',
+          text: 'Priced for your sites, devices and use cases.',
+          cta: 'Talk to us about pricing',
           href: '#pricing',
         },
       },
       {
-        id: 'solutions',
-        label: 'Solutions',
+        id: 'use-cases',
+        label: 'Use cases',
         columns: [
           {
             title: 'Device lifecycle',
             items: [
-              { label: 'New device pickup', text: 'Pre-staged devices, ready 24/7', href: '/solutions/new-device-pickup' },
-              { label: 'Faulty device swap', text: 'A working device on the same day', href: '/solutions/faulty-device-swap' },
-              { label: 'EOL rollout', text: 'Old device in, new device out', href: '/solutions/eol-rollout' },
+              { label: 'New device pickup', text: 'Pre-staged devices, ready 24/7', href: '/use-cases/new-device-pickup' },
+              { label: 'Faulty device swap', text: 'A working device on the same day', href: '/use-cases/faulty-device-swap' },
+              { label: 'EOL rollout', text: 'Old device in, new device out', href: '/use-cases/eol-rollout' },
             ],
           },
           {
             title: 'People and sites',
             items: [
-              { label: 'Onboarding', text: 'Day one starts at the locker', href: '/solutions/onboarding' },
-              { label: 'Offboarding return', text: 'Leavers return equipment any time', href: '/solutions/offboarding' },
-              { label: 'Multi-site IT', text: 'One process for every branch', href: '/solutions/multi-site' },
+              { label: 'Onboarding', text: 'Day one starts at the locker', href: '/use-cases/onboarding' },
+              { label: 'Offboarding return', text: 'Leavers return equipment any time', href: '/use-cases/offboarding' },
+              { label: 'Multi-site IT', text: 'One process for every branch', href: '/use-cases/multi-site' },
             ],
           },
         ],
         feature: {
           label: 'Business case',
-          title: 'Calculate what Spind saves you',
-          text: 'Put in your own numbers and see the monthly difference.',
+          title: 'See how much IT time Spind saves',
+          text: 'Put in your own numbers and see the hours your IT team gets back.',
           cta: 'Open the calculator',
           href: '#business-case',
         },
       },
-      {
-        id: 'resources',
-        label: 'Resources',
-        columns: [
-          {
-            title: 'Learn',
-            items: [
-              { label: 'Business case calculator', text: 'Your numbers, your result', href: '#business-case' },
-              { label: 'Questions and answers', text: 'What IT teams ask first', href: '#faq' },
-              { label: 'Rollout checklist', text: 'Everything to prepare for your first Spind', href: '/resources/rollout-checklist' },
-            ],
-          },
-          {
-            title: 'Popular',
-            items: [
-              { label: 'Pricing', text: '590 EUR per Spind per month', href: '#pricing' },
-              { label: 'Drawer sizes', text: 'Up to a MacBook Pro 16″', href: '#modules' },
-              { label: 'Who fills the locker', text: 'Our field partner, not your IT', href: '#service' },
-            ],
-          },
-        ],
-        feature: {
-          label: 'Talk to us',
-          title: 'Pera Jovicki',
-          text: 'Plans your pilot with you, from one site to every branch.',
-          cta: 'Send a request',
-          href: '#contact',
-        },
-      },
     ],
     links: [{ id: 'pricing', label: 'Pricing', href: '#pricing' }],
-    // Shown in the Resources menu and footer when there are stories to show (showStories).
+    // Customer stories are linked from the quotes section when there are stories to show (showStories).
     customers: { label: 'Customer stories', text: 'How IT teams use Spind', href: '/customers' },
-    cta: 'Book a demo',
+    cta: 'Book a call',
+    /** Language selector next to Pricing. A language with available: false is listed but not linked yet. */
+    languages: [
+      { code: 'de', label: 'Deutsch', href: '/de/', available: false },
+      { code: 'en', label: 'English', href: '/', available: true },
+    ],
+    languageLabel: 'Language',
+    soon: 'soon',
     menu: 'Menu',
     close: 'Close menu',
     skip: 'Skip to content',
   },
 
   hero: {
-    title: 'Devices available without bothering IT staff',
+    title: 'Devices available 24/7 without bothering IT staff',
     subAccent: 'Spind',
     subRest: ' is self-service pickup, return and swap for enterprise IT, around the clock at every site.',
-    primary: 'Book a demo',
+    primary: 'Book a call',
     secondary: 'See how it works',
     facts: [
       { k: 'Access', v: 'QR code or PIN' },
@@ -258,38 +236,35 @@ const en = {
 
   businessCase: {
     title: 'Calculate your business case',
-    intro: 'Put in your own numbers and see what self-service handovers are worth to your IT team each month.',
+    intro: 'Put in your own numbers and see how many hours self-service handovers give back to your IT team each month.',
     inputsTitle: 'Your numbers',
     inputs: {
       lockers: { label: 'Lockers', hint: 'One Spind per site', min: 1, max: 50, step: 1, value: 1 },
       handovers: { label: 'Handovers per locker per month', hint: 'Pickups, returns and swaps', min: 5, max: 300, step: 5, value: 40 },
       minutesToday: { label: 'IT minutes per handover today', hint: 'Booking, waiting, walking and paperwork', min: 5, max: 120, step: 5, value: 30 },
       minutesSpind: { label: 'IT minutes per handover with Spind', hint: 'Approving the request in LISSA', min: 0, max: 30, step: 1, value: 3 },
-      rate: { label: 'IT cost per hour (EUR)', hint: 'Fully loaded, including overhead', min: 20, max: 200, step: 5, value: 60 },
     },
     resultTitle: 'Per month',
     today: 'IT time today',
-    withSpind: 'IT time and Spind fee',
-    hours: 'Hours back for IT',
-    difference: 'Monthly difference',
-    positive: 'saved with Spind',
-    negative: 'more than today, Spind pays off with more handovers',
+    withSpind: 'IT time with Spind',
+    handovers: 'Handovers per month',
+    difference: 'IT time saved',
+    positive: 'back for real IT work every month',
     hoursUnit: 'h',
-    currency: 'EUR',
-    note: 'Estimate from your inputs at 590 EUR per Spind per month, excluding VAT and hardware, which is quoted per site.',
+    note: 'Estimate from your inputs, your offer is tailored to your sites and devices after a short call.',
     cta: 'Check it with us',
   },
 
   solutions: {
-    label: 'Solution',
-    breadcrumb: 'Solutions',
-    primary: 'Book a demo',
+    label: 'Use case',
+    breadcrumb: 'Use cases',
+    primary: 'Book a call',
     secondary: 'Calculate your business case',
     todayTitle: 'What it looks like today',
     flowTitle: 'How it works with Spind',
     benefitsTitle: 'What changes',
     faqTitle: 'Questions about this',
-    moreTitle: 'More solutions',
+    moreTitle: 'More use cases',
     items: [
       {
         slug: 'new-device-pickup',
@@ -605,23 +580,34 @@ const en = {
   },
 
   pricing: {
-    title: 'Start with one Spind at one site',
-    intro: 'One monthly price per locker, published, so you can plan a pilot with real numbers.',
-    price: 590,
-    unit: 'EUR per Spind per month',
-    note: 'Excluding VAT, hardware quoted per site.',
-    includedTitle: 'What is included',
-    included: [
-      'Spind module in LISSA Asset',
-      'Pickup, return, assign and swap',
-      'Activity log and request tracking',
-      'Updates and support',
+    title: 'Pricing that fits your setup',
+    text: 'Every Spind is priced for your sites, devices and use cases, so we put together your offer after a short call.',
+    cta: 'Book a call',
+  },
+
+  goLive: {
+    title: 'Go live in 12 weeks',
+    intro: 'From the first call to the first employee opening a drawer, we plan, connect and install everything together with your IT team in three months.',
+    phases: [
+      { label: 'Weeks 1–2', title: 'Plan', text: 'We map your sites, devices and handover flows in one workshop.' },
+      { label: 'Weeks 3–6', title: 'Connect', text: 'We link Spind to LISSA Asset, your sign-in and your service desk.' },
+      { label: 'Weeks 7–10', title: 'Prepare', text: 'We build your locker, set up the drawers and train your team.' },
+      { label: 'Weeks 11–12', title: 'Go live', text: 'Our field partner installs Spind and runs the first handovers with you.' },
     ],
-    cta: 'Book a demo',
+  },
+
+  video: {
+    title: 'See Spind in action',
+    intro: 'A short film shows how an employee picks up a device in a minute and how IT sees every step in LISSA Asset.',
+    /** Paste the video file URL (mp4) and a poster image here once the film is ready. Empty shows the placeholder. */
+    src: '',
+    poster: '',
+    play: 'Play the Spind video',
+    placeholder: 'Video coming soon',
   },
 
   faq: {
-    title: 'Questions IT teams ask first',
+    title: 'FAQ',
     items: [
       {
         q: 'Who fills and empties the locker?',
@@ -633,7 +619,7 @@ const en = {
       },
       {
         q: 'What does it cost?',
-        a: 'Spind costs 590 EUR per locker per month excluding VAT, and the hardware is quoted per site.',
+        a: 'Pricing depends on your sites, devices and use cases, so we put together your offer after a short call.',
       },
       {
         q: 'How do employees open a drawer?',
@@ -657,13 +643,13 @@ const en = {
       },
       {
         q: 'Does Spind make sense for a smaller office?',
-        a: 'Spind is priced per locker, so you can start with one Spind at one site and add lockers when more sites or handovers need them.',
+        a: 'Yes, you can start with one Spind at one site and add lockers when more sites or handovers need them.',
       },
     ],
   },
 
   contact: {
-    title: 'Book a demo',
+    title: 'Book a call',
     intro: 'See Spind and LISSA Asset in a short call and plan your first site.',
     form: {
       name: 'Name',
@@ -691,7 +677,7 @@ const en = {
         sites: 'Please enter a whole number of 1 or more.',
         summary: 'Please check the highlighted fields.',
       },
-      subject: 'Spind demo request',
+      subject: 'Spind call request',
     },
   },
 
@@ -699,7 +685,7 @@ const en = {
     byline: 'Spind by Cimet',
     impressum: 'Impressum',
     privacy: 'Privacy',
-    rights: 'Cimet',
+    rights: 'Cimet. All rights reserved. Spind and LISSA Asset are products of Cimet.',
     legalNav: 'Legal',
     pageNav: 'Sections',
     pricing: 'Pricing',

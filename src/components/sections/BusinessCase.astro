@@ -3,20 +3,18 @@ import Section from '../Section.astro';
 import { getContent } from '../../content/site';
 const t = getContent(Astro.props.locale);
 const b = t.businessCase;
-const price = t.pricing.price;
 const keys = Object.keys(b.inputs) as (keyof typeof b.inputs)[];
 const v = Object.fromEntries(keys.map((k) => [k, b.inputs[k].value])) as Record<keyof typeof b.inputs, number>;
-// Same formula as src/scripts/calc.ts, so the page is complete without JS.
+// IT time only, no prices. Same formula as src/scripts/calc.ts, so the page is complete without JS.
 const handovers = v.lockers * v.handovers;
-const today = (handovers * v.minutesToday) / 60 * v.rate;
-const withSpind = (handovers * v.minutesSpind) / 60 * v.rate + v.lockers * price;
-const hours = (handovers * (v.minutesToday - v.minutesSpind)) / 60;
-const diff = today - withSpind;
-const eur = (n: number) => Math.round(n).toLocaleString('de-DE');
+const today = (handovers * v.minutesToday) / 60;
+const withSpind = (handovers * v.minutesSpind) / 60;
+const saved = Math.max(0, today - withSpind);
+const h = (n: number) => Math.round(n).toLocaleString('de-DE');
 ---
 <!-- Like Cora's business case calculator: visitors put in their own numbers, nothing is claimed for them. -->
 <Section id="business-case" title={b.title} intro={b.intro} class="section--strong-intro">
-  <form class="calc" data-calc data-price={price} onsubmit="return false" aria-label={b.title}>
+  <form class="calc" data-calc onsubmit="return false" aria-label={b.title}>
     <fieldset class="calc-inputs tile" data-reveal="drawer">
       <legend class="label">{b.inputsTitle}</legend>
       {keys.map((k) => {
@@ -37,58 +35,58 @@ const eur = (n: number) => Math.round(n).toLocaleString('de-DE');
     <div class="calc-result tile" data-reveal="drawer" style="--d:120ms" aria-live="polite">
       <p class="label res-label">{b.resultTitle}</p>
       <dl class="rows">
-        <div><dt>{b.today}</dt><dd class="tabular"><span data-res="today">{eur(today)}</span> {b.currency}</dd></div>
-        <div><dt>{b.withSpind}</dt><dd class="tabular"><span data-res="with">{eur(withSpind)}</span> {b.currency}</dd></div>
-        <div><dt>{b.hours}</dt><dd class="tabular"><span data-res="hours">{Math.round(hours)}</span> {b.hoursUnit}</dd></div>
+        <div><dt>{b.today}</dt><dd class="tabular"><span data-res="today">{h(today)}</span> {b.hoursUnit}</dd></div>
+        <div><dt>{b.withSpind}</dt><dd class="tabular"><span data-res="with">{h(withSpind)}</span> {b.hoursUnit}</dd></div>
+        <div><dt>{b.handovers}</dt><dd class="tabular"><span data-res="handovers">{h(handovers)}</span></dd></div>
       </dl>
-      <div class="big">
+      <div class="big title-body">
         <p class="big-label">{b.difference}</p>
-        <p class="big-num tabular"><span data-res="diff">{eur(Math.abs(diff))}</span> <span class="cur">{b.currency}</span></p>
-        <p class="big-sub" data-res="sign" data-pos={b.positive} data-neg={b.negative}>{diff >= 0 ? b.positive : b.negative}</p>
+        <p class="big-num tabular"><span data-res="saved">{h(saved)}</span> <span class="cur">{b.hoursUnit}</span></p>
+        <p class="big-sub">{b.positive}</p>
       </div>
       <p class="note">{b.note}</p>
-      <a class="btn btn--mark" href="#contact">{b.cta}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--primary" href="#contact">{b.cta}<span class="arrow" aria-hidden="true">→</span></a>
     </div>
   </form>
 </Section>
 
 <style>
-  .calc { display: grid; grid-template-columns: repeat(var(--cols), var(--cell)); box-shadow: var(--hair) var(--hair) 0 0 var(--line); }
-  .calc .tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; padding: 24px; }
-  fieldset { border: 0; border-top: var(--hair) solid var(--line); border-left: var(--hair) solid var(--line); margin: 0; min-inline-size: 0; display: grid; gap: 24px; }
+  .calc { display: grid; grid-template-columns: repeat(var(--cols), var(--cell)); box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
+  .calc .tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; padding: var(--spacing-padding-container-lg); }
+  fieldset { border: 0; border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); margin: 0; min-inline-size: 0; display: grid; gap: var(--spacing-gap-general-object-lg); }
   legend { float: left; width: 100%; padding: 0; margin-bottom: 8px; }
-  .field { display: grid; gap: 8px; }
-  .field-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
-  label { font-family: var(--font-display); font-weight: 500; font-size: 16px; line-height: 24px; color: var(--ink); }
-  .val { font-family: var(--font-display); font-weight: 500; font-size: 20px; line-height: 28px; color: var(--accent-ink); min-width: 48px; text-align: right; }
-  .hint { font-size: 16px; line-height: 24px; color: var(--ink-muted-strong); }
+  .field { display: grid; gap: var(--spacing-gap-text-md); }
+  .field-top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--spacing-gap-general-object-md); }
+  label { font-family: var(--font-display); font-weight: 500; font-size: 16px; line-height: 24px; color: var(--text-neutral-headings); }
+  .val { font-family: var(--font-display); font-weight: 500; font-size: 20px; line-height: 28px; color: var(--text-action-default); min-width: 48px; text-align: right; }
+  .hint { font-size: 16px; line-height: 24px; color: var(--text-neutral-body); }
 
   input[type='range'] { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; background: transparent; cursor: pointer; margin: 0; }
-  input[type='range']::-webkit-slider-runnable-track { height: 4px; background: linear-gradient(to right, var(--accent) var(--p), var(--line) var(--p)); }
-  input[type='range']::-moz-range-track { height: 4px; background: var(--line); }
-  input[type='range']::-moz-range-progress { height: 4px; background: var(--accent); }
-  input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; background: var(--surface); border: 2px solid var(--accent); border-radius: 0; transform: rotate(45deg) scale(0.8); transition: transform var(--dur-fast) var(--ease); }
-  input[type='range']::-moz-range-thumb { width: 16px; height: 16px; background: var(--surface); border: 2px solid var(--accent); border-radius: 0; transform: rotate(45deg); }
-  input[type='range']:hover::-webkit-slider-thumb, input[type='range']:focus-visible::-webkit-slider-thumb { transform: rotate(45deg) scale(1); background: var(--accent); }
+  input[type='range']::-webkit-slider-runnable-track { height: 4px; background: linear-gradient(to right, var(--surface-action-default) var(--p), var(--surface-neutral-track) var(--p)); }
+  input[type='range']::-moz-range-track { height: 4px; background: var(--surface-neutral-track); }
+  input[type='range']::-moz-range-progress { height: 4px; background: var(--surface-action-default); }
+  input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; background: var(--surface-neutral-default); border: 2px solid var(--border-action-default); border-radius: 0; transform: rotate(45deg) scale(0.8); transition: transform var(--dur-fast) var(--ease); }
+  input[type='range']::-moz-range-thumb { width: 16px; height: 16px; background: var(--surface-neutral-default); border: 2px solid var(--border-action-default); border-radius: 0; transform: rotate(45deg); }
+  input[type='range']:hover::-webkit-slider-thumb, input[type='range']:focus-visible::-webkit-slider-thumb { transform: rotate(45deg) scale(1); background: var(--surface-action-default); }
 
-  .calc-result { background: var(--graphite); color: var(--surface); border-color: transparent; display: flex; flex-direction: column; gap: 24px; }
-  .res-label { color: var(--line); }
+  .calc-result { background: var(--surface-neutral-dark); color: var(--text-neutral-onsurface); border-color: transparent; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
+  .res-label { color: var(--text-neutral-decorative); }
   .rows { display: grid; }
-  .rows div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; }
-  .rows dt { color: var(--paper); }
-  .rows dd { font-family: var(--font-display); font-weight: 500; color: var(--surface); white-space: nowrap; }
-  .big { display: grid; gap: 4px; padding-top: 16px; border-top: var(--hair) solid rgba(255, 255, 255, 0.2); }
-  .big-label { color: var(--paper); }
-  .big-num { font-family: var(--font-display); font-weight: 500; font-size: 56px; line-height: 64px; letter-spacing: -0.04em; color: var(--mark); }
+  .rows div { display: flex; justify-content: space-between; gap: var(--spacing-gap-general-object-md); padding: var(--spacing-padding-container-2xs) 0; }
+  .rows dt { color: var(--text-neutral-ondark); }
+  .rows dd { font-family: var(--font-display); font-weight: 500; color: var(--text-neutral-onsurface); white-space: nowrap; }
+  .big { display: grid; gap: var(--spacing-gap-text-sm); padding-top: var(--spacing-padding-container-sm); border-top: var(--hair) solid var(--border-neutral-ondark); }
+  .big-label { color: var(--text-neutral-ondark); }
+  .big-num { font-family: var(--font-display); font-weight: 500; font-size: 56px; line-height: 64px; letter-spacing: -0.04em; color: var(--text-action-ondark); }
   .big-num .cur { font-size: 20px; letter-spacing: 0; }
-  .big-sub { font-family: var(--font-display); font-weight: 500; color: var(--surface); }
-  .note { font-size: 16px; line-height: 24px; color: var(--line); }
+  .big-sub { font-family: var(--font-display); font-weight: 500; color: var(--text-neutral-onsurface); }
+  .note { font-size: 16px; line-height: 24px; color: var(--text-neutral-decorative); }
   .calc-result .btn { align-self: flex-start; margin-top: auto; }
 
   @media (min-width: 960px) {
     .calc-inputs { grid-column: 1 / span 7 !important; }
     .calc-result { grid-column: 8 / span 5 !important; }
-    .calc .tile { padding: 32px; }
+    .calc .tile { padding: var(--spacing-padding-container-2xl); }
     .big-num { font-size: 72px; line-height: 72px; }
   }
 </style>

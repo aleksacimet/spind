@@ -26,12 +26,12 @@ const titleId = wall ? 'logos-wall-title' : 'logos-title';
 )}
 
 <style>
-  .logos { padding-block: 48px 64px; }
+  .logos { padding-block: var(--spacing-padding-section-xs) var(--spacing-padding-section-md); }
   .logos-head { display: flex; justify-content: center; margin-bottom: 32px; }
-  .logos-head .label { color: var(--ink-muted-strong); }
+  .logos-head .label { color: var(--text-neutral-body); }
   .marquee { overflow: hidden; }
   .track { display: flex; width: max-content; }
-  .set { display: flex; align-items: center; gap: 64px; padding-right: 64px; }
+  .set { display: flex; align-items: center; gap: var(--spacing-gap-general-section-lg); padding-right: var(--spacing-padding-section-md); }
   .set li { flex: none; }
   @media (prefers-reduced-motion: no-preference) {
     .track { animation: logos-scroll 40s linear infinite; }
@@ -42,12 +42,12 @@ const titleId = wall ? 'logos-wall-title' : 'logos-title';
   /* Without motion: one static, centred set. */
   @media (prefers-reduced-motion: reduce) {
     .track { width: auto; justify-content: center; }
-    .set { flex-wrap: wrap; justify-content: center; gap: 32px 56px; padding: 0 20px; }
+    .set { flex-wrap: wrap; justify-content: center; gap: var(--spacing-gap-general-group-lg) 56px; padding: 0 var(--spacing-padding-container-md); }
     .set[aria-hidden] { display: none; }
   }
 
-  .logos--wall { padding-block: 0 100px; }
-  .logos--wall .logos-head { justify-content: flex-start; padding-block: 48px; margin: 0; }
+  .logos--wall { padding-block: 0 var(--spacing-padding-section-xl); }
+  .logos--wall .logos-head { justify-content: flex-start; padding-block: var(--spacing-padding-section-xs); margin: 0; }
   .wall-title { font-size: var(--fs-title); line-height: var(--lh-title); }
-  .logos--wall .set { gap: 96px; padding-right: 96px; }
+  .logos--wall .set { gap: var(--spacing-gap-general-section-xl); padding-right: 96px; }
 </style>
