@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import Contact from '../components/sections/Contact.astro';
+import { getContent } from '../content/site';
+const t = getContent('en');
+---
+<Base title="Contact | Spind" description={t.contact.intro} locale="en" darkHero>
+  <Contact locale="en" page />
+</Base>

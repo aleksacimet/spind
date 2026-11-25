@@ -22,7 +22,8 @@
   /* CTA yellow and the indigo of the primary button (LISSA action colour) */
   --yellow-500: #FFDA1F; --yellow-600: #F2C800; --yellow-700: #D9B300;
   --indigo-500: #5757F5; --indigo-600: #4343D9; --indigo-700: #3333B8;
-  --ice-1000-10: rgba(22, 26, 33, 0.1);
+  --ice-1000-5: rgba(22, 26, 33, 0.05);
+  --ice-1000-60: rgba(22, 26, 33, 0.6);
 
   --scale-none: 0px; --scale-3xs: 0.5px; --scale-2xs: 1px; --scale-xs: 2px; --scale-sm: 4px;
   --scale-md: 8px; --scale-lg: 12px; --scale-xl: 16px; --scale-2xl: 20px; --scale-3xl: 24px;
@@ -47,7 +48,8 @@
   --error-50: var(--red-50); --error-500: var(--red-500); --error-700: var(--red-700);
   --highlight-500: var(--yellow-500); --highlight-600: var(--yellow-600); --highlight-700: var(--yellow-700);
   --accent-500: var(--indigo-500); --accent-600: var(--indigo-600); --accent-700: var(--indigo-700);
-  --neutral-grid: var(--ice-1000-10);
+  --neutral-grid: var(--ice-1000-5);
+  --neutral-overlay: var(--ice-1000-60);
 
   --border-width-none: var(--scale-none);
   --border-width-hair: var(--scale-3xs);
@@ -87,13 +89,16 @@
   --icon-action-strong: var(--primary-600);
   --icon-status-error: var(--error-500);
   /* Border */
-  --border-neutral-default: var(--neutral-100);
+  --border-neutral-default: var(--line); /* one hairline colour for every grid line, card edge and divider */
   --border-neutral-strong: var(--neutral-500);
   --border-neutral-dark: var(--neutral-1000);
   --border-neutral-white: var(--neutral-white);
   --border-neutral-ondark: var(--neutral-white-20);
   --border-action-default: var(--primary-500);
   --border-neutral-grid: var(--neutral-grid);
+  --surface-overlay: var(--neutral-overlay);
+  --surface-neutral-input-ondark: var(--neutral-1000);
+  --text-neutral-placeholder-ondark: var(--neutral-400);
   --border-focus: var(--primary-500);
   --border-width-focus: var(--scale-xs);
   --border-status-error: var(--error-500);
@@ -158,7 +163,26 @@
   --hair: var(--border-width-hair); /* every stroke, as in Figma */
 
   /* Type */
-  --font-display: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Drawer frame lines (rails, label strips, menu columns): Ice/1000 or white at 15%. */
+  /* One line colour that reads on white and on the dark bands (Ice/400 at 30%). */
+  --line: color-mix(in srgb, var(--ice-400) 18%, transparent);
+  --line-ondark: color-mix(in srgb, var(--ice-white) 9%, transparent);
+  /*
+   * PADDING SYSTEM (one rule for the whole site)
+   * --inset: the only horizontal distance between a rail (or a card edge) and its content. Section text, label strips,
+   *          tiles, panels, bands and the footer all use it, so every left and right text edge lines up.
+   * --pad-block: vertical padding inside tiles, panels and bands.
+   * --head-pad: space above and below a section title block.
+   * --spacer: white strip between two blocks.
+   */
+  --inset: var(--spacing-padding-container-lg);          /* 24 */
+  --pad-block: var(--spacing-padding-container-lg);      /* 24 */
+  --head-pad: var(--spacing-padding-container-2xl);      /* 32 */
+  /* Page heroes (dark bands under the header): same top and bottom on every page. */
+  --hero-top: calc(var(--header-h) + var(--spacing-padding-section-md));
+  --hero-bottom: var(--spacing-padding-section-md);
+  --font-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-display: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-body: 'Hanken Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /*
@@ -169,20 +193,26 @@
    */
   --cols: 4;
   --gutter-min: 20px;
-  --cell: calc(min(100vw - var(--gutter-min) * 2, var(--cols) * 112px) / var(--cols));
-  --u: calc(var(--cell) / 4);
+  /* Cells and --u are snapped down to the 4px baseline, so every derived size stays on it. */
+  --cell: round(down, calc(min(100vw - var(--gutter-min) * 2, var(--cols) * 112px) / var(--cols)), 4px);
+  --u: round(down, calc(var(--cell) / 4), 4px);
   --container: calc(var(--cell) * var(--cols));
 
   /* Type scale, line heights locked to --u */
-  --fs-hero: calc(var(--cell) * 0.46);
+  --fs-hero: calc(var(--cell) * 0.4);
   --lh-hero: calc(var(--u) * 2);
-  --fs-title: calc(var(--cell) * 0.34);
-  --lh-title: calc(var(--u) * 1.5);
-  --fs-subtitle: calc(var(--cell) * 0.21);
+  --fs-title: calc(var(--cell) * 0.3);
+  --lh-title: round(up, calc(var(--u) * 1.5), 4px);
+  --fs-subtitle: calc(var(--cell) * 0.19);
   --lh-subtitle: var(--u);
   --fs-body: 16px;
   --lh-body: var(--u);
   --fs-label: 12px;
+  --fs-page: var(--fs-title);
+  --lh-page: var(--lh-title);
+  --fs-h3: 22px;
+  --lh-h3: 32px;
+  --fs-stat: 36px;
 
   --header-h: calc(var(--u) * 3);
 
@@ -200,11 +230,11 @@
   :root {
     --cols: 8;
     --gutter-min: 32px;
-    --fs-hero: calc(var(--cell) * 0.6);
+    --fs-hero: calc(var(--cell) * 0.52);
     --lh-hero: calc(var(--u) * 3);
-    --fs-title: calc(var(--cell) * 0.42);
+    --fs-title: calc(var(--cell) * 0.36);
     --lh-title: calc(var(--u) * 2);
-    --fs-subtitle: calc(var(--cell) * 0.22);
+    --fs-subtitle: calc(var(--cell) * 0.2);
     --fs-body: 17px;
   }
 }
@@ -214,11 +244,11 @@
     --cols: 12;
     /* Side padding grows to 120px at 1440 (content 1200px = 12 columns of 100px), as in Figma. */
     --gutter-min: clamp(40px, 8.334vw, var(--spacing-margin));
-    --fs-hero: calc(var(--cell) * 0.82);
+    --fs-hero: calc(var(--cell) * 0.7);
     --lh-hero: calc(var(--u) * 4);
-    --fs-title: calc(var(--cell) * 0.44);
+    --fs-title: calc(var(--cell) * 0.38);
     --lh-title: calc(var(--u) * 2);
-    --fs-subtitle: calc(var(--cell) * 0.19);
+    --fs-subtitle: calc(var(--cell) * 0.17);
     --fs-body: clamp(16px, calc(var(--cell) * 0.16), 18px);
     --fs-label: 13px;
     --header-h: calc(var(--u) * 3);
@@ -229,13 +259,21 @@
 /* From 1280px everything follows the Figma text styles and the 4px baseline. */
 @media (min-width: 1280px) {
   :root {
-    --fs-title: 48px;     /* Heading/H2 48/56 */
-    --lh-title: 56px;
-    --fs-subtitle: 20px;  /* Heading/H4 20/28 */
-    --lh-subtitle: 28px;
+    --fs-title: 40px;     /* Heading/H2 40/48 */
+    --lh-title: 48px;
+    --fs-hero: 56px;      /* Display/Hero 56/64 */
+    --lh-hero: 64px;
+    --fs-page: 48px;      /* Display/Page 48/56 */
+    --lh-page: 56px;
+    --fs-h3: 24px;        /* Heading/H3 24/32 */
+    --lh-h3: 32px;
+    --fs-stat: 40px;
+    --fs-subtitle: 18px;  /* Heading/H4 18/24 (4px baseline) */
+    --lh-subtitle: 24px;
     --fs-body: 16px;      /* Body/Default 16/28 */
     --lh-body: 28px;
     --fs-label: 12px;     /* UI/Label 12/16 */
     --header-h: 84px;     /* Figma header bar */
   }
 }
+@media (min-width: 960px) { :root { --inset: var(--spacing-padding-container-3xl); --pad-block: var(--spacing-padding-container-2xl); --head-pad: var(--spacing-padding-section-xs); --hero-bottom: var(--spacing-padding-section-lg); } } /* 40 / 32 / 48 */

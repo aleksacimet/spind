@@ -10,10 +10,12 @@ interface Props {
   modules?: ModuleKey[];
   /** The drawer shown open (accent). Index is row-major within the module. */
   accent?: { module: ModuleKey; index: number } | null;
-  /** Hero entrance animation plus random drawers opening (driven by main.ts). */
+  /** Hero entrance animation; the drawer nearest the mouse opens (driven by main.ts). */
   animate?: boolean;
   /** Screen states for the how-it-works story (driven by main.ts via data-state). */
   screen?: { request: string; code: string; open: string; logged: string } | null;
+  /** Space between modules in viewBox units (Figma hero: modules stand apart, 22px at 252px module width). */
+  gap?: number;
   id: string;
   label: string;
   class?: string;
@@ -21,9 +23,10 @@ interface Props {
 
 const {
   modules = ['master', 's24', 'n8', 'm124'],
-  accent = { module: 's24', index: 7 },
+  accent = null, // no drawer is highlighted unless hovered (hero) or part of the story
   animate = false,
   screen = null,
+  gap = 0,
   id,
   label,
   class: className = '',
@@ -34,9 +37,9 @@ const H = 300; // total height = 3 cells
 const BH = 288; // body height
 const PAD = 6;
 const DG = 3;
-const totalW = modules.length * MW;
+const totalW = modules.length * MW + (modules.length - 1) * gap;
 
-type Drawer = { x: number; y: number; w: number; h: number; accent: boolean; order: number; n: number };
+type Drawer = { x: number; y: number; w: number; h: number; accent: boolean; order: number; n: number; kind: 'small' | 'wide' };
 
 function drawersFor(key: ModuleKey, ox: number): Drawer[] {
   const out: Drawer[] = [];
@@ -48,14 +51,14 @@ function drawersFor(key: ModuleKey, ox: number): Drawer[] {
   for (let r = 0; r < 8; r++) {
     const y = PAD + r * (rowH + DG);
     const small = key === 's24' || (key === 'm124' && r < 4);
-    if (small) for (let c = 0; c < 3; c++) out.push({ x: ox + PAD + c * (smallW + DG), y, w: smallW, h: rowH, accent: false, order: 0, n: 0 });
-    else out.push({ x: ox + PAD, y, w: innerW, h: rowH, accent: false, order: 0, n: 0 });
+    if (small) for (let c = 0; c < 3; c++) out.push({ x: ox + PAD + c * (smallW + DG), y, w: smallW, h: rowH, accent: false, order: 0, n: 0, kind: 'small' });
+    else out.push({ x: ox + PAD, y, w: innerW, h: rowH, accent: false, order: 0, n: 0, kind: 'wide' });
   }
   if (accent && accent.module === key && out[accent.index]) out[accent.index].accent = true;
   return out;
 }
 
-const mods = modules.map((key, i) => ({ key, ox: i * MW, drawers: drawersFor(key, i * MW) }));
+const mods = modules.map((key, i) => ({ key, ox: i * (MW + gap), drawers: drawersFor(key, i * (MW + gap)) }));
 const all = mods.flatMap((m) => m.drawers);
 all.forEach((d, i) => (d.n = i + 1));
 // Stagger order: diagonal sweep from top left to bottom right.
@@ -83,68 +86,99 @@ const accentDrawer = all.find((d) => d.accent);
       <stop offset="1" stop-color="#2C74B3" />
     </linearGradient>
     <linearGradient id={g('screen')} x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#30475E" />
-      <stop offset="1" stop-color="#30475E" />
+      <stop offset="0" stop-color="#2A4A6E" />
+      <stop offset="1" stop-color="#16263A" />
     </linearGradient>
+    <linearGradient id={g('sheen')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.12" />
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id={g('body')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" />
+      <stop offset="1" stop-color="#E9EDF2" />
+    </linearGradient>
+    <filter id={g('glow')} x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="8" /></filter>
+    <filter id={g('soft')} x="-10%" y="-400%" width="120%" height="900%"><feGaussianBlur stdDeviation="2.5" /></filter>
   </defs>
 
+  <ellipse class="floor" cx={totalW / 2} cy={BH + 1} rx={totalW * 0.5} ry="2.5" filter={`url(#${g('soft')})`} />
   {mods.map((m) => (
     <g class="mod" data-module={m.key} style={`--m:${mods.indexOf(m)}`}>
-      <rect class="body" x={m.ox} y="0" width={MW} height={BH} />
-      <rect class="foot" x={m.ox + 16} y={BH} width="20" height={H - BH} />
-      <rect class="foot" x={m.ox + MW - 36} y={BH} width="20" height={H - BH} />
+      <rect class="body" x={m.ox} y="0" width={MW} height={BH} fill={`url(#${g('body')})`} />
+      <rect class="crown" x={m.ox} y="0" width={MW} height="3" />
 
-      {m.key === 'master' && (
+      {m.key === 'master' && (() => {
+        // Figma 105:1457: one central touch screen, a round reader on each side (badge left, QR / camera right).
+        const sx = m.ox + 40, sy = 20, sw = 120, sh = 88, cy = sy + sh / 2;
+        return (
         <g class="master">
-          <rect x={m.ox + PAD} y={PAD} width={MW - PAD * 2} height="92" fill={`url(#${g('screen')})`} />
-          <rect class="scanline" x={m.ox + PAD} y={PAD} width={MW - PAD * 2} height="2" />
-          {!screen && (
-            <g>
-              <line class="screen-line" x1={m.ox + 16} y1="18" x2={m.ox + 76} y2="18" />
-              <line class="screen-line" x1={m.ox + 16} y1="24" x2={m.ox + 52} y2="24" />
-            </g>
-          )}
-          {screen && (
-            <g class="screens">
-              <g class="scr scr-0">
-                <text x={m.ox + 16} y="28" class="scr-t">{screen.request}</text>
-                <rect class="scr-bar" x={m.ox + 16} y="40" width="110" height="5" />
-                <rect class="scr-bar scr-bar--dim" x={m.ox + 16} y="51" width="80" height="5" />
-                <rect class="scr-cursor" x={m.ox + 16} y="66" width="44" height="14" />
+          <rect class="bezel" x={sx - 4} y={sy - 4} width={sw + 8} height={sh + 8} rx="7" />
+          <rect class="screen-glow" x={sx} y={sy} width={sw} height={sh} rx="4" filter={`url(#${g('glow')})`} />
+          <rect class="screen" x={sx} y={sy} width={sw} height={sh} rx="4" fill={`url(#${g('screen')})`} />
+          <rect class="screen-sheen" x={sx} y={sy} width={sw} height={sh / 2} rx="4" fill={`url(#${g('sheen')})`} />
+          <clipPath id={g('clip')}><rect x={sx} y={sy} width={sw} height={sh} rx="4" /></clipPath>
+          <g clip-path={`url(#${g('clip')})`}>
+            <rect class="scanline" x={sx} y={sy} width={sw} height="2" />
+            {!screen && (
+              <g class="idle">
+                <text x={sx + 10} y={sy + 20} class="scr-t">Spind</text>
+                <rect class="scr-bar" x={sx + 10} y={sy + 30} width="70" height="4" rx="2" />
+                <rect class="scr-bar scr-bar--dim" x={sx + 10} y={sy + 39} width="46" height="4" rx="2" />
+                <rect class="scr-cursor" x={sx + 10} y={sy + sh - 26} width="48" height="14" rx="3" />
               </g>
-              <g class="scr scr-1">
-                <rect x={m.ox + 16} y="16" width="66" height="66" fill="var(--icon-neutral-onsurface)" />
-                {qrBits.map((b, k) => b ? <rect x={m.ox + 20 + (k % 8) * 7.25} y={20 + Math.floor(k / 8) * 7.25} width="7.25" height="7.25" fill="#1C2A38" /> : null)}
-                <text x={m.ox + 94} y="34" class="scr-t">{screen.code}</text>
-                {[0, 1, 2, 3, 4].map((k) => <rect class="pin-dot" x={m.ox + 94 + k * 14} y="50" width="9" height="9" style={`--k:${k}`} />)}
+            )}
+            {screen && (
+              <g class="screens">
+                <g class="scr scr-0">
+                  <text x={sx + 10} y={sy + 20} class="scr-t">{screen.request}</text>
+                  <rect class="scr-bar" x={sx + 10} y={sy + 30} width="86" height="4" rx="2" />
+                  <rect class="scr-bar scr-bar--dim" x={sx + 10} y={sy + 39} width="60" height="4" rx="2" />
+                  <rect class="scr-cursor" x={sx + 10} y={sy + sh - 26} width="48" height="14" rx="3" />
+                </g>
+                <g class="scr scr-1">
+                  <text x={sx + 10} y={sy + 18} class="scr-t">{screen.code}</text>
+                  <rect x={sx + 10} y={sy + 28} width="40" height="40" rx="2" fill="var(--icon-neutral-onsurface)" />
+                  {qrBits.map((b, k) => b ? <rect x={sx + 12 + (k % 8) * 4.5} y={sy + 30 + Math.floor(k / 8) * 4.5} width="4.5" height="4.5" fill="#1C2A38" /> : null)}
+                  {[0, 1, 2, 3, 4].map((k) => <rect class="pin-dot" x={sx + 58 + k * 11} y={sy + 44} width="7" height="7" rx="1.5" style={`--k:${k}`} />)}
+                </g>
+                <g class="scr scr-2">
+                  <text x={sx + 10} y={sy + 20} class="scr-t">{screen.open}</text>
+                  <rect class="scr-bar scr-accent" x={sx + 10} y={sy + 30} width="100" height="4" rx="2" />
+                  <text x={sx + 10} y={sy + 72} class="scr-big">08</text>
+                </g>
+                <g class="scr scr-3">
+                  <circle cx={sx + 26} cy={cy} r="14" class="scr-ok" />
+                  <path d={`M${sx + 19} ${cy} l5 5 l10 -11`} class="scr-check" />
+                  <text x={sx + 48} y={cy + 4} class="scr-t">{screen.logged}</text>
+                </g>
               </g>
-              <g class="scr scr-2">
-                <text x={m.ox + 16} y="28" class="scr-t">{screen.open}</text>
-                <rect class="scr-bar scr-accent" x={m.ox + 16} y="40" width="150" height="5" />
-                <text x={m.ox + 16} y="76" class="scr-big">08</text>
-              </g>
-              <g class="scr scr-3">
-                <circle cx={m.ox + 32} cy="52" r="16" class="scr-ok" />
-                <path d={`M${m.ox + 24} 52 l6 6 l11 -12`} class="scr-check" />
-                <text x={m.ox + 58} y="57" class="scr-t">{screen.logged}</text>
-              </g>
-            </g>
-          )}
-          <circle class="scanner" cx={m.ox + 20} cy="118" r="7" />
-          <rect class="pin" x={m.ox + 34} y="113" width="50" height="9" />
-          <line class="pin-line" x1={m.ox + 37} y1="117.5" x2={m.ox + 81} y2="117.5" />
+            )}
+          </g>
+          {/* Badge reader (left) and QR / camera scanner (right). */}
+          <g class="reader">
+            <circle class="reader-c" cx={m.ox + 20} cy={cy} r="12" />
+            <path class="reader-i" d={`M${m.ox + 17} ${cy - 4} a6 6 0 0 1 0 8 M${m.ox + 20.5} ${cy - 6.5} a10 10 0 0 1 0 13`} />
+          </g>
+          <g class="reader">
+            <circle class="reader-c" cx={m.ox + MW - 20} cy={cy} r="12" />
+            <circle class="reader-lens" cx={m.ox + MW - 20} cy={cy} r="4.5" />
+          </g>
+          <rect class="slot" x={m.ox + 70} y={sy + sh + 14} width="60" height="3" rx="1.5" />
           <rect class="service" x={m.ox + PAD} y="150" width={MW - PAD * 2} height={BH - 150 - PAD} />
+          <text class="brand" x={m.ox + 22} y="176">SPIND</text>
           {[0, 1, 2, 3, 4, 5].map((k) => (
             <line class="vent" x1={m.ox + 110} y1={178 + k * 12} x2={m.ox + 182} y2={178 + k * 12} />
           ))}
         </g>
-      )}
+        );
+      })()}
 
       {m.drawers.map((d) => (
         <g
           class:list={['dr', { 'dr--accent': d.accent, 'dr--target': !!screen && d.accent }]}
           style={`--i:${d.order}`}
           data-drawer={d.n}
+          data-kind={d.kind}
         >
           <rect class="dr-base" x={r1(d.x)} y={r1(d.y)} width={r1(d.w)} height={r1(d.h)} />
           <rect class="dr-fill" x={r1(d.x)} y={r1(d.y)} width={r1(d.w)} height={r1(d.h)} style={`fill:url(#${g('accent')})`} />
@@ -164,15 +198,19 @@ const accentDrawer = all.find((d) => d.accent);
 <style>
   .locker { width: 100%; height: auto; overflow: visible; }
   /* Bodies sit on the module boundary, so neighbouring modules share one 0.5px line. */
-  .locker :global(.body) { fill: var(--icon-neutral-onsurface); stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
-  .locker :global(.foot) { fill: var(--icon-neutral-dark); }
+  .locker :global(.body) { stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
+  .locker :global(.crown) { fill: var(--illustration-light); opacity: 0.35; }
+  .locker :global(.floor) { fill: #0D1015; opacity: 0.18; } /* just a contact shadow: the locker stands on the floor */
+  .locker :global(.bezel) { fill: #1E2530; }
+  .locker :global(.screen-glow) { fill: #3B82F6; opacity: 0.35; }
+  .locker :global(.reader-c) { fill: #1E2530; }
+  .locker :global(.reader-i) { fill: none; stroke: var(--illustration-light); stroke-width: 1.4; stroke-linecap: round; }
+  .locker :global(.reader-lens) { fill: #2A4A6E; stroke: var(--illustration-light); stroke-width: 1; }
+  .locker :global(.slot) { fill: #1E2530; opacity: 0.8; }
+  .locker :global(.brand) { fill: var(--icon-neutral-default); font-family: var(--font-display); font-weight: 700; font-size: 10px; letter-spacing: 0.2em; }
   .locker :global(.dr-base) { fill: var(--icon-neutral-onsurface); stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
   .locker :global(.dr-fill) { opacity: 0; transition: opacity 400ms var(--ease); }
   .locker :global(.handle) { stroke: var(--icon-neutral-default); stroke-width: var(--hair); vector-effect: non-scaling-stroke; transition: stroke 350ms var(--ease); }
-  .locker :global(.screen-line) { stroke: var(--illustration-light); stroke-width: 2; }
-  .locker :global(.scanner) { fill: var(--icon-neutral-onsurface); stroke: var(--icon-neutral-subtle); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
-  .locker :global(.pin) { fill: var(--illustration-deep); }
-  .locker :global(.pin-line) { stroke: var(--icon-action-default); stroke-width: 2; }
   .locker :global(.service) { fill: var(--icon-neutral-onsurface); stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
   .locker :global(.vent) { stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
   .locker :global(.scanline) { fill: var(--illustration-light); opacity: 0; }
@@ -187,10 +225,12 @@ const accentDrawer = all.find((d) => d.accent);
 
   .locker :global(.mod) { transition: opacity var(--dur) var(--ease), transform 700ms var(--ease-out); }
 
+  .locker :global(.dr) { transition: opacity var(--dur-fast) var(--ease); }
+
   /* Story screens (how it works) */
   .locker :global(.scr) { opacity: 0; transition: opacity 400ms var(--ease); }
-  .locker :global(.scr-t) { fill: var(--icon-neutral-onsurface); font-family: var(--font-display); font-weight: 500; font-size: 11px; }
-  .locker :global(.scr-big) { fill: var(--icon-neutral-onsurface); font-family: var(--font-display); font-weight: 500; font-size: 30px; }
+  .locker :global(.scr-t) { fill: var(--icon-neutral-onsurface); font-family: var(--font-display); font-weight: 600; font-size: 9px; }
+  .locker :global(.scr-big) { fill: var(--icon-neutral-onsurface); font-family: var(--font-display); font-weight: 600; font-size: 28px; }
   .locker :global(.scr-bar) { fill: var(--illustration-light); }
   .locker :global(.scr-bar--dim) { opacity: 0.5; }
   .locker :global(.scr-accent) { fill: #7FB0DC; }
@@ -212,8 +252,14 @@ const accentDrawer = all.find((d) => d.accent);
   .locker--story[data-state='3'] :global(.dr--target .dr-fill) { opacity: 0.25; }
   .locker--story[data-state='1'] :global(.scanline) { opacity: 0.8; animation: scan 1.6s var(--ease) infinite; }
 
+  @media (prefers-reduced-motion: no-preference) {
+    .locker :global(.idle .scr-cursor) { animation: idle-pulse 2.4s var(--ease) infinite; }
+    .locker :global(.reader-lens) { animation: lens 3.2s var(--ease) infinite; }
+  }
+  @keyframes idle-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+  @keyframes lens { 0%, 80%, 100% { fill: #2A4A6E; } 88% { fill: #7FB0DC; } }
   @keyframes pin { 0%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
-  @keyframes scan { from { transform: translateY(0); } to { transform: translateY(90px); } }
+  @keyframes scan { from { transform: translateY(0); } to { transform: translateY(86px); } }
 
   @media (max-width: 400px) {
     .locker :global(.handle) { display: none; }

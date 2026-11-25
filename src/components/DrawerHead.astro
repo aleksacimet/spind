@@ -1,0 +1,6 @@
+---
+/** Drawer label strip (square bullet + mono caps between hairlines), the head of every section. */
+interface Props { label: string }
+const { label } = Astro.props;
+---
+<div class="drawer-head" data-reveal><span class="sq" aria-hidden="true"></span><span>{label}</span></div>

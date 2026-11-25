@@ -16,10 +16,8 @@ const p = t.problem;
 </Section>
 
 <style>
-  :global(.section--problem) { padding-block: var(--spacing-padding-section-md); }
-  :global(.section--problem .section-head) { padding: 0 0 var(--spacing-padding-container-2xl); }
   .pains .tile { grid-column: span 2; --rows: 2; }
-  .pains .label { display: block; margin-bottom: calc(var(--u) * 0.5); }
+  .pains .label { display: block; margin-bottom: var(--spacing-gap-text-lg); }
   @media (min-width: 640px) { .pains .tile { grid-column: span 4; } }
   @media (min-width: 960px) { .pains .tile { grid-column: span 3; } }
 </style>

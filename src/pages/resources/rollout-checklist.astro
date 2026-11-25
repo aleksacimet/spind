@@ -38,7 +38,7 @@ let n = 0;
     </div>
 
     <div class="cl-foot no-print">
-      <a class="btn btn--cta" href="/#contact">{c.cta}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--cta" href="/contact">{c.cta}<span class="arrow" aria-hidden="true">→</span></a>
       <a class="back" href="/">{c.back}</a>
     </div>
   </article>
@@ -49,14 +49,14 @@ let n = 0;
 </script>
 
 <style>
-  .cl { padding-top: calc(var(--header-h) + var(--spacing-padding-section-xs)); padding-bottom: var(--spacing-padding-section-xl); }
+  .cl { padding-inline: var(--inset); padding-top: var(--hero-top); padding-bottom: var(--spacing-padding-section-xl); }
   .cl-head { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-gap-general-object-lg); padding-bottom: var(--spacing-padding-section-xs); }
   .cl h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; }
   .intro { max-width: 520px; color: var(--text-neutral-body); }
 
   .phases { display: grid; gap: var(--spacing-gap-general-object-lg); }
-  .phase { background: var(--surface-neutral-default); padding: var(--spacing-padding-container-lg); display: grid; gap: var(--spacing-gap-text-md); align-content: start; }
-  .phase h2 { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); letter-spacing: 0; margin-bottom: 8px; }
+  .phase { background: var(--surface-neutral-default); padding: var(--pad-block) var(--inset); display: grid; gap: var(--spacing-gap-text-md); align-content: start; }
+  .phase h2 { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); letter-spacing: 0; margin-bottom: var(--spacing-gap-text-md); }
   .phase ul { display: grid; gap: var(--spacing-gap-general-object-md); }
   .phase li { display: flex; gap: var(--spacing-gap-general-object-md); align-items: flex-start; }
   .phase label { color: var(--text-neutral-headings); cursor: pointer; }
@@ -79,8 +79,7 @@ let n = 0;
     .phases { grid-template-columns: 1fr 1fr; }
   }
   @media (min-width: 1280px) {
-    .cl { padding-top: 148px; }
-    .cl h1 { font-size: 56px; line-height: 64px; letter-spacing: -0.03em; }
+    .cl h1 { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; }
   }
   @media print {
     :global(.site-header), :global(.site-footer), :global(.skip-link), .no-print { display: none !important; }

@@ -47,7 +47,13 @@ const action = endpoint || mailto;
     </div>
     <div class="field">
       <label for="cf-sites">{f.sites} <span class="opt">({f.optional})</span></label>
-      <input id="cf-sites" name="sites" type="number" inputmode="numeric" min="1" step="1" placeholder={f.placeholders.sites} aria-describedby="cf-sites-err" />
+      <div class="counter">
+        <input id="cf-sites" name="sites" type="number" inputmode="numeric" min="1" step="1" placeholder={f.placeholders.sites} aria-describedby="cf-sites-err" data-counter />
+        <span class="steps">
+          <button type="button" class="step" data-step="-1" aria-label="Fewer sites" aria-controls="cf-sites"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.5" /></svg></button>
+          <button type="button" class="step" data-step="1" aria-label="More sites" aria-controls="cf-sites"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.5" /></svg></button>
+        </span>
+      </div>
       <p class="err" id="cf-sites-err" aria-live="polite"></p>
     </div>
   </div>
@@ -67,22 +73,36 @@ const action = endpoint || mailto;
   </div>
 </form>
 
+<script>
+  // Counter (Figma "Number of sites"): down / up buttons step the number field, never below its min.
+  document.querySelectorAll<HTMLInputElement>('[data-counter]').forEach((input) => {
+    input.parentElement?.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const min = Number(input.min || 0);
+        const cur = input.value === '' ? min - 1 : Number(input.value);
+        input.value = String(Math.max(min, cur + Number(btn.dataset.step)));
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+  });
+</script>
+
 <style>
   /* Form on the grid: fields are 2u tall, labels and errors 1u. */
-  .form { background: var(--surface-neutral-default); outline: var(--hair) solid var(--border-neutral-default); outline-offset: calc(var(--hair) * -1); padding: var(--u); display: grid; }
+  .form { background: color-mix(in srgb, var(--surface-neutral-dark) 88%, transparent); outline: var(--hair) solid var(--border-neutral-ondark); outline-offset: calc(var(--hair) * -1); backdrop-filter: blur(6px); padding: var(--u); display: grid; }
   .row.two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--u); }
   .field { display: grid; grid-template-rows: var(--u) calc(var(--u) * 2) var(--u); align-content: start; }
   .field--area { grid-template-rows: var(--u) auto; }
-  label { font-family: var(--font-body); font-weight: 400; font-size: 15px; line-height: var(--u); color: var(--text-neutral-headings); }
-  .opt { color: var(--text-neutral-subtle); font-weight: 300; }
+  label { font-family: var(--font-body); font-weight: 500; font-size: 15px; line-height: var(--u); color: var(--text-neutral-onsurface); }
+  .opt { color: var(--text-neutral-placeholder-ondark); font-weight: 400; }
   input, textarea {
     width: 100%;
-    border: var(--hair) solid var(--border-neutral-default);
+    border: var(--hair) solid var(--border-neutral-ondark);
     border-radius: 0;
-    background: var(--surface-neutral-page);
+    background: var(--surface-neutral-input-ondark);
     padding: 0 calc(var(--u) * 0.5);
     font-family: var(--font-body);
-    font-weight: 400;
+    font-weight: 500;
     font-size: 16px;
     height: calc(var(--u) * 2);
     transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);
@@ -90,21 +110,32 @@ const action = endpoint || mailto;
     appearance: none;
   }
   textarea { resize: none; height: calc(var(--u) * 4); padding-top: calc(var(--u) * 0.4); line-height: var(--u); }
-  .form { color: var(--text-neutral-headings); }
-  input, textarea { color: var(--text-neutral-headings); } /* typed text is dark, even inside the blue Contact section */
-  input::placeholder, textarea::placeholder { color: var(--text-neutral-subtle); opacity: 1; }
+  /* Dark form (Figma Input field, Theme=Dark) on the dark Contact section. */
+  .form { color: var(--text-neutral-ondark); }
+  input, textarea { color: var(--text-neutral-ondark); }
+  input::placeholder, textarea::placeholder { color: var(--text-neutral-placeholder-ondark); opacity: 1; }
   input:hover, textarea:hover { border-color: var(--border-neutral-strong); }
-  input:focus-visible, textarea:focus-visible { outline: 2px solid var(--border-action-default); outline-offset: -2px; border-color: var(--border-action-default); background: var(--surface-neutral-default); }
-  input[aria-invalid='true'] { border-color: #B42318; background: #FEF3F2; }
-  .err { font-size: 13px; color: #B42318; font-weight: 400; line-height: var(--u); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  input:focus-visible, textarea:focus-visible { outline: var(--border-width-focus) solid var(--border-focus); outline-offset: -2px; border-color: var(--border-focus); background: var(--surface-neutral-input-ondark); }
+  input[aria-invalid='true'] { border-color: var(--border-status-error); }
+  .err { font-size: 13px; color: var(--border-status-error); font-weight: 500; line-height: var(--u); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 0 var(--u); margin-top: var(--u); min-height: calc(var(--u) * 2); }
-  .status { font-weight: 400; font-size: 15px; line-height: var(--u); }
-  .status.is-error { color: #B42318; }
-  .status.is-ok { color: var(--text-action-hover); }
+  .status { font-weight: 500; font-size: 15px; line-height: var(--u); }
+  .status.is-error { color: var(--border-status-error); }
+  .status.is-ok { color: var(--text-action-ondark); }
   /* Figma: 56px fields and a 112px message box with 16px inner padding */
   input, textarea { padding-left: var(--spacing-padding-container-sm); padding-right: var(--spacing-padding-container-sm); }
   textarea { padding-top: var(--spacing-padding-container-sm); padding-bottom: var(--spacing-padding-container-sm); }
+  /* Counter: native spinners hidden, two 40px square steppers inside the field. */
+  .counter { position: relative; }
+  .counter input { padding-right: 104px; -moz-appearance: textfield; }
+  .counter input::-webkit-inner-spin-button, .counter input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .steps { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; gap: 8px; }
+  .step { display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 0; padding: 0; background: color-mix(in srgb, var(--neutral-white, #fff) 14%, transparent); color: var(--text-neutral-onsurface); cursor: pointer; transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .step:hover { background: color-mix(in srgb, var(--neutral-white, #fff) 24%, transparent); }
+  .step:active { background: var(--surface-cta-default); color: var(--icon-cta-default); }
+  .step:focus-visible { outline: var(--border-width-focus) solid var(--border-focus); outline-offset: 0; }
+  @media (max-width: 1279px) { .step { width: 32px; height: 32px; } .counter input { padding-right: 88px; } }
   @media (min-width: 1280px) {
     .form { gap: var(--spacing-gap-general-group-md); padding: var(--spacing-padding-container-xl); }
     .row.two { gap: var(--spacing-gap-general-group-md); }

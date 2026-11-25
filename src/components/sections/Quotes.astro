@@ -2,14 +2,16 @@
 import Section from '../Section.astro';
 import MockLogo from '../MockLogo.astro';
 import { getContent, flags } from '../../content/site';
-interface Props { locale?: string; exclude?: string; title?: string }
-const { locale, exclude, title } = Astro.props;
+interface Props { locale?: string; exclude?: string; title?: string; allLink?: boolean }
+const { locale, exclude, title, allLink = false } = Astro.props;
 const t = getContent(locale);
 const stories = t.proof.stories.filter((s) => s.slug !== exclude).slice(0, 3);
 const logoName = (key: string) => t.proof.logos.find((l) => l.key === key)?.name ?? '';
+// Profile circle: photo when one is set in site.ts, otherwise initials.
+const initials = (name: string) => name.replace(/^Dr\.\s*/, '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2);
 ---
 {flags.exampleProof && (
-  <Section id="stories" title={title ?? t.customers.quotesTitle}>
+  <Section id="stories" title={title ?? t.customers.quotesTitle} link={allLink ? { label: t.customers.quotesCta, href: '/customers' } : undefined}>
     <ul class="quotes" role="list">
       {stories.map((s, i) => (
         <li class:list={['q-card', { 'q-card--accent': i === 0 }]} data-reveal="drawer" style={`--d:${i * 100}ms`}>
@@ -20,32 +22,42 @@ const logoName = (key: string) => t.proof.logos.find((l) => l.key === key)?.name
             <p>“{s.quote.text}”</p>
           </blockquote>
           <div class="q-foot">
-            <p class="who"><strong>{s.quote.name}</strong><span>{s.quote.role}</span></p>
+            <div class="person">
+              {s.quote.photo
+                ? <img class="avatar" src={s.quote.photo} alt="" width="48" height="48" loading="lazy" />
+                : <span class="avatar" aria-hidden="true">{initials(s.quote.name)}</span>}
+              <p class="who title-body"><strong>{s.quote.name}</strong><span>{s.quote.role}</span></p>
+            </div>
             <a class="q-link" href={`/customers/${s.slug}`}>{t.customers.read}<span class="sr-only">: {s.company}</span><span class="arrow" aria-hidden="true">→</span></a>
           </div>
         </li>
       ))}
     </ul>
-    <p class="q-all"><a href="/customers">{t.customers.quotesCta}<span class="arrow" aria-hidden="true">→</span></a></p>
   </Section>
 )}
 
 <style>
   .quotes { display: grid; gap: 0; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
-  .q-card { display: flex; flex-direction: column; gap: var(--spacing-gap-general-group-lg); padding: var(--spacing-padding-container-lg); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); }
+  .q-card { display: flex; flex-direction: column; gap: var(--spacing-gap-general-group-lg); padding: var(--pad-block) var(--inset); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); }
   .q-top { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-general-object-md); }
-  blockquote p { font-family: var(--font-display); font-weight: 500; font-size: 20px; line-height: 28px; color: var(--text-neutral-headings); text-wrap: pretty; }
+  blockquote p { font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 28px; color: var(--text-neutral-headings); text-wrap: pretty; }
   .q-foot { margin-top: auto; display: grid; gap: var(--spacing-gap-general-object-md); }
+  .person { display: flex; align-items: center; gap: var(--spacing-gap-general-object-md); }
+  .avatar {
+    flex: none; display: grid; place-items: center;
+    width: 48px; height: 48px; border-radius: var(--scale-max); object-fit: cover;
+    background: var(--surface-action-washed); color: var(--text-action-default);
+    font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 1;
+  }
+  .q-card--accent .avatar { background: var(--surface-action-hover); color: var(--text-neutral-onsurface); }
   .who { display: grid; }
   .who strong { color: var(--text-neutral-headings); }
   .who span { color: var(--text-neutral-body); }
-  .q-link, .q-all a { display: inline-flex; gap: var(--spacing-gap-text-md); width: fit-content; font-family: var(--font-display); font-weight: 500; color: var(--text-action-default); text-decoration: none; }
-  .q-link .arrow, .q-all .arrow { transition: transform var(--dur-fast) var(--ease); }
-  .q-link:hover .arrow, .q-all a:hover .arrow { transform: translateX(4px); }
+  .q-link { display: inline-flex; gap: var(--spacing-gap-text-md); width: fit-content; font-family: var(--font-display); font-weight: 600; color: var(--text-action-default); text-decoration: none; }
+  .q-link .arrow { transition: transform var(--dur-fast) var(--ease); }
   .q-card--accent { background: var(--surface-action-default); border-color: transparent; }
   .q-card--accent blockquote p, .q-card--accent .who strong, .q-card--accent .who span, .q-card--accent .q-link { color: var(--text-neutral-onsurface); }
   .q-card--accent :global(.mock-logo) { color: var(--text-neutral-onsurface); }
-  .q-all { margin-top: 32px; }
   @media (min-width: 960px) {
     .quotes { grid-template-columns: repeat(3, 1fr); }
     .q-card { min-height: 400px; }

@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Section from '../../components/Section.astro';
 import LockerDrawing from '../../components/LockerDrawing.astro';
-import Contact from '../../components/sections/Contact.astro';
+import UseCaseCard from '../../components/UseCaseCard.astro';
 import { getContent } from '../../content/site';
 
 export function getStaticPaths() {
@@ -14,38 +14,26 @@ const t = getContent(locale);
 const S = t.solutions;
 const s = S.items.find((i) => i.slug === Astro.params.slug)!;
 const others = S.items.filter((i) => i.slug !== s.slug);
-// A different open drawer on every use case page.
-const accentIndex = (S.items.indexOf(s) * 5 + 4) % 24;
 ---
-<Base title={`${s.title} | Spind`} description={s.intro} locale={locale}>
-  <section class="sol-hero" aria-labelledby="sol-title">
+<Base title={`${s.title} | Spind`} description={s.intro} locale={locale} darkHero>
+  <section class="sol-hero space" aria-labelledby="sol-title" data-hero>
+    <div class="space-glow" aria-hidden="true"></div>
     <div class="container sol-hero-grid">
       <div class="sol-copy">
         <h1 id="sol-title">{s.heroTitle}</h1>
         <p class="sol-intro">{s.intro}</p>
         <div class="sol-actions">
-          <a class="btn btn--cta" href="#contact">{S.primary}<span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn--secondary" href="/#business-case">{S.secondary}</a>
+          <a class="btn btn--cta" href="/contact">{S.primary}<span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn--secondary" href="/business-case">{S.secondary}</a>
         </div>
       </div>
       <div class="sol-visual">
-        <LockerDrawing id={`sol-${s.slug}`} modules={['master', 's24']} accent={{ module: 's24', index: accentIndex }} label={`${s.title} with a Spind locker, one drawer open`} />
+        <LockerDrawing id={`sol-${s.slug}`} modules={['master', 's24']} gap={17.5} animate accent={null} label={`${s.title} with a Spind locker`} />
       </div>
     </div>
   </section>
 
-  <Section id="today" title={S.todayTitle}>
-    <ul class="tiles today" role="list">
-      {s.today.map((item, i) => (
-        <li class="tile" data-reveal="drawer" style={`--d:${i * 90}ms`}>
-          <svg class="x" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 1.5C6.15 1.5 1.5 6.15 1.5 12S6.15 22.5 12 22.5 22.5 17.85 22.5 12 17.85 1.5 12 1.5Zm4.05 15.75L12 13.2l-4.05 4.05-1.2-1.2L10.8 12 6.75 7.95l1.2-1.2L12 10.8l4.05-4.05 1.2 1.2L13.2 12l4.05 4.05-1.2 1.2Z" fill="var(--icon-status-error)" /></svg>
-          <p>{item}</p>
-        </li>
-      ))}
-    </ul>
-  </Section>
-
-  <Section id="flow" title={S.flowTitle} shade>
+  <Section id="flow" title={S.flowTitle}>
     <ol class="tiles flow" role="list">
       {s.steps.map((st, i) => (
         <li class:list={['tile', { 'tile--accent': i === 2 }]} data-reveal="drawer" style={`--d:${i * 90}ms`}>
@@ -62,45 +50,29 @@ const accentIndex = (S.items.indexOf(s) * 5 + 4) % 24;
   <Section id="more" title={S.moreTitle}>
     <ul class="tiles more" role="list">
       {others.map((o, i) => (
-        <li class="tile tile--hover more-tile" data-reveal="drawer" style={`--d:${i * 60}ms`}>
-          <div class="title-body">
-            <h3><a href={`/use-cases/${o.slug}`}>{o.title}</a></h3>
-            <p>{o.heroTitle}</p>
-          </div>
-          <span class="go" aria-hidden="true">→</span>
-        </li>
+        <UseCaseCard slug={o.slug} title={o.title} text={o.heroTitle} delay={i * 60} />
       ))}
     </ul>
   </Section>
 
-  <Contact locale={locale} />
 </Base>
 
 <style>
-  .sol-hero { padding-top: calc(var(--header-h) + var(--spacing-padding-section-xs)); padding-bottom: var(--spacing-padding-section-md); }
+  .sol-hero { padding-top: var(--hero-top); padding-bottom: var(--hero-bottom); }
   .sol-hero-grid { display: flex; flex-direction: column; gap: var(--spacing-gap-general-section-md); }
   .sol-copy { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
   .sol-hero h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; max-width: 640px; }
-  .sol-intro { max-width: 520px; color: var(--text-neutral-body); }
-  .sol-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-general-object-md); margin-top: 8px; }
-  .sol-visual { width: 100%; max-width: 480px; filter: drop-shadow(0 30px 30px rgba(22, 25, 30, 0.1)); }
+  .sol-intro { max-width: 520px; }
+  .sol-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-general-object-md); margin-top: var(--spacing-gap-text-md); }
+  .sol-visual { width: 100%; max-width: 384px; }
 
   .tiles { grid-auto-rows: auto; }
-  .tiles .tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; padding: var(--spacing-padding-container-lg); display: flex; flex-direction: column; gap: var(--spacing-gap-text-md); }
+  .tiles .tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-text-md); }
   .tiles .tile h3 { margin: 0; }
-  .x { width: 20px; height: 20px; margin-bottom: 16px; }
-  .today p { color: var(--text-neutral-headings); font-family: var(--font-display); font-weight: 500; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); }
-  .step-num { font-family: var(--font-display); font-weight: 500; font-size: 28px; line-height: 40px; color: var(--text-neutral-subtle); margin-bottom: 16px; }
+  .step-num { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); color: var(--text-neutral-subtle); margin-bottom: var(--spacing-gap-general-object-md); }
   .flow .tile--accent .step-num { color: var(--text-neutral-onsurface); }
 
-  .tiles .more-tile { padding-right: var(--spacing-padding-section-sm); }
-  .more-tile a { text-decoration: none; }
-  .more-tile a::after { content: ''; position: absolute; inset: 0; z-index: 2; }
-  /* Figma "Use case card" hover: washed blue fill, blue border. */
-  .tiles .more-tile { transition: background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
-  .tiles .more-tile:hover { background: var(--surface-action-washed); border-color: var(--border-action-default); }
-  .go { position: absolute; right: 24px; top: 24px; font-family: var(--font-display); font-size: 20px; line-height: 28px; color: var(--text-action-default); transition: transform var(--dur-fast) var(--ease); }
-  .more-tile:hover .go { transform: translateX(4px); }
+  .more :global(.uc) { grid-row: auto; min-height: 160px; }
 
   @media (min-width: 640px) {
     .tiles .tile { grid-column: span 4; }
@@ -108,13 +80,10 @@ const accentIndex = (S.items.indexOf(s) * 5 + 4) % 24;
   @media (min-width: 960px) {
     .sol-hero-grid { flex-direction: row; align-items: center; justify-content: space-between; }
     .sol-copy { width: 600px; }
-    .sol-visual { width: 480px; }
-    .today .tile { min-height: 200px; }
+    .sol-visual { width: 384px; }
     .flow .tile { grid-column: span 3; min-height: 260px; }
-    .more .tile { min-height: 160px; }
   }
   @media (min-width: 1280px) {
-    .sol-hero { padding-top: 148px; padding-bottom: var(--spacing-padding-section-lg); }
-    .sol-hero h1 { font-size: 56px; line-height: 64px; letter-spacing: -0.03em; }
+    .sol-hero h1 { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; }
   }
 </style>

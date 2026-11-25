@@ -26,10 +26,10 @@ const s = t.service;
   .cycle-head { grid-column: span 4; --rows: 2; background: var(--surface-neutral-dark); border-color: transparent; box-shadow: none; }
   .cycle-head h3, .cycle-head p { color: var(--text-neutral-onsurface); }
   .cycle-steps { display: contents; }
-  .cycle-step { grid-column: span 4; --rows: 1; display: grid; grid-template-columns: var(--u) 1fr; column-gap: calc(var(--u) * 0.5); row-gap: var(--spacing-gap-text-sm); align-content: center; padding-top: 0; padding-bottom: 0; }
+  .cycle-step { grid-column: span 4; --rows: 1; display: grid; grid-template-columns: var(--spacing-padding-container-sm) 1fr; column-gap: var(--spacing-gap-text-lg); row-gap: var(--spacing-gap-text-sm); align-content: center; padding-top: 0; padding-bottom: 0; }
   .cycle-step h3 { margin: 0; }
   .cycle-step p { grid-column: 2; }
-  .node { grid-row: span 2; align-self: center; width: 11px; height: 11px; background: var(--surface-neutral-darkest); transform: rotate(45deg); }
+  .node { grid-row: span 2; align-self: center; width: 12px; height: 12px; background: var(--surface-neutral-darkest); transform: rotate(45deg); }
   .node--accent { background: var(--surface-action-default); }
   /* While visible, the accent diamond walks through the lifecycle (main.ts adds .is-running and .is-on). */
   .node { transition: background-color 450ms var(--ease), transform 450ms var(--ease-out); }
@@ -40,8 +40,8 @@ const s = t.service;
 
   @media (min-width: 960px) {
     .cycle-head { grid-column: span 2; }
-    .cycle-step { grid-column: span 2; --rows: 2; grid-template-columns: 1fr; align-content: start; padding-top: calc(var(--u) - var(--hair)); padding-bottom: var(--u); }
-    .node { grid-row: auto; margin-bottom: calc(var(--u) * 0.75); align-self: start; }
+    .cycle-step { grid-column: span 2; --rows: 2; grid-template-columns: 1fr; align-content: start; padding-top: var(--pad-block); padding-bottom: var(--pad-block); }
+    .node { grid-row: auto; margin-bottom: var(--spacing-gap-general-object-md); align-self: start; }
     .cycle-step p { grid-column: 1; }
   }
 </style>

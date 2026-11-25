@@ -1,9 +1,11 @@
 ---
+import DrawerHead from './DrawerHead.astro';
 interface Props { title: string; backLabel: string; backHref?: string }
 const { title, backLabel, backHref = '/' } = Astro.props;
 ---
-<article class="section legal" style="padding-top: var(--cell)">
+<article class="section legal">
   <div class="container">
+    <DrawerHead label={title} />
     <h1>{title}</h1>
     <div class="legal-body">
       <p class="todo"><strong>TODO: legal text from Cimet</strong></p>
@@ -14,9 +16,13 @@ const { title, backLabel, backHref = '/' } = Astro.props;
 </article>
 
 <style>
-  .legal h1 { font-size: var(--fs-title); line-height: 1.1; margin-bottom: 40px; }
-  .legal-body { max-width: 68ch; display: grid; gap: 20px; color: var(--text-neutral-subtle); }
-  .legal-body :global(h2) { font-size: var(--fs-subtitle); margin-top: 16px; }
+  /* Spacer above the panel, closed by a full-width line like every drawer edge. */
+  .legal { padding-top: calc(var(--header-h) + var(--spacer)); }
+  .legal > .container::before { content: ''; position: absolute; left: 50%; top: 0; width: 100vw; height: var(--hair); margin-left: -50vw; background: var(--line); }
+  .legal h1 { margin-top: var(--spacing-padding-container-2xl); }
+  .legal h1 { font-size: var(--fs-title); line-height: var(--lh-title); margin-bottom: var(--spacing-gap-general-section-sm); }
+  .legal-body { max-width: 68ch; display: grid; gap: var(--spacing-gap-general-object-md); color: var(--text-neutral-subtle); }
+  .legal-body :global(h2) { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); margin-top: var(--spacing-gap-general-object-md); }
   .legal-body a { color: var(--text-action-default); }
-  .todo { padding: var(--spacing-padding-container-sm) var(--spacing-padding-container-md); background: var(--surface-action-washed); color: var(--text-action-hover); border-left: 3px solid var(--border-action-default); }
+  .todo { padding: var(--spacing-padding-container-sm) var(--spacing-padding-container-md); background: var(--surface-action-washed); color: var(--text-action-hover); border-left: 4px solid var(--border-action-default); }
 </style>

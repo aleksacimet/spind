@@ -3,32 +3,34 @@ import { getContent } from '../../content/site';
 const t = getContent(Astro.props.locale);
 const p = t.pricing;
 ---
-<!-- Figma "pricing band": pricing is custom, so a short note and a CTA instead of a price. -->
+<!-- Figma "pricing band": pricing is custom, so a short note and a CTA instead of a price.
+     The one section without a label strip: the band sits in the panel with the title padding above and below. -->
 <section id="pricing" class="section pricing" aria-labelledby="pricing-title" data-section="pricing" data-snap>
   <div class="container">
-    <div class="band" data-reveal>
+    <div class="band glow-band on-accent" data-reveal data-hero>
+      <div class="space-glow" aria-hidden="true"></div>
       <div class="title-body">
         <h3 id="pricing-title">{p.title}</h3>
         <p>{p.text}</p>
       </div>
-      <a class="btn btn--cta" href="#contact">{p.cta}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--cta" href="/contact">{p.cta}<span class="arrow" aria-hidden="true">→</span></a>
     </div>
   </div>
 </section>
 
 <style>
   .pricing { padding-top: 0; }
+  .pricing > .container { padding-block: var(--head-pad) !important; }
   .band {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-gap-general-object-lg);
-    padding: var(--spacing-padding-container-2xl);
-    background: var(--surface-neutral-default);
-    border: var(--hair) solid var(--border-neutral-default);
+    padding: var(--pad-block) var(--inset);
+    background: var(--surface-neutral-dark); /* Figma pricing band: dark */
   }
-  .band h3 { font-size: 28px; line-height: 40px; }
-  .band p { color: var(--text-neutral-body); max-width: 600px; }
+  .band h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); color: var(--text-neutral-onsurface); }
+  .band p { color: var(--text-neutral-onsurface); max-width: 600px; }
   @media (min-width: 960px) {
     .band { flex-direction: row; align-items: center; justify-content: space-between; }
   }

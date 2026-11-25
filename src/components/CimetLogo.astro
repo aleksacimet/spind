@@ -1,0 +1,13 @@
+---
+/**
+ * Cimet logo (the company behind Spind). -dark has ink lettering for light surfaces, -light white for dark surfaces.
+ * Height follows the text line it sits in.
+ */
+interface Props { onDark?: boolean; height?: number; class?: string }
+const { onDark = false, height = 16, class: className = '' } = Astro.props;
+---
+<img class:list={['cimet-logo', className]} src={`/images/cimet-logo-${onDark ? 'light' : 'dark'}.svg`} alt="Cimet" height={height} width={Math.round((height * 721) / 184)} style={`height:${height}px`} />
+
+<style>
+  .cimet-logo { display: inline-block; width: auto; vertical-align: middle; }
+</style>

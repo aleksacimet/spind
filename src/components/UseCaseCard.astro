@@ -1,0 +1,38 @@
+---
+/**
+ * Use case card (Figma "Use case card"): nav icon (same Icon/* set as the mega menu) in a 48px washed square,
+ * title + body, arrow bottom right. Used on the home page (Workflows) and in "More use cases" on use case pages.
+ */
+import { solutionIcons } from '../content/icons';
+interface Props { slug: string; title: string; text: string; delay?: number }
+const { slug, title, text, delay = 0 } = Astro.props;
+---
+<li class="tile uc" data-reveal="drawer" data-spot style={`--d:${delay}ms`}>
+  <span class="uc-icon" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={solutionIcons[slug]} pathLength="1" /></svg></span>
+  <div class="title-body">
+    <h3><a class="uc-link" href={`/use-cases/${slug}`}>{title}</a></h3>
+    <p>{text}</p>
+  </div>
+  <span class="arrow" aria-hidden="true">→</span>
+</li>
+
+<style>
+  .uc { grid-column: 1 / -1; --rows: 2; }
+  /* Use case card: nav icon (same set as the mega menu) in a washed square, title + body, arrow bottom right.
+     Hover: fill only (washed card, blue icon box, icon redraws in place). Nothing moves. */
+  .uc { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto 1fr; gap: var(--spacing-gap-general-object-lg); align-items: start; transition: background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), clip-path 750ms var(--ease-out) var(--d, 0ms); }
+  .uc .title-body { min-width: 0; }
+  .uc h3 { margin: 0; transition: color var(--dur-fast) var(--ease); }
+  .uc-icon { display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-action-washed); transition: background-color var(--dur) var(--ease); }
+  .uc-icon svg { stroke: var(--icon-action-strong); transition: stroke var(--dur-fast) var(--ease); }
+  .uc-link { text-decoration: none; }
+  .uc-link::after { content: ''; position: absolute; inset: 0; z-index: 2; }
+  .uc .arrow { position: absolute; right: var(--inset); bottom: var(--pad-block); font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 28px; color: var(--text-action-default); opacity: 0; transition: opacity var(--dur) var(--ease); }
+  .uc:hover, .uc:focus-within { background: var(--surface-action-washed); }
+  .uc:hover h3, .uc:focus-within h3 { color: var(--text-action-default); }
+  .uc:hover .uc-icon, .uc:focus-within .uc-icon { background: var(--surface-action-default); }
+  .uc:hover .uc-icon svg, .uc:focus-within .uc-icon svg { stroke: var(--icon-neutral-onsurface); }
+  .uc:hover .uc-icon path, .uc:focus-within .uc-icon path { animation: icon-draw 700ms var(--ease-out); }
+  .uc:hover .arrow, .uc:focus-within .arrow { opacity: 1; }
+  @media (min-width: 640px) { .uc { grid-column: span 4; } }
+</style>

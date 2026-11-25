@@ -1,5 +1,6 @@
 ---
 import MockLogo from '../MockLogo.astro';
+import DrawerHead from '../DrawerHead.astro';
 import { getContent, flags } from '../../content/site';
 interface Props { locale?: string; wall?: boolean }
 const { locale, wall = false } = Astro.props;
@@ -9,8 +10,10 @@ const titleId = wall ? 'logos-wall-title' : 'logos-title';
 ---
 <!-- Social proof logos: a constant, infinite horizontal scroll (two identical sets, the second one hidden from screen readers). -->
 {flags.exampleProof && (
-  <section class:list={['logos', { 'logos--wall': wall }]} aria-labelledby={titleId}>
-    <div class="container logos-head">
+  <section class:list={['section logos', { 'logos--wall': wall }]} aria-labelledby={titleId}>
+    <div class="container">
+    <DrawerHead label={t.sectionLabels.logos} />
+    <div class="logos-head">
       <h2 id={titleId} class:list={[wall ? 'wall-title' : 'label']}>{t.customers.logosTitle}</h2>
     </div>
     <div class="marquee">
@@ -22,12 +25,13 @@ const titleId = wall ? 'logos-wall-title' : 'logos-title';
         ))}
       </div>
     </div>
+    </div>
   </section>
 )}
 
 <style>
-  .logos { padding-block: var(--spacing-padding-section-xs) var(--spacing-padding-section-md); }
-  .logos-head { display: flex; justify-content: center; margin-bottom: 32px; }
+  .marquee { margin-inline: calc(var(--inset) * -1); padding-bottom: var(--spacer); } /* logos scroll rail to rail */
+  .logos-head { display: flex; justify-content: center; padding-block: var(--head-pad); }
   .logos-head .label { color: var(--text-neutral-body); }
   .marquee { overflow: hidden; }
   .track { display: flex; width: max-content; }
@@ -46,8 +50,8 @@ const titleId = wall ? 'logos-wall-title' : 'logos-title';
     .set[aria-hidden] { display: none; }
   }
 
-  .logos--wall { padding-block: 0 var(--spacing-padding-section-xl); }
-  .logos--wall .logos-head { justify-content: flex-start; padding-block: var(--spacing-padding-section-xs); margin: 0; }
-  .wall-title { font-size: var(--fs-title); line-height: var(--lh-title); }
-  .logos--wall .set { gap: var(--spacing-gap-general-section-xl); padding-right: 96px; }
+
+  .logos--wall .logos-head { justify-content: flex-start; }
+  .wall-title { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; }
+  .logos--wall .set { gap: var(--spacing-gap-general-section-xl); padding-right: var(--spacing-padding-section-xl); }
 </style>

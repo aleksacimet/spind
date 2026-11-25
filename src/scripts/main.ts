@@ -34,7 +34,7 @@ function splitLines(el: HTMLElement) {
   const lines: string[][] = [];
   let top = -1;
   spans.forEach((s) => {
-    if (s.offsetTop !== top) { lines.push([]); top = s.offsetTop; }
+    if (!lines.length || s.offsetTop !== top) { lines.push([]); top = s.offsetTop; }
     lines[lines.length - 1].push(s.textContent ?? '');
   });
   el.innerHTML = lines
@@ -129,26 +129,31 @@ document.addEventListener('keydown', (e) => {
 });
 document.addEventListener('click', (e) => { if (openDD() && !(e.target as Element).closest('[data-dd]')) setDD(null); });
 
-/* ---------- How it works: scroll story ---------- */
+/* ---------- How it works: steps advance on their own while in view; hover, focus or click shows a step ---------- */
 const story = document.querySelector<HTMLElement>('[data-story]');
 const storyLocker = story?.querySelector<SVGSVGElement>('[data-locker]');
 const storySteps = story ? [...story.querySelectorAll<HTMLElement>('[data-step]')] : [];
-const storyBars = story ? [...story.querySelectorAll<HTMLElement>('.stage-progress span')] : [];
 let storyState = -1;
 function setStory(i: number) {
   if (i === storyState || !storyLocker) return;
   storyState = i;
   storyLocker.dataset.state = String(Math.max(0, i));
   storySteps.forEach((s, k) => s.classList.toggle('is-active', k === i));
-  storyBars.forEach((b, k) => b.classList.toggle('on', k <= i));
 }
-function updateStory() {
-  if (!story || !storySteps.length) return;
-  // The active step is the last one whose top has passed 55% of the viewport.
-  const line = window.innerHeight * 0.55;
-  let idx = 0;
-  storySteps.forEach((s, k) => { if (s.getBoundingClientRect().top < line) idx = k; });
-  setStory(idx);
+if (story && storySteps.length) {
+  setStory(0);
+  let timer = 0;
+  let held = false;
+  const stop = () => window.clearInterval(timer);
+  const start = () => { stop(); if (motionOK() && !held) timer = window.setInterval(() => setStory((storyState + 1) % storySteps.length), 3200); };
+  storySteps.forEach((s, k) => {
+    const pick = () => { held = true; stop(); setStory(k); };
+    s.addEventListener('pointerenter', pick);
+    s.addEventListener('focus', pick);
+    s.addEventListener('click', pick);
+  });
+  story.querySelector('.story-steps')?.addEventListener('pointerleave', () => { held = false; start(); });
+  new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()), { threshold: 0.3 }).observe(story);
 }
 
 /* ---------- Scroll loop ---------- */
@@ -156,7 +161,7 @@ let ticking = false;
 function onScroll() {
   if (ticking) return;
   ticking = true;
-  requestAnimationFrame(() => { ticking = false; updateHeader(); updateStory(); });
+  requestAnimationFrame(() => { ticking = false; updateHeader(); });
 }
 window.addEventListener('scroll', onScroll, { passive: true });
 onScroll();
@@ -218,21 +223,27 @@ if (motionOK() && 'IntersectionObserver' in window) {
   revealEls.forEach(show);
 }
 
-/* ---------- Hero: drawers open and close on their own, like a busy locker ---------- */
-const heroLocker = document.querySelector<SVGSVGElement>('.locker--animate');
-if (heroLocker && motionOK()) {
-  const drawers = [...heroLocker.querySelectorAll<SVGGElement>('.dr:not(.dr--accent)')];
-  let visible = true;
-  new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(heroLocker);
-  const cycle = () => {
-    if (visible && !document.hidden && drawers.length) {
-      const d = drawers[Math.floor(Math.random() * drawers.length)];
-      d.classList.add('is-open');
-      window.setTimeout(() => d.classList.remove('is-open'), 1700);
-    }
-    window.setTimeout(cycle, 1500 + Math.random() * 900);
-  };
-  window.setTimeout(cycle, 2600);
+/* ---------- Dark surfaces: the glow follows the mouse (lockers have no hover effect) ---------- */
+if (motionOK() && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  document.querySelectorAll<HTMLElement>('[data-hero]').forEach((hero) => {
+    const space = hero.matches('.space, .glow-band, .site-footer') ? hero : hero.querySelector<HTMLElement>('.space');
+    if (!space) return;
+    let frame = 0;
+    hero.addEventListener('pointermove', (e) => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        // Glow: position inside the dark surface, clamped so it never leaves it.
+        const b = space.getBoundingClientRect();
+        space.style.setProperty('--gx', `${Math.min(100, Math.max(0, ((e.clientX - b.left) / b.width) * 100))}%`);
+        space.style.setProperty('--gy', `${Math.min(100, Math.max(0, ((e.clientY - b.top) / b.height) * 100))}%`);
+      });
+    }, { passive: true });
+    hero.addEventListener('pointerleave', () => {
+      cancelAnimationFrame(frame);
+      space.style.removeProperty('--gx');
+      space.style.removeProperty('--gy');
+    });
+  });
 }
 
 /* ---------- Modules highlight ---------- */
@@ -247,17 +258,32 @@ document.querySelectorAll<HTMLElement>('[data-modules]').forEach((figure) => {
   };
   buttons.forEach((b) => {
     const key = b.dataset.moduleBtn!;
-    b.addEventListener('mouseenter', () => show(key));
-    b.addEventListener('mouseleave', () => show(pinned));
     b.addEventListener('focus', () => show(key));
     b.addEventListener('blur', () => show(pinned));
-    b.addEventListener('click', () => { pinned = pinned === key ? null : key; show(pinned ?? (b.matches(':hover') ? key : null)); });
+    b.addEventListener('click', () => { pinned = pinned === key ? null : key; show(pinned); });
   });
-  mods.forEach((m) => {
-    const key = m.dataset.module!;
-    m.addEventListener('mouseenter', () => show(key));
-    m.addEventListener('mouseleave', () => show(pinned));
-    m.addEventListener('click', () => { pinned = pinned === key ? null : key; show(pinned); });
+});
+
+/* ---------- Device fit (Modules): hovering a device card highlights the one drawer it goes into ---------- */
+document.querySelectorAll<HTMLElement>('[data-modules]').forEach((figure) => {
+  const locker = figure.querySelector<SVGSVGElement>('[data-locker]');
+  const section = figure.closest('section');
+  if (!locker || !section) return;
+  // A small drawer in Lotte for the phone, a wide one in Bruno for the laptop.
+  const targets: Record<string, SVGGElement | undefined> = {
+    small: locker.querySelectorAll<SVGGElement>('.mod[data-module="s24"] .dr')[4],
+    wide: locker.querySelectorAll<SVGGElement>('.mod[data-module="n8"] .dr')[2],
+  };
+  section.querySelectorAll<HTMLElement>('[data-fit-drawer]').forEach((card) => {
+    const dr = targets[card.dataset.fitDrawer ?? ''];
+    if (!dr) return;
+    const on = () => dr.classList.add('is-open');
+    const off = () => dr.classList.remove('is-open');
+    card.tabIndex = 0;
+    card.addEventListener('pointerenter', on);
+    card.addEventListener('pointerleave', off);
+    card.addEventListener('focus', on);
+    card.addEventListener('blur', off);
   });
 });
 
@@ -336,3 +362,14 @@ document.querySelectorAll<HTMLElement>('[data-mock]').forEach((mock) => {
 /* ---------- Contact form ---------- */
 initContactForm();
 initCalc();
+
+/* ---------- Motion layer: card spotlight (fine pointers only) ---------- */
+if (motionOK() && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  document.querySelectorAll<HTMLElement>('[data-spot], .tile--hover').forEach((el) => {
+    el.addEventListener('pointermove', (e) => {
+      const b = el.getBoundingClientRect();
+      el.style.setProperty('--mx', `${e.clientX - b.left}px`);
+      el.style.setProperty('--my', `${e.clientY - b.top}px`);
+    });
+  });
+}

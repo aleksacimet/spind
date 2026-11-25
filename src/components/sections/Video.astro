@@ -13,10 +13,11 @@ const v = t.video;
       </video>
     ) : (
       <div class="placeholder">
+        {v.poster && <img class="poster" src={v.poster} alt="" width="1920" height="1080" loading="lazy" decoding="async" />}
         <button class="play" type="button" aria-label={v.play} disabled>
-          <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+          <svg viewBox="0 0 96 96" width="100%" height="100%" aria-hidden="true"><path d="M64 48 40 64.02V31.98Z" /></svg>
         </button>
-        <p class="label">{v.placeholder}</p>
+        {v.placeholder && <p class="label">{v.placeholder}</p>}
       </div>
     )}
   </div>
@@ -25,15 +26,23 @@ const v = t.video;
 <style>
   .player { position: relative; aspect-ratio: 16 / 9; background: var(--surface-neutral-dark); overflow: hidden; }
   .player video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  /* Figma 86:227: the render sits under a dark ice wash so the yellow play button carries the frame. */
+  .placeholder::before { content: ''; position: absolute; inset: 0; z-index: 1; background: color-mix(in srgb, var(--ice-1000) 72%, transparent); }
+  .placeholder > :not(.poster) { position: relative; z-index: 2; }
   .placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-gap-general-object-md); }
   .play {
+    padding: 0;
     display: grid; place-items: center;
-    width: 96px; height: 96px;
+    width: 128px; height: 128px;
+    transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease);
     border: 0; border-radius: var(--scale-max);
     background: var(--surface-cta-default);
     color: var(--icon-cta-default);
     cursor: default;
   }
-  .play svg { fill: currentColor; transform: translateX(2px); }
+  .play svg { fill: currentColor; }
+  .player:hover .play { box-shadow: 0 0 32px color-mix(in srgb, var(--surface-cta-default) 45%, transparent); }
+  @media (max-width: 639px) { .play { width: 88px; height: 88px; } }
   .placeholder .label { color: var(--text-neutral-decorative); }
 </style>

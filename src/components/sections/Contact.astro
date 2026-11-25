@@ -1,18 +1,25 @@
 ---
 import ContactForm from '../ContactForm.astro';
 import { getContent, contact } from '../../content/site';
-const t = getContent(Astro.props.locale);
+const { locale, page = false } = Astro.props as { locale?: string; page?: boolean };
+const t = getContent(locale);
 ---
-<!-- Figma: blue (Accent Ink) band, info 520px left, white form 680px right, 88px top and bottom. -->
-<section id="contact" class="section contact on-accent" aria-labelledby="contact-title" data-section="contact">
+<!-- Figma: dark band, info 500px left (title + intro at the top, person card at the bottom), dark form 700px right. -->
+<section id="contact" class:list={['section contact glow-band on-accent', { 'glow-band--page': page }]} data-hero aria-labelledby="contact-title" data-section="contact">
+  <div class="space-glow" aria-hidden="true"></div>
   <div class="container contact-grid">
     <div class="contact-info" data-reveal>
-      <h2 id="contact-title" data-split>{t.contact.title}</h2>
-      <p class="intro">{t.contact.intro}</p>
+      <div class="head">
+        {page ? <h1 id="contact-title" data-split>{t.contact.title}</h1> : <h2 id="contact-title" data-split>{t.contact.title}</h2>}
+        <p class="intro">{t.contact.intro}</p>
+      </div>
       <address class="person">
-        <strong>{contact.name}</strong>
-        <a href={`mailto:${contact.email}`}>{contact.email}</a>
-        <a href={`tel:${contact.phoneHref}`}>{contact.phone}</a>
+        <img class="photo" src={contact.photo} alt={contact.name} width="56" height="56" loading="lazy" />
+        <span class="details">
+          <strong>{contact.name}</strong>
+          <a href={`mailto:${contact.email}`}>{contact.email}</a>
+          <a href={`tel:${contact.phoneHref}`}>{contact.phone}</a>
+        </span>
       </address>
     </div>
     <div class="contact-form" data-reveal="drawer">
@@ -22,13 +29,15 @@ const t = getContent(Astro.props.locale);
 </section>
 
 <style>
-  .contact { background: var(--surface-neutral-darkest); color: var(--text-neutral-ondark); padding-block: var(--spacing-padding-section-xl); }
+  .contact { padding-block: var(--spacing-padding-section-xl); }
+  .contact.glow-band--page { padding-top: var(--hero-top); }
+  .contact-info h1 { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; }
   .contact-grid { display: flex; flex-direction: column; gap: var(--spacing-gap-general-section-md); }
   .contact-info { display: flex; flex-direction: column; gap: var(--spacing-gap-general-group-md); padding-top: var(--spacing-padding-container-2xs); }
-  .contact-info h2 { color: var(--text-neutral-onsurface); }
+  .contact-info h1, .contact-info h2 { color: var(--text-neutral-onsurface); }
   .intro { max-width: 360px; color: var(--text-neutral-ondark); }
   .person { font-style: normal; display: grid; gap: var(--spacing-gap-text-sm); }
-  .person strong { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-subtitle); line-height: 28px; color: var(--text-neutral-ondark); }
+  .person strong { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); color: var(--text-neutral-ondark); }
   .person a { color: var(--text-neutral-ondark); text-decoration: none; width: fit-content; line-height: 28px; }
   .person a:hover { text-decoration: underline; text-underline-offset: 4px; }
   @media (min-width: 960px) {
@@ -36,4 +45,17 @@ const t = getContent(Astro.props.locale);
     .contact-info { width: 500px; } /* 5 columns */
     .contact-form { width: 700px; } /* 7 columns */
   }
+  /* Figma 33:133: title and intro at the top, person card at the bottom (space between). */
+  .head { display: flex; flex-direction: column; gap: var(--spacing-gap-text-md); }
+  .contact-info { justify-content: space-between; }
+  .person {
+    display: flex; align-items: center; gap: var(--spacing-gap-general-object-lg);
+    width: fit-content;
+    padding: var(--spacing-padding-container-sm) var(--inset);
+    background: var(--surface-neutral-dark);
+    border: var(--hair) solid var(--border-neutral-ondark);
+  }
+  .photo { width: 56px; height: 56px; border-radius: var(--scale-max); object-fit: cover; box-shadow: 0 0 0 1px var(--icon-neutral-ondark); filter: grayscale(1); }
+  .details { display: grid; }
+  .person strong { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); }
 </style>

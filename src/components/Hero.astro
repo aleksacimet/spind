@@ -5,28 +5,22 @@ import { getContent } from '../content/site';
 interface Props { locale?: string }
 const t = getContent(Astro.props.locale);
 ---
-<!-- Centred hero, as designed in Figma: locker, headline, facts, buttons. The band ends at the locker's middle. -->
-<section class="hero" aria-labelledby="hero-title" data-snap>
-  <div class="band on-accent" aria-hidden="true"></div>
+<!-- Centred hero, as designed in Figma: locker, headline, buttons. The band ends at the locker's middle.
+     The blue glow and the open drawer follow the mouse (see the hero block in scripts/main.ts). -->
+<section class="hero" aria-labelledby="hero-title" data-snap data-hero>
+  <div class="band space on-accent" aria-hidden="true"><div class="space-glow"></div></div>
 
   <div class="container hero-inner">
     <div class="hero-locker">
-      <LockerDrawing id="hero" modules={['master', 's24', 'n8']} animate label={t.hero.lockerLabel} />
+      <LockerDrawing id="hero" modules={['master', 's24', 'n8']} gap={17.5} animate accent={null} label={t.hero.lockerLabel} />
     </div>
 
     <h1 id="hero-title" class="hero-title">{t.hero.title}</h1>
+    <p class="hero-intro">{t.hero.intro}</p>
 
-    <dl class="hero-facts">
-      {t.hero.facts.map((f, i) => (
-        <div class="fact" style={`--k:${i}`}>
-          <dt>{f.k}</dt>
-          <dd>{f.v}</dd>
-        </div>
-      ))}
-    </dl>
 
     <div class="hero-actions">
-      <a class="btn btn--cta" href="#contact">{t.hero.primary}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--cta" href="/contact">{t.hero.primary}<span class="arrow" aria-hidden="true">→</span></a>
       <a class="btn btn--secondary" href="#video">{t.hero.secondary}</a>
     </div>
   </div>
@@ -35,7 +29,7 @@ const t = getContent(Astro.props.locale);
 <style>
   .hero {
     position: relative;
-    /* Locker width; its height is half of it (3 modules, 600 x 300 viewBox). */
+    /* Locker width; 3 modules standing apart (635 x 300 viewBox), height about 0.47 of the width. */
     --lw: calc(var(--cell) * 4);
     --locker-top: var(--cell);
     padding-bottom: var(--u);
@@ -44,24 +38,9 @@ const t = getContent(Astro.props.locale);
   .band {
     position: absolute;
     inset: 0 0 auto 0;
-    height: calc(var(--locker-top) + var(--lw) / 4);
-    overflow: hidden;
-    /* Figma hero band: dark space, indigo and blue nebula glows (radial layers over Ice/1100). */
-    background:
-      radial-gradient(34% 130% at 72% 25%, color-mix(in srgb, var(--indigo-500) 55%, transparent), transparent 70%),
-      radial-gradient(30% 120% at 22% 95%, color-mix(in srgb, var(--blue-700) 60%, transparent), transparent 70%),
-      radial-gradient(16% 70% at 48% 60%, color-mix(in srgb, var(--blue-600) 25%, transparent), transparent 70%),
-      var(--ice-1100);
-  }
-  /* Fine white dither (hides banding) plus sparse star specks. */
-  .band::before, .band::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
-  .band::before {
-    opacity: 0.06;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.3' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.6 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-  .band::after {
-    opacity: 0.55;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 9 -7.6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+    /* The band ends three quarters down the locker, as in Figma (415 at a 382px tall locker). */
+    height: calc(var(--locker-top) + var(--lw) * 0.8 * 0.35);
+    position: absolute; /* .space supplies the dark background, glow and grain */
   }
 
   .hero-inner {
@@ -71,64 +50,40 @@ const t = getContent(Astro.props.locale);
     align-items: center;
     text-align: center;
     padding-top: var(--locker-top);
+    padding-inline: var(--inset);
   }
-  .hero-locker { width: var(--lw); filter: drop-shadow(0 30px 30px rgba(22, 25, 30, 0.1)); }
+  .hero-locker { width: calc(var(--lw) * 0.8); } /* locker drawn 20% smaller than its slot */
 
-  .hero-title { margin-top: calc(var(--u) * 1.5); max-width: calc(var(--cell) * 7); }
+  .hero-title { margin-top: var(--spacing-gap-general-group-lg); max-width: calc(var(--cell) * 7); text-wrap: wrap; } /* line breaks as in Figma, not balanced */
 
-  .hero-facts {
-    margin-top: var(--u);
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    row-gap: calc(var(--u) * 0.5);
-  }
-  .fact { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-text-md); padding: 0 var(--spacing-padding-container-lg); }
-  .fact + .fact { border-left: var(--hair) solid var(--border-neutral-default); }
-  .fact dt {
-    font-family: var(--font-body);
-    font-weight: 400;
-    font-size: 11px;
-    line-height: 14px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-neutral-headings);
-  }
-  .fact dd { font-family: var(--font-display); font-weight: 500; font-size: var(--fs-subtitle); line-height: 22px; color: var(--text-neutral-headings); }
 
+  .hero-intro { margin-top: var(--spacing-gap-general-object-md); max-width: 600px; color: var(--text-neutral-body); }
   .hero-actions { margin-top: var(--u); display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-gap-general-object-md); }
 
   @media (max-width: 639px) {
-    .fact { padding: 0 var(--spacing-padding-container-xs); }
-    .fact dd { font-size: 16px; }
     .hero-actions { width: 100%; }
     .hero-actions .btn { flex: 1 1 100%; }
   }
   @media (min-width: 640px) {
-    .hero { --lw: calc(var(--cell) * 5); }
+    .hero { --lw: calc(var(--cell) * 6); }
   }
   @media (min-width: 960px) {
-    .hero-title { font-size: calc(var(--cell) * 0.62); line-height: calc(var(--u) * 3); }
-    .fact { width: calc(var(--cell) * 2); padding: 0; }
+    .hero { --lw: calc(var(--cell) * 7); }
+    .hero-title { font-size: calc(var(--cell) * 0.44); line-height: round(up, calc(var(--u) * 2.25), 4px); }
   }
   @media (min-width: 1280px) {
-    /* Figma: header 84 + 48 gap, locker 516 x 258, band 260, gaps 16 / 32 / 32, bottom 56 */
-    .hero { --lw: 516px; --locker-top: 132px; padding-bottom: var(--spacing-padding-section-sm); }
-    .band { height: 260px; }
-    .hero-title { font-size: 68px; line-height: 84px; letter-spacing: -0.03em; max-width: 776px; margin-top: 16px; }
-    .hero-facts { margin-top: 32px; gap: var(--spacing-gap-text-md); }
-    .fact { width: 224px; }
-    .fact + .fact { padding-left: var(--spacing-padding-container-2xs); }
-    .fact dt { font-size: 12px; line-height: 16px; letter-spacing: 0.08em; }
-    .fact dd { font-size: 20px; line-height: 24px; }
+    /* Figma: header 84 + 48 gap, locker 800 x 382, band 415, gaps 64 / 32, bottom 56 */
+    .hero { --lw: 800px; --locker-top: 132px; padding-bottom: var(--spacing-padding-section-sm); }
+    .band { height: calc(132px + 640px * 0.354); } /* ends ~3/4 down the (20% smaller) locker */
+    .hero-title { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; max-width: 776px; margin-top: var(--spacing-gap-general-section-lg); }
     .hero-actions { margin-top: 32px; }
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .hero-title, .hero-facts, .hero-actions { animation: hero-up 700ms var(--ease-out) both; }
+    .hero-title, .hero-intro, .hero-actions { animation: hero-up 700ms var(--ease-out) both; }
     .hero-title { animation-delay: 120ms; }
-    .hero-facts { animation-delay: 220ms; }
-    .hero-actions { animation-delay: 320ms; }
+    .hero-intro { animation-delay: 180ms; }
+    .hero-actions { animation-delay: 240ms; }
   }
   /* Starts at 0.01, not 0, so the text still counts as painted (LCP). */
   @keyframes hero-up { from { opacity: 0.01; transform: translateY(var(--u)); } to { opacity: 1; transform: none; } }

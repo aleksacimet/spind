@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import TemplateHero from '../components/TemplateHero.astro';
+import Workflows from '../components/sections/Workflows.astro';
+import HowItWorks from '../components/sections/HowItWorks.astro';
+import GoLive from '../components/sections/GoLive.astro';
+import Faq from '../components/sections/Faq.astro';
+import { getContent } from '../content/site';
+const locale = 'en';
+const t = getContent(locale);
+const W = t.workflowsPage;
+---
+<Base title={`${W.label} | Spind`} description={W.meta} locale={locale} darkHero>
+  <TemplateHero id="workflows-page" label={W.label} title={W.title} intro={W.intro} primary={W.primary} secondary={W.secondary} />
+  <Workflows locale={locale} />
+  <HowItWorks locale={locale} />
+  <GoLive locale={locale} />
+  <Faq locale={locale} />
+</Base>

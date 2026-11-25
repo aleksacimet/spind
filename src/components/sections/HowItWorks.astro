@@ -5,10 +5,11 @@ import { getContent } from '../../content/site';
 const t = getContent(Astro.props.locale);
 const h = t.how;
 ---
-<!-- Figma: steps on the left (compact 120px cards, big number), locker on the right. -->
-<Section id="how-it-works" title={h.title} intro={h.intro} shade>
+<!-- Figma 31:222: steps list on the left (600px, 122px rows, active row blue), locker centred in the space on the right. Steps advance on their own; hover or click a step to show it. -->
+<Section id="how-it-works" title={h.title} intro={h.intro}>
   <div class="story" data-story>
-    <div class="story-stage">
+    <div class="story-stage space" data-hero>
+      <div class="space-glow" aria-hidden="true"></div>
       <div class="stage-inner">
         <LockerDrawing
           id="story"
@@ -17,14 +18,11 @@ const h = t.how;
           screen={h.screen}
           label={h.lockerLabel}
         />
-        <div class="stage-progress" aria-hidden="true">
-          {h.steps.map((_, i) => <span style={`--k:${i}`}></span>)}
-        </div>
       </div>
     </div>
     <ol class="story-steps" role="list">
       {h.steps.map((s, i) => (
-        <li class="story-step" data-step={i}>
+        <li class="story-step" data-step={i} tabindex="0">
           <span class="num tabular" aria-hidden="true" data-num={String(i + 1).padStart(2, '0')}></span>
           <div class="step-body">
             <h3>{s.title}</h3>
@@ -38,12 +36,9 @@ const h = t.how;
 
 <style>
   .story { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
-  .story-stage { position: sticky; top: var(--header-h); z-index: 2; background: color-mix(in srgb, var(--surface-neutral-page-shade) 92%, transparent); padding-bottom: var(--spacing-padding-container-sm); }
-  .stage-inner { width: 100%; max-width: 576px; }
-  .stage-progress { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-gap-text-sm); margin-top: 32px; height: 4px; }
-  .stage-progress span { background: var(--surface-neutral-track); position: relative; overflow: hidden; }
-  .stage-progress span::after { content: ''; position: absolute; inset: 0; background: var(--surface-action-default); transform: scaleX(0); transform-origin: left; transition: transform 500ms var(--ease-out); }
-  .stage-progress span.on::after { transform: scaleX(1); }
+  /* The locker sits in its own box next to the steps: the dark hero surface (.space), framed by a hairline. */
+  .story-stage { display: flex; align-items: center; justify-content: center; padding: var(--pad-block) var(--inset); } /* dark space surface like the heroes; blue glow follows the mouse */
+  .stage-inner { width: 80%; max-width: 400px; }
 
   .story-steps { list-style: none; padding: 0; display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
   .story-step {
@@ -51,26 +46,30 @@ const h = t.how;
     align-items: center;
     gap: var(--spacing-gap-general-object-lg);
     min-height: 120px;
-    padding: var(--spacing-padding-container-2xl) var(--spacing-padding-container-lg);
+    padding: var(--pad-block) var(--inset);
     background: var(--surface-neutral-default);
     border-top: var(--hair) solid var(--border-neutral-default);
     border-left: var(--hair) solid var(--border-neutral-default);
+    cursor: pointer;
+    outline: none;
     transition: background-color var(--dur) var(--ease);
   }
-  /* Decorative step number (drawn with CSS, light Line colour as in Figma) */
+  .story-step:focus-visible { box-shadow: inset 0 0 0 var(--border-width-focus) var(--border-focus); }
+  /* Step number (Figma: Geist 31/44, light and decorative, bold white when active) */
   .num::before { content: attr(data-num); }
-  .num { flex: none; min-width: 32px; font-family: var(--font-display); font-weight: 500; font-size: 28px; line-height: 40px; color: var(--text-neutral-decorative); transition: color var(--dur) var(--ease); }
+  .num { flex: none; width: 44px; font-family: var(--font-display); font-weight: 400; font-size: 31px; line-height: 44px; color: var(--text-neutral-decorative); transition: color var(--dur) var(--ease); }
   .step-body { display: grid; gap: var(--spacing-gap-text-sm); }
-  .story-step h3 { color: var(--text-neutral-headings); }
-  .story-step p { color: var(--text-neutral-body); }
-  /* Active step (Figma): graphite card, light text */
-  .story-step.is-active { background: var(--surface-neutral-dark); border-color: transparent; }
+  .story-step h3 { font-size: 18px; line-height: 24px; letter-spacing: 0; color: var(--text-neutral-headings); }
+  .story-step p { font-weight: 400; font-size: 16px; line-height: 28px; color: var(--text-neutral-body); }
+  .story-step:not(.is-active):hover { background: var(--surface-neutral-page); }
+  /* Active step (Figma): Surface/Action/500 blue, white text, bold number */
+  .story-step.is-active { background: var(--surface-action-default); border-color: transparent; }
+  .story-step.is-active .num { font-weight: 700; }
   .story-step.is-active .num, .story-step.is-active h3, .story-step.is-active p { color: var(--text-neutral-onsurface); }
 
   @media (min-width: 960px) {
-    .story { flex-direction: row-reverse; justify-content: space-between; align-items: flex-start; gap: var(--spacing-column); }
-    .story-stage { width: 500px; flex: none; top: calc(var(--header-h) + 24px); background: none; padding: 0; }
+    .story { flex-direction: row-reverse; align-items: stretch; gap: 0; }
+    .story-stage { flex: 1; min-width: 0; margin-left: calc(var(--hair) * -1); }
     .story-steps { width: 600px; flex: none; }
-    .story-step { height: 120px; }
   }
 </style>

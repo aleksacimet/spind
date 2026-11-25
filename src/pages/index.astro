@@ -6,16 +6,12 @@ import Quotes from '../components/sections/Quotes.astro';
 import Problem from '../components/sections/Problem.astro';
 import HowItWorks from '../components/sections/HowItWorks.astro';
 import Modules from '../components/sections/Modules.astro';
-import Workflows from '../components/sections/Workflows.astro';
-import Platform from '../components/sections/Platform.astro';
-import Service from '../components/sections/Service.astro';
+import Integrations from '../components/sections/Integrations.astro';
 import Clients from '../components/sections/Clients.astro';
-import BusinessCase from '../components/sections/BusinessCase.astro';
 import Pricing from '../components/sections/Pricing.astro';
 import Faq from '../components/sections/Faq.astro';
 import GoLive from '../components/sections/GoLive.astro';
 import Video from '../components/sections/Video.astro';
-import Contact from '../components/sections/Contact.astro';
 import { flags } from '../content/site';
 
 const locale = 'en';
@@ -26,15 +22,11 @@ const locale = 'en';
   <Problem locale={locale} />
   <HowItWorks locale={locale} />
   <Modules locale={locale} />
-  <Workflows locale={locale} />
-  <Platform locale={locale} />
-  <Service locale={locale} />
+  <Integrations locale={locale} />
   {flags.showClients && <Clients locale={locale} />}
   <Quotes locale={locale} />
-  <BusinessCase locale={locale} />
   <Pricing locale={locale} />
   <GoLive locale={locale} />
   <Faq locale={locale} />
   <Video locale={locale} />
-  <Contact locale={locale} />
 </Base>

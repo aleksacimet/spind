@@ -1,17 +1,20 @@
 ---
+import DrawerHead from '../DrawerHead.astro';
 import { getContent } from '../../content/site';
-interface Props { locale?: string; title?: string; only?: number[]; id?: string }
-const { locale, title, only, id = 'faq' } = Astro.props;
+interface Props { locale?: string; title?: string; only?: number[]; id?: string; items?: { q: string; a: string }[] }
+const { locale, title, only, id = 'faq', items } = Astro.props;
 const t = getContent(locale);
-const f = { title: title ?? t.faq.title, items: only ? only.map((i) => t.faq.items[i]) : t.faq.items };
+const f = { title: title ?? t.faq.title, items: items ?? (only ? only.map((i) => t.faq.items[i]) : t.faq.items) };
 ---
 <!-- Figma: heading on the left (400px), one column of questions on the right (gap one column). -->
 <section id={id} class="section faq-section" aria-labelledby={`${id}-title`} data-section={id}>
-  <div class="container faq-grid">
+  <div class="container">
+  <DrawerHead label={getContent('en').sectionLabels[id] ?? 'FAQ'} />
+  <div class="faq-grid">
     <h2 id={`${id}-title`} data-split>{f.title}</h2>
     <div class="faq-list">
       {f.items.map((item, i) => (
-        <details class="qa" data-reveal style={`--d:${i * 50}ms`}>
+        <details class="qa" name={`${id}-qa`} data-qa data-reveal style={`--d:${i * 50}ms`}>
           <summary>
             <span class="q">{item.q}</span>
             <span class="pm" aria-hidden="true"></span>
@@ -21,11 +24,21 @@ const f = { title: title ?? t.faq.title, items: only ? only.map((i) => t.faq.ite
       ))}
     </div>
   </div>
+  </div>
 </section>
 
+<script>
+  // Only one answer open at a time. The details name attribute does this natively; this covers older browsers.
+  document.querySelectorAll<HTMLDetailsElement>('[data-qa]').forEach((d, _, all) => {
+    d.addEventListener('toggle', () => {
+      if (d.open) all.forEach((o) => { if (o !== d && o.name === d.name && o.open) o.open = false; });
+    });
+  });
+</script>
+
 <style>
-  .faq-section { padding-block: var(--spacing-padding-section-xs); }
-  .faq-grid { display: flex; flex-direction: column; gap: var(--spacing-gap-general-group-lg); }
+  .faq-section { padding-top: 0; }
+  .faq-grid { display: flex; flex-direction: column; gap: var(--spacing-gap-general-group-lg); padding-top: var(--spacing-padding-container-2xl); }
   .faq-list { flex: 1; }
   .qa { background: var(--surface-neutral-default); box-shadow: inset 0 var(--hair) 0 var(--border-neutral-default); }
   summary {
@@ -35,20 +48,23 @@ const f = { title: title ?? t.faq.title, items: only ? only.map((i) => t.faq.ite
     justify-content: space-between;
     gap: var(--spacing-gap-general-object-lg);
     min-height: 76px;
-    padding: 0 var(--spacing-padding-container-lg);
+    padding: 0 var(--inset);
     cursor: pointer;
     font-family: var(--font-display);
-    font-weight: 500;
+    font-weight: 600;
     font-size: var(--fs-subtitle);
-    line-height: 28px;
+    line-height: var(--lh-subtitle);
   }
   summary::-webkit-details-marker { display: none; }
   summary:hover .q { color: var(--text-action-default); }
   /* Plain plus, no box (Figma FAQ toggle) */
   .pm { position: relative; flex: none; width: 32px; height: 32px; }
-  .pm::before { content: '+'; position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-display); font-weight: 500; font-size: 32px; line-height: 32px; color: var(--text-neutral-headings); transition: transform var(--dur) var(--ease-out), color var(--dur-fast) var(--ease); }
-  .qa[open] .pm::before { color: var(--text-action-default); transform: rotate(45deg); }
-  .a { color: var(--text-neutral-subtle); padding: 0 var(--spacing-padding-container-lg) var(--spacing-padding-container-lg); max-width: 60ch; }
+  .pm::before, .pm::after { content: ''; position: absolute; left: 50%; top: 50%; width: 22px; height: 1.5px; background: var(--text-neutral-headings); transform: translate(-50%, -50%); transition: transform var(--dur) var(--ease-out), background-color var(--dur-fast) var(--ease); }
+  .pm::after { transform: translate(-50%, -50%) rotate(90deg); }
+  .qa[open] .pm::before { background: var(--text-action-default); transform: translate(-50%, -50%) rotate(45deg); }
+  .qa[open] .pm::after { background: var(--text-action-default); transform: translate(-50%, -50%) rotate(135deg); }
+  summary:hover .pm::before, summary:hover .pm::after { background: var(--text-action-default); }
+  .a { color: var(--text-neutral-subtle); padding: 0 var(--inset) var(--pad-block); max-width: 60ch; }
   @media (prefers-reduced-motion: no-preference) {
     .qa[open] .a { animation: qa-open 500ms var(--ease-out); }
   }

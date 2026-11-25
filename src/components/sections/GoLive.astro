@@ -3,27 +3,106 @@ import Section from '../Section.astro';
 import { getContent } from '../../content/site';
 const t = getContent(Astro.props.locale);
 const g = t.goLive;
+const weeks = Math.max(...g.phases.map((p) => p.to));
 ---
-<!-- Figma "go live": section head, then four phase tiles (label + title + body), 3 columns each. -->
+<!-- Go live as a 12-week timeline: week numbers, one thin track with a point where each phase starts and a yellow
+     point where Spind goes live. When it comes into view a blue line runs from week 1 to week 12 and lights each
+     point as it passes. Hover or focus a phase to light its stretch of the track and read what happens. -->
 <Section id="go-live" title={g.title} intro={g.intro}>
-  <ol class="tiles phases" role="list" data-fit>
-    {g.phases.map((ph, i) => (
-      <li class="tile tile--hover" data-reveal="drawer" style={`--d:${i * 80}ms`}>
-        <p class="label phase-label">{ph.label}</p>
-        <div class="title-body">
-          <h3>{ph.title}</h3>
-          <p>{ph.text}</p>
-        </div>
-      </li>
-    ))}
-  </ol>
+  <div class="tl" style={`--weeks:${weeks}`} data-reveal>
+    <ol class="tl-ruler" aria-hidden="true">
+      {Array.from({ length: weeks }, (_, i) => <li style={`--w:${i}`}>{String(i + 1).padStart(2, '0')}</li>)}
+    </ol>
+    <div class="tl-body">
+      <div class="tl-track" aria-hidden="true"><span class="tl-run"></span><span class="tl-end"></span></div>
+      <ol class="tl-phases" role="list">
+        {g.phases.map((ph, i) => (
+          <li class="tl-phase" tabindex="0" style={`--from:${ph.from}; --len:${ph.to - ph.from + 1}; --k:${i}`}>
+            <span class="tl-seg" aria-hidden="true"></span>
+            <span class="tl-pt" aria-hidden="true"></span>
+            <p class="label tl-label">{ph.label}</p>
+            <h3>{ph.title}</h3>
+            <p class="tl-text">{ph.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
 </Section>
 
 <style>
-  .phases { padding: 0; }
-  .phases .tile { grid-column: span 2; --rows: 2; display: flex; flex-direction: column; gap: var(--spacing-gap-text-lg); }
-  .phase-label { color: var(--text-action-default); }
-  .phases .tile h3 { margin: 0; }
-  @media (min-width: 640px) { .phases .tile { grid-column: span 4; } }
-  @media (min-width: 960px) { .phases .tile { grid-column: span 3; } }
+  /* White panel rail to rail, like the tile grids; text starts on the --inset line. */
+  .tl { --step: 180ms; --start: 300ms; --pt: 12px; --line: 2px; background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); padding: var(--pad-block) var(--inset); }
+  .tl-body { position: relative; }
+  .tl-ruler { display: none; }
+
+  /* Track: a thin grey line, the blue run on top of it, a yellow point at the end (go live). */
+  .tl-track { position: absolute; background: var(--surface-neutral-track); }
+  .tl-run { position: absolute; background: var(--primary-200); }
+  .tl-end { position: absolute; width: var(--pt); height: var(--pt); background: var(--surface-cta-default); }
+
+  .tl-phases { position: relative; display: grid; gap: var(--spacing-gap-general-group-md); }
+  .tl-phase { position: relative; display: grid; row-gap: var(--spacing-gap-text-sm); align-content: start; outline: none; cursor: default; }
+  /* Point where the phase starts: an open square that fills when the run reaches it. */
+  .tl-pt { position: absolute; z-index: 1; width: var(--pt); height: var(--pt); background: var(--surface-neutral-default); box-shadow: inset 0 0 0 var(--line) var(--neutral-300); transition: background-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+  /* The phase's own stretch of track, shown on hover. */
+  .tl-seg { position: absolute; background: var(--surface-action-default); opacity: 0; transition: opacity var(--dur-fast) var(--ease); }
+  .tl-label { color: var(--text-neutral-subtle); transition: color var(--dur-fast) var(--ease); }
+  .tl-phase h3 { transition: color var(--dur-fast) var(--ease); }
+  .tl-text { color: var(--text-neutral-body); }
+
+  /* Mobile: vertical timeline, track on the left. */
+  .tl-track { left: calc(var(--pt) / 2 - var(--line) / 2); top: 0; bottom: 0; width: var(--line); }
+  .tl-run { inset: 0; transform-origin: top; }
+  .tl-end { left: 0; bottom: 0; }
+  .tl-phases { padding-bottom: var(--spacing-gap-general-group-md); }
+  .tl-phase { padding-left: calc(var(--pt) + var(--spacing-gap-general-object-md)); }
+  .tl-pt { left: 0; top: var(--spacing-gap-text-sm); }
+  .tl-seg { left: calc(var(--pt) / 2 - var(--line) / 2); top: var(--spacing-gap-text-sm); bottom: 0; width: var(--line); }
+
+  /* Hover / focus: fill only. Its stretch of track turns blue, the point fills, the text shows. */
+  .tl-phase:is(:hover, :focus-visible) .tl-seg { opacity: 1; }
+  .tl-phase:is(:hover, :focus-visible) .tl-pt { background: var(--surface-action-default); box-shadow: inset 0 0 0 var(--line) var(--border-action-default), 0 0 0 6px var(--surface-action-washed); }
+  .tl-phase:is(:hover, :focus-visible) :is(.tl-label, h3) { color: var(--text-action-default); }
+
+  /* Titles only until a phase is hovered (pointer devices). The text keeps its space, so nothing moves. */
+  @media (hover: hover) and (pointer: fine) {
+    .tl-text { opacity: 0; clip-path: inset(0 0 100% 0); transition: opacity var(--dur) var(--ease), clip-path var(--dur) var(--ease-out); }
+    .tl-phase:is(:hover, :focus-visible) .tl-text { opacity: 1; clip-path: inset(0 0 0 0); }
+  }
+
+  @media (min-width: 960px) {
+    /* Desktop: one column per week; each phase starts on its week. */
+    .tl-ruler, .tl-phases { display: grid; grid-template-columns: repeat(var(--weeks), minmax(0, 1fr)); }
+    .tl-ruler { list-style: none; padding: 0; margin-bottom: var(--spacing-gap-text-lg); }
+    .tl-ruler li { font-family: var(--font-mono); font-weight: 600; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; color: var(--text-neutral-decorative); transition: color var(--dur-fast) var(--ease); }
+
+    .tl-track { left: 0; right: 0; top: calc(var(--pt) / 2 - var(--line) / 2); bottom: auto; width: auto; height: var(--line); }
+    .tl-run { transform-origin: left; }
+    .tl-end { left: auto; right: 0; bottom: auto; top: calc(var(--line) / 2 - var(--pt) / 2); }
+
+    .tl-phases { gap: 0; padding-bottom: 0; }
+    .tl-phase { grid-column: var(--from) / span var(--len); padding: calc(var(--pt) + var(--spacing-gap-general-object-md)) var(--spacing-gap-general-object-lg) 0 0; }
+    .tl-pt { top: 0; }
+    .tl-seg { left: 0; right: 0; top: calc(var(--pt) / 2 - var(--line) / 2); bottom: auto; width: auto; height: var(--line); }
+  }
+
+  /* Comes into view: the run travels from week 1 to week 12 and lights every point and week number it passes. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .tl .tl-run { transform: scaleY(0); transition: transform calc(var(--weeks) * var(--step)) linear var(--start); }
+    :global(.js) .tl .tl-end { transform: scale(0); transition: transform var(--dur) var(--ease-out) calc(var(--start) + var(--weeks) * var(--step)); }
+    :global(.js) .tl .tl-pt { transition: background-color var(--dur-fast) var(--ease) calc(var(--start) + (var(--from) - 1) * var(--step)), box-shadow var(--dur-fast) var(--ease) calc(var(--start) + (var(--from) - 1) * var(--step)); }
+    :global(.js) .tl .tl-ruler li { transition: color var(--dur-fast) var(--ease) calc(var(--start) + var(--w) * var(--step)); }
+    :global(.js) .tl.is-visible .tl-run { transform: none; }
+    :global(.js) .tl.is-visible .tl-end { transform: none; }
+    @media (min-width: 960px) { :global(.js) .tl .tl-run { transform: scaleX(0); } :global(.js) .tl.is-visible .tl-run { transform: none; } }
+  }
+  /* Reached (always on without motion): points filled light blue, week numbers in ink. */
+  .tl-pt { background: var(--primary-300); box-shadow: inset 0 0 0 var(--line) var(--primary-300); }
+  .tl-ruler li { color: var(--text-neutral-subtle); }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .tl:not(.is-visible) .tl-pt { background: var(--surface-neutral-default); box-shadow: inset 0 0 0 var(--line) var(--neutral-300); }
+    :global(.js) .tl:not(.is-visible) .tl-ruler li { color: var(--text-neutral-decorative); }
+  }
+  .tl .tl-phase:is(:hover, :focus-visible) .tl-pt { background: var(--surface-action-default); box-shadow: inset 0 0 0 var(--line) var(--border-action-default), 0 0 0 6px var(--surface-action-washed); transition-delay: 0ms; }
 </style>

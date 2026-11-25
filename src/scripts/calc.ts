@@ -1,4 +1,4 @@
-/** Business case calculator, IT time only: same formula as BusinessCase.astro renders without JS. */
+/** Business case calculator: IT desk time priced at the hourly cost, same formula as BusinessCase.astro renders without JS. */
 export function initCalc() {
   document.querySelectorAll<HTMLFormElement>('[data-calc]').forEach((form) => {
     const fmt = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
@@ -30,12 +30,15 @@ export function initCalc() {
         if (out) out.textContent = r.value;
       });
       const handovers = get('lockers') * get('handovers');
-      const today = (handovers * get('minutesToday')) / 60;
-      const withSpind = (handovers * get('minutesSpind')) / 60;
-      set('today', today);
-      set('with', withSpind);
+      const hoursToday = (handovers * get('minutesToday')) / 60;
+      const hoursSpind = (handovers * get('minutesSpind')) / 60;
+      const hoursSaved = Math.max(0, hoursToday - hoursSpind);
+      const rate = get('hourlyCost');
+      set('today', hoursToday * rate);
+      set('with', hoursSpind * rate);
       set('handovers', handovers);
-      set('saved', Math.max(0, today - withSpind));
+      set('saved', hoursSaved * rate);
+      set('hours', hoursSaved);
     };
     form.addEventListener('input', update);
     update();

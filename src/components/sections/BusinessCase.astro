@@ -1,21 +1,29 @@
 ---
-import Section from '../Section.astro';
 import { getContent } from '../../content/site';
-const t = getContent(Astro.props.locale);
+const { locale, page = false } = Astro.props as { locale?: string; page?: boolean };
+const t = getContent(locale);
 const b = t.businessCase;
 const keys = Object.keys(b.inputs) as (keyof typeof b.inputs)[];
 const v = Object.fromEntries(keys.map((k) => [k, b.inputs[k].value])) as Record<keyof typeof b.inputs, number>;
-// IT time only, no prices. Same formula as src/scripts/calc.ts, so the page is complete without JS.
+// IT desk time priced at the visitor's hourly cost. Same formula as src/scripts/calc.ts, so the page is complete without JS.
 const handovers = v.lockers * v.handovers;
-const today = (handovers * v.minutesToday) / 60;
-const withSpind = (handovers * v.minutesSpind) / 60;
-const saved = Math.max(0, today - withSpind);
+const hoursToday = (handovers * v.minutesToday) / 60;
+const hoursSpind = (handovers * v.minutesSpind) / 60;
+const hoursSaved = Math.max(0, hoursToday - hoursSpind);
+const today = hoursToday * v.hourlyCost;
+const withSpind = hoursSpind * v.hourlyCost;
+const saved = hoursSaved * v.hourlyCost;
 const h = (n: number) => Math.round(n).toLocaleString('de-DE');
 ---
 <!-- Like Cora's business case calculator: visitors put in their own numbers, nothing is claimed for them. -->
-<Section id="business-case" title={b.title} intro={b.intro} class="section--strong-intro">
+<section id="business-case" class:list={['section bc glow-band on-accent', { 'glow-band--page': page }]} data-hero aria-labelledby="bc-title" data-section="business-case">
+  <div class="space-glow" aria-hidden="true"></div>
+  <div class="container">
+  <header class="bc-head" data-reveal>
+    {page ? <h1 id="bc-title" data-split>{b.title}</h1> : <h2 id="bc-title" data-split>{b.title}</h2>}
+  </header>
   <form class="calc" data-calc onsubmit="return false" aria-label={b.title}>
-    <fieldset class="calc-inputs tile" data-reveal="drawer">
+    <fieldset class="calc-inputs tile glow-panel" data-reveal="drawer">
       <legend class="label">{b.inputsTitle}</legend>
       {keys.map((k) => {
         const f = b.inputs[k];
@@ -32,33 +40,34 @@ const h = (n: number) => Math.round(n).toLocaleString('de-DE');
       })}
     </fieldset>
 
-    <div class="calc-result tile" data-reveal="drawer" style="--d:120ms" aria-live="polite">
+    <div class="calc-result tile glow-panel" data-reveal="drawer" style="--d:120ms" aria-live="polite">
       <p class="label res-label">{b.resultTitle}</p>
       <dl class="rows">
-        <div><dt>{b.today}</dt><dd class="tabular"><span data-res="today">{h(today)}</span> {b.hoursUnit}</dd></div>
-        <div><dt>{b.withSpind}</dt><dd class="tabular"><span data-res="with">{h(withSpind)}</span> {b.hoursUnit}</dd></div>
+        <div><dt>{b.today}</dt><dd class="tabular"><span data-res="today">{h(today)}</span> {b.currency}</dd></div>
+        <div><dt>{b.withSpind}</dt><dd class="tabular"><span data-res="with">{h(withSpind)}</span> {b.currency}</dd></div>
         <div><dt>{b.handovers}</dt><dd class="tabular"><span data-res="handovers">{h(handovers)}</span></dd></div>
       </dl>
       <div class="big title-body">
         <p class="big-label">{b.difference}</p>
-        <p class="big-num tabular"><span data-res="saved">{h(saved)}</span> <span class="cur">{b.hoursUnit}</span></p>
-        <p class="big-sub">{b.positive}</p>
+        <p class="big-num tabular"><span data-res="saved">{h(saved)}</span> <span class="cur">{b.currency}</span></p>
+        <p class="big-sub"><span class="tabular" data-res="hours">{h(hoursSaved)}</span> {b.positive}</p>
       </div>
       <p class="note">{b.note}</p>
-      <a class="btn btn--primary" href="#contact">{b.cta}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--cta" href="/contact">{b.cta}<span class="arrow" aria-hidden="true">→</span></a>
     </div>
   </form>
-</Section>
+  </div>
+</section>
 
 <style>
-  .calc { display: grid; grid-template-columns: repeat(var(--cols), var(--cell)); box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
-  .calc .tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; padding: var(--spacing-padding-container-lg); }
+  .calc { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
+  .calc .tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; }
   fieldset { border: 0; border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); margin: 0; min-inline-size: 0; display: grid; gap: var(--spacing-gap-general-object-lg); }
-  legend { float: left; width: 100%; padding: 0; margin-bottom: 8px; }
+  legend { float: left; width: 100%; padding: 0; margin-bottom: var(--spacing-gap-text-md); }
   .field { display: grid; gap: var(--spacing-gap-text-md); }
   .field-top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--spacing-gap-general-object-md); }
-  label { font-family: var(--font-display); font-weight: 500; font-size: 16px; line-height: 24px; color: var(--text-neutral-headings); }
-  .val { font-family: var(--font-display); font-weight: 500; font-size: 20px; line-height: 28px; color: var(--text-action-default); min-width: 48px; text-align: right; }
+  label { font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px; color: var(--text-neutral-headings); }
+  .val { font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 28px; color: var(--text-action-default); min-width: 48px; text-align: right; }
   .hint { font-size: 16px; line-height: 24px; color: var(--text-neutral-body); }
 
   input[type='range'] { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; background: transparent; cursor: pointer; margin: 0; }
@@ -74,19 +83,45 @@ const h = (n: number) => Math.round(n).toLocaleString('de-DE');
   .rows { display: grid; }
   .rows div { display: flex; justify-content: space-between; gap: var(--spacing-gap-general-object-md); padding: var(--spacing-padding-container-2xs) 0; }
   .rows dt { color: var(--text-neutral-ondark); }
-  .rows dd { font-family: var(--font-display); font-weight: 500; color: var(--text-neutral-onsurface); white-space: nowrap; }
+  .rows dd { font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-onsurface); white-space: nowrap; }
   .big { display: grid; gap: var(--spacing-gap-text-sm); padding-top: var(--spacing-padding-container-sm); border-top: var(--hair) solid var(--border-neutral-ondark); }
   .big-label { color: var(--text-neutral-ondark); }
-  .big-num { font-family: var(--font-display); font-weight: 500; font-size: 56px; line-height: 64px; letter-spacing: -0.04em; color: var(--text-action-ondark); }
+  .big-num { font-family: var(--font-display); font-weight: 600; font-size: 48px; line-height: 56px; letter-spacing: -0.04em; color: var(--surface-cta-default); }
   .big-num .cur { font-size: 20px; letter-spacing: 0; }
-  .big-sub { font-family: var(--font-display); font-weight: 500; color: var(--text-neutral-onsurface); }
+  .big-sub { font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-onsurface); }
   .note { font-size: 16px; line-height: 24px; color: var(--text-neutral-decorative); }
   .calc-result .btn { align-self: flex-start; margin-top: auto; }
 
   @media (min-width: 960px) {
     .calc-inputs { grid-column: 1 / span 7 !important; }
     .calc-result { grid-column: 8 / span 5 !important; }
-    .calc .tile { padding: var(--spacing-padding-container-2xl); }
     .big-num { font-size: 72px; line-height: 72px; }
+  }
+
+  /* Dark band, same look as the contact form section. */
+  .bc { padding-block: var(--spacing-padding-section-xl); }
+  .bc.glow-band--page { padding-top: var(--hero-top); }
+  .bc-head { display: grid; gap: var(--spacing-gap-text-md); margin-bottom: var(--spacing-gap-general-section-sm); max-width: 640px; }
+  .bc-head h1, .bc-head h2 { color: var(--text-neutral-onsurface); }
+  .bc-head h1 { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; }
+  .bc-head .intro { color: var(--text-neutral-ondark); }
+  .calc { box-shadow: none; gap: var(--spacing-gap-general-group-md); }
+  .calc .tile { border: 0; box-shadow: none; }
+  fieldset.glow-panel { border: 0; }
+  .calc-inputs .label { color: var(--text-neutral-decorative); }
+  .calc-inputs label { color: var(--text-neutral-onsurface); }
+  .calc-inputs .val { color: var(--surface-cta-default); }
+  .calc-inputs .hint { color: var(--text-neutral-placeholder-ondark); }
+  input[type='range']::-webkit-slider-runnable-track { background: linear-gradient(to right, var(--surface-cta-default) var(--p), var(--border-neutral-ondark) var(--p)); }
+  input[type='range']::-moz-range-track { background: var(--border-neutral-ondark); }
+  input[type='range']::-moz-range-progress { background: var(--surface-cta-default); }
+  input[type='range']::-webkit-slider-thumb { background: var(--surface-neutral-darkest); border-color: var(--surface-cta-default); }
+  input[type='range']::-moz-range-thumb { background: var(--surface-neutral-darkest); border-color: var(--surface-cta-default); }
+  input[type='range']:hover::-webkit-slider-thumb, input[type='range']:focus-visible::-webkit-slider-thumb { background: var(--surface-cta-default); }
+  .calc-result .btn--cta { color: var(--text-cta-default); background-color: var(--surface-cta-default); }
+  .calc-result .btn--cta:hover { background-color: var(--surface-cta-hover); }
+  @media (min-width: 960px) {
+    .calc { gap: 0 var(--spacing-gap-general-group-md); grid-template-columns: 7fr 5fr; }
+    .calc-inputs, .calc-result { grid-column: auto !important; }
   }
 </style>

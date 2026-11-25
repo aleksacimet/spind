@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import BusinessCase from '../components/sections/BusinessCase.astro';
+import { getContent } from '../content/site';
+const t = getContent('en');
+---
+<Base title="Business case | Spind" description={t.businessCase.intro} locale="en" darkHero>
+  <BusinessCase locale="en" page />
+</Base>

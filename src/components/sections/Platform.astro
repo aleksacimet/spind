@@ -9,19 +9,10 @@ const p = t.platform;
   <div class="mock-wrap" data-reveal data-snap>
     <LissaMock label={p.mockLabel} />
   </div>
-  <ul class="tiles feats" role="list" data-fit>
-    {p.features.map((f, i) => (
-      <li class="tile tile--hover" data-reveal="drawer" style={`--d:${i * 70}ms`}>
-        <h3>{f.title}</h3>
-        <p>{f.text}</p>
-      </li>
-    ))}
-  </ul>
 </Section>
 
 <style>
-  .mock-wrap { margin-bottom: 28px; }
-  .feats .tile { grid-column: span 2; --rows: 2; }
-  @media (min-width: 640px) { .feats .tile { grid-column: span 4; } }
-  @media (min-width: 960px) { .feats .tile { grid-column: span 2; } }
+  .mock-wrap { margin-bottom: 0; }
+  /* Rail to rail: the rails and the panel line frame the mock, so it drops its own frame. */
+  .mock-wrap :global(.mock) { outline: 0; }
 </style>

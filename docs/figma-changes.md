@@ -13,9 +13,134 @@ When a batch is built, move it from To build to Built and note the date.
 
 _Nothing waiting. Add new Figma changes here._
 
+## Built in code only, Figma still to update (2026-11-25)
+
+- Grid lines quieter: line colour Ice/400 at 18% (was 30%), on dark white at 9% (was 15%). Border/Neutral/Default now uses the same line colour, so cards and grid lines are one colour.
+- No double lines anywhere: card grids, comparisons, the How it works box, quotes, the calculator and the story metrics drop their own outer lines where they meet a rail or a panel line. Pricing band and LISSA mockup lost their own frame for the same reason.
+- 4px baseline everywhere: grid cells and the quarter unit snap down to 4px, every line height is a multiple of 4 (H4 18/24, H3 22/32 below 1280, menu labels 18/24, nav 15/16), off-grid gaps fixed (header nav, burger, labels, hero title).
+- Padding system: `--inset` 24 mobile / 40 desktop is the only horizontal distance from a rail or card edge to text (section text, tiles, panels, bands, FAQ rows, steps, map); `--pad-block` 24 / 32 vertical padding in cards; `--head-pad` 32 / 48 above and below section titles; `--hero-top` header + 64 and `--hero-bottom` 64 / 80 on every page hero.
+- Every section has a label strip: added to the logo strip (CUSTOMERS), Integrations security band (SECURITY) and the closing CTA (NEXT STEP). The Problem label now sits on the section's top line.
+- Closing CTA band title is H3 size (24/32), not H2.
+- Hover glow on dark surfaces stronger (Blue/700 at 58% centre, Blue/800 at 30%).
+- "EOL rollout" renamed to "EOU rollout" (end of use), URL /use-cases/eou-rollout.
+- Modules renamed with DACH first names: Master → Otto (screen module), Nikola → Lotte (24 small drawers), Viktor → Bruno (8 wide drawers), Larry → Greta (mixed). Module labels are centred over their module, and the whole locker figure is centred in the section.
+- Device fit: hovering the iPhone 17 Pro Max card fills one small drawer in Lotte blue, the MacBook Pro 16″ card one wide drawer in Bruno. The dark "Drawer size examples" tile then shows a front-view drawing in mm: drawer opening (white lines that draw in), the device lying in it (CTA yellow) and dimension lines (175 × 90 / 163 × 9, 500 × 90 / 356 × 17), both at the same scale. Before hover it shows a short hint.
+- Pricing is the one section without a label strip: the band sits in its panel with 48px (32px mobile) above and below.
+- Go live is a 12-week timeline: week ruler 01–12, one bar per phase as long as the phase, square marker at each phase start (Go live's is CTA yellow). Bars fill week by week when it comes into view. Titles only; hover or focus shows the phase text (its space is reserved, nothing moves). On touch screens and mobile the text is always shown, as a vertical timeline.
+- FAQ label strip reads "Frequently asked questions".
+- New page headlines and bodies (one sentence each) on every page hero; home hero got a body line. Business case calculator works in money: new slider "IT desk cost per hour (€)" (20–150, default 60), results in €, hours saved shown under the total.
+- LISSA Asset is named only as a connected system (Integrations on home, Platform and /integrations), with its logo (public/images/lissa-asset-logo.svg; a text wordmark stands in until the file is added). Elsewhere the back end is "our application", "the application" or "online".
+- Integrations: "Logistics and service partners" split into Logistics partners and Service partners; home list is now LISSA Asset, sign-in, service desk, HR systems, logistics partners, service partners; /integrations systems are 8 tiles, 4 per row, with one-line texts.
+- No subtitles next to section titles anywhere (the title carries the section).
+- Calculator page: title "See how much money Spind saves", no subtitle, slider values and the big saving in CTA yellow, the dark band runs straight into the footer (no white strip; same on the contact page).
+- Go live timeline v2: 2px track, 12px square points at each phase start (open, then filled as the run passes), yellow end point, week numbers without tick lines that turn dark as the run passes. Hover: the phase's stretch of track turns blue, its point fills with a soft halo, label and title turn blue and the text appears.
+- Navigation: new "Case studies" menu after Use cases, built from the stories and split by industry (Logistics, Energy, Healthcare, Insurance), each with an industry icon, the company and the use cases it runs. Same layout as the other menus: two link columns (two industries stacked per column) and a dark feature card linking to all stories. The mobile menu and the footer list it too (footer now 4 columns from 1024px).
+- Customer story template: title is Heading/H2 (40/48, was Display/Page 48/56), metric numbers use the stat style (40/48, were 72/72). The hero and the metric cards are one dark surface, so the hover glow runs across both and stops in the middle of the cards (fixes the hard glow edge). No line under the metric cards. The quote in the story has a round photo (initials until a photo is set) left of the name and role.
+- Cimet logo added (public/images/cimet-logo-dark.svg for light surfaces, -light.svg for dark ones, component CimetLogo). Used in the footer: "All rights reserved. Spind is a product of [Cimet logo]".
+- Customer story template, round 2: hero has the title and summary on the left and the company logo (40px) on the right, both centred vertically. Metric cards are 132px tall (24px padding, number and label centred). Facts list the exact cities under Sites (e.g. 12 branches: Hamburg, Bremen, …, Wien, Linz). "All customer stories" is a small secondary button on the right of the "More stories" title instead of a text link under the cards (Section component has an optional link).
+
 ---
 
 ## Built
+
+### 2026-11-24 · Round 8: content review against Figma, nav cleanup, glows on hover only
+- **Navigation**
+  - Removed: the Pricing nav link, "Product overview →", "All use cases →", and the Service and Device lifecycle menu items. Service and Device lifecycle are also gone from the footer.
+  - The Product feature card now promotes the video ("See Spind in action", "Watch the video" → `#video`) instead of pricing.
+  - Menu items: the icon tile is vertically centred (middle left).
+- **Removed sections**
+  - The Platform feature tiles (Live status … Maps) on the website. They weren't in Figma.
+  - "You never touch the locker" (the lifecycle tiles), in both Figma and on the website.
+- **Glows**
+  - Dark surfaces rest without any glow: the hero band, template heroes and mega menu feature cards.
+  - The blue glow fades in only while the mouse is over the section, and follows the pointer.
+  - Figma shows the resting state: the radial layers are removed, and the shader base plus grain stay.
+- **Buttons**
+  - Hover and Pressed add a very light outer glow: 16px blur in the button colour (CTA yellow 35%, primary indigo 30%, secondary ink 12%).
+  - "Check it with us" is a yellow CTA. It had been deleted from the Figma result tile; it's back as a CTA.
+- **Text cursor:** the caret in inputs is CTA yellow (`caret-color`).
+- **Pricing band:** dark (`Surface/Neutral/Dark`) with white title and text, as in Figma.
+- **Testimonials:** 48px profile circles next to each person. They show initials until a photo is set (`quote.photo` in site.ts). The first card's circle is darker blue; the others are washed blue.
+- **Contact (Figma 33:133 / 33:136):**
+  - Title and intro sit at the top, the person card at the bottom.
+  - Person card: dark card with a hairline border, Pera's round photo (`public/images/pera-jovicki.png`, exported from Figma at 3×), name, email and phone.
+- **Footer:** "© 2026 Cimet" on the left, "All rights reserved. Spind and LISSA Asset are products of Cimet." on the right. Both "Cimet" words link to https://cimet.rs/.
+- **Content now matching Figma:**
+  - No intro on "Go live in 12 weeks" or on the video section.
+  - No "Video coming soon" caption.
+  - No "All customer stories" link under the home testimonials. It stays on customer story pages, where Figma has it.
+
+### 2026-11-24 · Round 7: dark template heroes, drawers on hover only, blue active step
+- **Template pages** (use case pages, Customer stories, a single customer story):
+  - The whole first section is the dark "space" surface (Ice/1100, blue glows, fine grain and stars), with a blue glow that follows the mouse.
+  - The header sits on it transparent with white text (Header Theme=Dark) and turns white once the page scrolls.
+  - **Figma:** a locked `hero space` rectangle sits behind the header bar and hero on each template frame. The header bar has no fill and uses the Dark header. Hero text is OnSurface or OnDark.
+  - **Website:** a shared `.space` / `.space-glow` style in global.css, used by the home band and the template heroes. `Base` has a `darkHero` prop that starts the header transparent. One script handles every `[data-hero]`.
+- **Drawers:** no drawer is highlighted by default (home hero, Modules, use case heroes). On the website, a drawer opens only while the mouse is over it, or within 6px of it. The How it works story locker still shows its target drawer, because it's part of the story.
+- **Active step** in "From request to device in four steps": default blue (`Surface/Action/Default`) with white text.
+- **Use case pages:** "How it works with Spind" no longer has the grey shade, the same as the home page.
+- **Website fix:** made the title line-splitting animation safe; it could throw a console error.
+
+### 2026-11-24 · Round 6: hero from Figma (31:3), yellow text selection
+- **Hero, following your Figma change:**
+  - The locker is 800 × 382 and its three modules stand apart. Gap 22px at 252px module width, which is 17.5 viewBox units; the `gap` prop on `LockerDrawing`.
+  - Band height 415px.
+  - 64px between the locker and the headline, 32px between the headline and the buttons.
+  - The headline uses Display/Page (48/56) at max width 776px, with normal line breaks: "Devices available 24/7 without / bothering IT staff".
+  - Smaller screens scale the same way: the locker is 4 / 6 / 7 cells wide, and the band ends about three quarters down the locker.
+- **Text selection (website only):** CTA yellow `--surface-cta-default` with black `--text-cta-default`, like the CTA buttons.
+
+### 2026-11-24 · Round 5: navigation redesign, hero interaction, type, form (Figma and website together)
+
+**Navigation**
+- **New Figma components:** `Mega menu` (Menu=Product / Use cases), `Menu item` (Default / Hover, with an Icon swap property) and 12 `Icon/*` components. The icons are the same paths as `src/content/icons.ts`.
+- **Panel layout:**
+  - Two link columns on columns 1–8 (400px each). Each column has an uppercase label, a hairline, then Menu items: a 40px icon tile on washed blue, plus title and description with a 4px gap.
+  - The first column ends with an overview link: "Product overview →" or "All use cases →".
+  - A grey panel (`Surface/Neutral/Page-Shade`) starts at column 9 and holds a dark feature card (the hero's space look) with an eyebrow, title, text and a small CTA button.
+- **Hover:** the row fills with page colour, the icon tile turns blue with a white icon, and the title turns blue.
+- **Overlay:** while a menu is open, the page under it gets `Surface/Overlay` (Ice/1000 at 60%). Clicking the overlay closes the menu.
+- **Nav spacing:** 40px between nav items (`Spacing/Gap/General/Section/sm`).
+- **Figma:** the Mega menus frames now use the new component, with the overlay drawn under the panel.
+
+**Hero**
+- The purple glow is now the drawer blue, `Blue/500`.
+- **Website:** the main glow follows the mouse inside the band, and the drawer closest to the pointer opens. The random drawer cycle is gone. This only runs for mouse users who allow motion.
+- The facts row (Access, Availability, Managed in) is removed.
+
+**Type and labels**
+- **Smaller titles:**
+  - Display/Hero 56/64
+  - Display/Page 48/56
+  - Heading/H2 40/48
+  - Heading/H3 24/32
+  - Heading/H4 18/26
+  - Display/Stat 64
+  - The website scales down by the same amount at smaller widths.
+- **Eyebrow labels:** UI/Label and UI/Label Small are now Geist SemiBold 12/16, 4% tracking, uppercase.
+
+**Background and sections**
+- The square grid is 5% now: `Ice/1000-5`, renamed from `Ice/1000-10`.
+- "From request to device in four steps" no longer has the shaded background.
+
+**FAQ**
+- Only one answer can be open at a time. The website uses the `name` attribute on `<details>`, with a small script as fallback.
+- 6 questions, as in Figma.
+
+**Contact form**
+- The form card uses `Surface/Neutral/Dark`, matching your Figma change on 33:140.
+- `Input field` has a new Theme property, Light or Dark (10 variants). The contact form uses Dark:
+  - Labels: `Text/Colors/Neutral/OnSurface`
+  - Fields: `Surface/Neutral/Input OnDark` (Neutral/1000)
+  - Borders: `Border/Neutral/OnDark`
+  - Typed text: `Text/Colors/Neutral/OnDark`
+  - Placeholder: `Text/Colors/Neutral/Placeholder OnDark` (Neutral/400)
+  - Focus: blue `Border/Focus`. Error: `Border/Status/Error`.
+
+**Your Figma changes, now on the website**
+- **Module names:** Master, **Nikola, Viktor, Larry**. They also appear in the menu text "Master, Nikola, Viktor and Larry" and in the rollout checklist.
+- **No intro text** on "You never touch the locker" or on "Calculate your business case".
+- **FAQ:** the 6 questions from Figma. The 3 extra website-only questions are removed.
 
 ### Built on the website on 2026-11-24 (rounds 1–4)
 Everything below was built. Website-only details:
@@ -282,3 +407,49 @@ Everything below was built. Website-only details:
 - **Copy:** "Book a demo" is now "Book a call" everywhere, including the form email subject.
 - **FAQ toggle:** plain plus, no box or stroke. When open, it rotates and turns blue.
 - **Still to tidy in Figma:** the old paint styles (Brand/*, Neutral/*, Navy/*, Overlay/*) are unused and can be deleted. Keep LISSA/*.
+
+## 2026-11-24 — code-only changes (not yet in Figma)
+- Template pages: removed the "What it looks like today" section.
+- Contact form: "Number of sites" counter with down/up steppers (Figma 105:1452); blue glow behind the form section.
+- Calculator and form moved to their own pages: /business-case and /contact. Calculator uses the same dark glow band as the form; "Check it with us" is the yellow CTA.
+- Today vs With Spind: redesigned as paired rows with hover/focus state (strike-through, yellow accent bar, arrow badge).
+- FAQ plus drawn with thin 1.5px lines. Video play button 128px, new poster image (Figma 86:227).
+- Footer matched to Figma 97:541: big S at 124px from the top (34px left of the container, cut by the bottom edge), light 300 bottom line, Cimet links open in a new tab.
+- Glows: no glow at rest on any dark background. On hover a bigger mouse-following blue glow (min 1000px circle) appears on the home hero, template heroes, contact and business case pages, and the footer.
+- Customer story page: the dark hero now runs behind the top half of the three metric cards; the facts widget (Industry, Sites, Lockers, Solutions) is a white card on the page background.
+- Today vs With Spind: the "With Spind" side is black (Surface/Neutral/Darkest) instead of indigo; hover lifts it to Surface/Neutral/Dark.
+- "Built to save time and increase efficiency": each use case card has its own nav icon (same Icon/* set as the mega menu) in a 48px washed square. Hover: card lifts 4px, washed fill + blue frame, icon box turns blue, tilts and the icon redraws, title turns blue, arrow slides in, blue line runs along the bottom.
+- Motion across the site: reveals rise with a blur-in, line icons draw themselves in, hover cards get a faint cursor-following grey spotlight and a bigger lift, yellow CTAs get a light sweep, mega menu icons tilt and redraw on hover. All off with reduced motion.
+- "More use cases" on use case pages now uses the same Use case card as the home page (own icon, same hover and animations): one shared component, `UseCaseCard.astro`.
+- Locker drawing (all lockers on the site): master module redesigned after Figma 105:1457 — one central touch screen (rounded, dark bezel, soft screen glow, sheen) with a round badge reader on the left and a QR / camera scanner on the right. Bodies get a lit top-to-bottom gradient and a light crown strip, no feet or plinth (removed), soft floor shadow under the locker, "SPIND" mark on the service panel. Ideas taken from Cora's deck: front view with real hardware details and depth.
+- New home section "Connected to the tools you already run" (#integrations, after Platform) + "Integrations" in the Product menu and footer: dark hub (Spind + LISSA Asset, animated rings) and four cards — LISSA Asset, your sign-in, your service desk, logistics and service partners. Copy stays generic until Pera confirms partners and systems.
+- Glows: darker navy (Blue/800 → Blue/900) instead of bright Blue/500, closer to the dark backgrounds. Pricing band now also gets the hover glow.
+- Secondary buttons are outlined (transparent fill, dark outline on light, white outline on dark), fill slides in on hover.
+- How it works (Figma 31:222): title "From request to device in 4 steps"; 600px steps list on the left (122px rows, number Geist 31/44 light, bold white on the active blue row), locker centred in the remaining space, no progress bar. Steps advance every 3.2s while in view; hover, focus or click shows a step.
+- Hover rule for the whole site: fill only. No borders/frames, no lifting, no rotating or scaling icons, no sliding arrows. Applies to tiles, use case cards, integration cards, story cards, mega menu icons, button arrows, video play button.
+- Today vs With Spind: arrows on the seam are always yellow with a dark arrow, step numbers removed, header reads "With" + the Spind logo (same SVG as the header).
+- Locker floor shadow reduced to a thin contact shadow; the big drop shadows under the hero, module and use case lockers are removed.
+- Favicon: yellow S (#FFD369 with dark mark).
+- New page /integrations for enterprise buyers: hero, landscape map (your systems → LISSA Asset → Spind lockers), systems we connect (ERP, ITSM, identity, HR, endpoint, partners, with example products), how we connect (REST API, events/webhooks, SSO, file import), security band, Go live, integration FAQ, CTA. Product menu "Integrations" and the home section's "See all integrations" button link to it. All system names and security claims need Pera's confirmation.
+- Typography: every font weight on the website is one step bolder (body Hanken Grotesk 300→400, 400→500; titles and UI Geist 500→600, 600→700, 700→800). Fonts loaded: Geist 600/700/800, Hanken Grotesk 400/500. The LISSA Asset mockup (Inter) is unchanged, since it mirrors the product UI.
+- Header: menu items get no underline on hover or when their dropdown is open (colour change only; the current-section indicator stays). The language selector is a light filled box (flag, code, chevron), 36px tall, its dropdown opens below it.
+- Lockers: no hover effect anywhere (no drawer opens near the cursor, modules no longer dim when hovering the locker or its labels; labels still work on click/focus). Every locker is drawn 20% smaller: hero 640px instead of 800 (dark band shortened to match), Modules locker and labels 80% width, use case heroes 384px, How it works stage 400px.
+- Layout system (whole site, after the Chainlink reference): the square background grid is gone. The site now reads as one cabinet of drawers: two hairline rails run the full page height on the container edges (on-dark lines through dark heroes, bands and footer, and around the header). Every section starts with a drawer label strip — 48px, hairlines above and below, 6px blue square + Geist Mono caps (13px, 8% tracking) — then the title. Section heads and dark-surface content are inset 24px from the rails. Labels live in `site.ts` → `sectionLabels`.
+- Mega menu, drawer style: white panel exactly the container width, three equal columns split by hairlines, each with the same mono label strip (Spind locker / LISSA Asset / Video, Device lifecycle / People and sites / Business case). Items: plain line icon, 18px title, description; hover = light blue fill, title and icon turn blue. The feature card sits in the third column. The open menu item is boxed between two hairlines (no underline).
+- New font: Geist Mono 500 (labels only).
+- Drawer frame refinements: all frame lines (rails, label strips, header edges, mega menu columns and edges, open menu item box) are Ice/1000 at 15% (white at 15% on dark) — tokens `--line` / `--line-ondark`. Rails are now drawn on the page body, so they land exactly on the container edges (were half a pixel off next to the header and menu). One shared vertical alignment line 24px inside the left rail: logo, label squares, section titles, mega menu icons and the feature card all start on it. Header menu items (Product, Use cases) are Hanken Grotesk 600; label strips Geist Mono 600. The customer logo strip now scrolls inside the rails.
+- Open menu item: light blue fill instead of side lines (the side lines could not line up with the menu columns). Label strips (FAQ, ROLLOUT, …) and menu column labels are black (Text/Neutral/Headings). Tile padding is 24px at every width, so section titles, label squares and tile text share the same left line on smaller screens too (they drifted to ~18px below 1280).
+- Grid relationships (after the second Chainlink reference): the page outside the rails is white; every section is a light panel (Surface/Neutral/Page) between the rails, closed top and bottom by hairlines that run the full screen width, so they cross the rails. Between two panels is a white spacer strip (40px mobile / 64px desktop) — the "gap between drawers". One inset token `--inset` (20px mobile / 40px desktop) sets the distance from the rails to the content: logo, header items, label text, section titles, tiles, mega menu labels and icons all start on it. Label strips still run rail to rail. Tile grids use fractional columns so they fit the inset panel.
+- Grid on every block of every page: each top-level block (heroes, dark bands, panels, footer edge) now closes with a full-width hairline, so every section has rails left and right and lines top and bottom. Blocks that were outside the system now use it: the customer logo strip (a panel; logos scroll rail to rail), the customer stories list, the customer story body and the legal pages (each with its own label strip). The checklist resource page (not linked in the nav) is unchanged.
+- Header: open menu item is blue text only (no fill box, whose edges did not sit on the grid lines). Language box and Book a call are both exactly 44px tall with an 8px gap.
+- Platform and Workflows moved off the home page to their own template pages: /platform (hero, LISSA Asset mockup, features, integrations, go live, FAQ) and /workflows (hero, use case cards + Today vs With Spind, how it works, go live, FAQ). Shared hero component `TemplateHero.astro` (same layout as the use case pages). Menu items Platform and Workflows link to the pages.
+- Grid rules, final: (1) the two rails are drawn above every section, so they are always visible, also over dark bands; line colour Ice/400 at 30% reads on white and on dark. (2) Every block has two full-width lines: where it starts and where its content ends; the white spacer (40/64px) sits between that line and the next block's start line. Dark/hero blocks follow the same rule. (3) Content sits on the grid lines: card grids, comparison, story, integrations, video player, pricing band, mockup and locker figure run rail to rail and stand on the bottom line; text stays on the 40px inset.
+- Mega menu icons use the same tile as the use case cards: 48px washed square with a 24px blue line icon; on hover the square turns blue and the icon redraws in white. The tile starts on the 40px inset line, like the label squares.
+- How it works: the locker now sits in its own white box right next to the 4 steps (same height, same hairline frame as the step rows), instead of floating on the panel.
+- How it works: the locker box uses the dark hero surface (Ice/1100 with grain and stars) and the same mouse-following blue glow on hover as the hero sections.
+- Every horizontal grid line spans the whole screen: label strip lines, the header bottom line and the line above the Cimet copyright in the footer (was container width) now run edge to edge in the grid line colour.
+- Buttons: every yellow CTA ends with an arrow on the right (header "Book a call" and the mobile menu CTA got one). On hover only the arrow animates — it slides out to the right and back in from the left (600ms); the label and the button stay still. Off with reduced motion.
+- Title font trial: new "Fonts" dropdown in the header (2 columns of 5 + a feature card, not in the footer) with 10 hero-only pages at /fonts/<slug> (noindex). Each shows the home hero copy with one monospace title font: IBM Plex Mono, JetBrains Mono, Roboto Mono, Source Code Pro, Fira Code, Space Mono, DM Mono, Red Hat Mono, Martian Mono, Geist Mono (500, Space Mono 400). Body text stays Hanken Grotesk. List in site.ts → fontTrials.
+- Title font decision: keep Geist. The Fonts menu and the 10 trial pages were removed, and the extra font packages uninstalled (Geist Mono stays for the label strips).
+- Title font trial, round 2 (sans-serif, bold 700): Fonts dropdown again (not in the footer) with 10 hero-only pages at /fonts/<slug> (noindex): IBM Plex Sans, Inter, Archivo, Work Sans, Instrument Sans, Space Grotesk, Manrope, DM Sans, Plus Jakarta Sans, Sora. Only the hero title changes; body stays Hanken Grotesk.
+- Title font decision: IBM Plex Sans. It replaces Geist everywhere Geist was used (titles, buttons, numbers, menu labels, locker screen text). Titles h1–h4 are Bold 700; UI text keeps its weights (Plex has no 800, so 800 → 700). Font trial menu and pages removed, other trial fonts and Geist uninstalled. Label strips stay Geist Mono, body stays Hanken Grotesk. Figma text styles still need the same switch.

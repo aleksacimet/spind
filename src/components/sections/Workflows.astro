@@ -1,91 +1,82 @@
 ---
 import Section from '../Section.astro';
 import { getContent } from '../../content/site';
+import UseCaseCard from '../UseCaseCard.astro';
+import Logo from '../Logo.astro';
 const t = getContent(Astro.props.locale);
 const w = t.workflows;
 ---
 <Section id="workflows" title={w.title} intro={w.intro}>
   <ul class="tiles wf" role="list" data-fit>
     {w.cards.map((c, i) => (
-      <li class="tile wf-card" data-reveal="drawer" style={`--d:${(i % 3) * 90 + Math.floor(i / 3) * 120}ms`}>
-        <div class="title-body">
-          <h3><a class="wf-link" href={`/use-cases/${c.slug}`}>{c.title}</a></h3>
-          <p>{c.text}</p>
-        </div>
-        <span class="arrow" aria-hidden="true">→</span>
-      </li>
+      <UseCaseCard slug={c.slug} title={c.title} text={c.text} delay={(i % 3) * 90 + Math.floor(i / 3) * 120} />
     ))}
   </ul>
 
-  <div class="compare">
-    <div class="panel panel--today" data-reveal="drawer">
-      <div class="panel-head"><h3 class="panel-title">{w.today}</h3></div>
-      <ol class="rows" role="list">
-        {w.compare.map(([today]) => (
-          <li class="row">
-            <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 1.5C6.15 1.5 1.5 6.15 1.5 12S6.15 22.5 12 22.5 22.5 17.85 22.5 12 17.85 1.5 12 1.5Zm4.05 15.75L12 13.2l-4.05 4.05-1.2-1.2L10.8 12 6.75 7.95l1.2-1.2L12 10.8l4.05-4.05 1.2 1.2L13.2 12l4.05 4.05-1.2 1.2Z" fill="var(--icon-status-error)" /></svg>
-            <span class="txt"><s>{today}</s></span>
-          </li>
-        ))}
-      </ol>
+  <!-- Today vs with Spind: one row per pair. Hover (or focus) a row: today is crossed out, the Spind side lights up. -->
+  <div class="cmp" data-reveal="drawer">
+    <div class="cmp-head" aria-hidden="true">
+      <span class="cmp-h cmp-h--today">{w.today}</span>
+      <span class="cmp-h cmp-h--spind">{w.withLead} <Logo height={36} title="" class="cmp-logo" /></span>
     </div>
-    <div class="panel panel--spind on-accent" data-reveal="drawer" style="--d:150ms">
-      <div class="panel-head"><h3 class="panel-title">{w.withLead} {w.withBrand}</h3></div>
-      <ol class="rows" role="list">
-        {w.compare.map(([, spind], i) => (
-          <li class="row" style={`--k:${i}`}>
-            <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M11.49 21.75c.29.16.66.16.96 0 8.01-4.3 8.58-12.71 8.57-15.1a1 1 0 0 0-.6-.9l-8.05-3.57a1 1 0 0 0-.81 0L3.57 5.75a1 1 0 0 0-.6.89c-.03 2.38.45 10.8 8.52 15.11ZM8.67 10.29l2.3 2.3 4.29-4.3 1.41 1.42-5.7 5.7-3.71-3.7 1.41-1.42Z" fill="var(--icon-neutral-ondark)" /></svg>
-            <span class="txt">{spind}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
+    <ol class="cmp-rows" role="list">
+      {w.compare.map(([today, spind], i) => (
+        <li class="cmp-row" tabindex="0" style={`--k:${i}`}>
+          <span class="c c--today">
+            <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 1.5C6.15 1.5 1.5 6.15 1.5 12S6.15 22.5 12 22.5 22.5 17.85 22.5 12 17.85 1.5 12 1.5Zm4.05 15.75L12 13.2l-4.05 4.05-1.2-1.2L10.8 12 6.75 7.95l1.2-1.2L12 10.8l4.05-4.05 1.2 1.2L13.2 12l4.05 4.05-1.2 1.2Z" fill="currentColor" /></svg>
+            <span class="txt"><span class="sr-only">{w.today}: </span><span class="strike">{today}</span></span>
+          </span>
+          <span class="c-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M5 12h13m-5-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5" /></svg></span>
+          <span class="c c--spind">
+            <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M11.49 21.75c.29.16.66.16.96 0 8.01-4.3 8.58-12.71 8.57-15.1a1 1 0 0 0-.6-.9l-8.05-3.57a1 1 0 0 0-.81 0L3.57 5.75a1 1 0 0 0-.6.89c-.03 2.38.45 10.8 8.52 15.11ZM8.67 10.29l2.3 2.3 4.29-4.3 1.41 1.42-5.7 5.7-3.71-3.7 1.41-1.42Z" fill="currentColor" /></svg>
+            <span class="txt"><span class="sr-only">{w.withLead} {w.withBrand}: </span>{spind}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
   </div>
 </Section>
 
 <style>
-  .wf .tile { grid-column: span 4; --rows: 2; }
-  /* Figma "Use case card": title + body, arrow on the right, washed blue on hover. */
-  .wf .tile { display: flex; align-items: flex-start; gap: var(--spacing-gap-general-object-lg); transition: background-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
-  .wf .title-body { flex: 1; }
-  .wf .tile h3 { margin: 0; }
-  .wf-link { text-decoration: none; }
-  .wf-link::after { content: ''; position: absolute; inset: 0; z-index: 2; }
-  .wf .arrow { font-family: var(--font-display); font-weight: 500; font-size: 20px; line-height: 28px; color: var(--text-action-default); transition: transform var(--dur-fast) var(--ease); }
-  .wf .tile:hover { background: var(--surface-action-washed); box-shadow: inset 0 0 0 var(--hair) var(--border-action-default); }
-  .wf .tile:hover .arrow { transform: translateX(4px); }
-  @media (min-width: 640px) { .wf .tile { grid-column: span 4; } }
-  @media (min-width: 960px) { .wf .tile { grid-column: span 4; } }
-
-  /* Comparison: two panels (Figma): 96px head, 56px rows with an icon. */
-  .compare {
-    margin-top: var(--cell);
-    display: grid;
-    grid-template-columns: repeat(var(--cols), var(--cell));
-    row-gap: var(--u);
+  /* Comparison (Today vs With Spind): paired rows, light "today" half, indigo "Spind" half, arrow badge on the seam. */
+  .cmp { position: relative; }
+  .cmp-head { display: grid; grid-template-columns: 1fr 1fr; }
+  .cmp-h { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); padding: var(--pad-block) var(--inset); }
+  .cmp-h--today { color: var(--text-neutral-body); background: var(--surface-neutral-default); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); }
+  .cmp-h--spind { display: flex; align-items: center; gap: var(--spacing-gap-text-lg); color: var(--text-neutral-onsurface); background: var(--surface-neutral-darkest); }
+  .cmp-h--spind :global(.cmp-logo) { display: block; height: 36px; width: auto; color: var(--text-neutral-onsurface); }
+  .cmp-rows { display: grid; }
+  .cmp-row { position: relative; display: grid; grid-template-columns: 1fr 1fr; outline: none; cursor: default; }
+  .c { display: flex; align-items: center; gap: var(--spacing-gap-general-object-md); min-height: 88px; padding: var(--spacing-padding-container-sm) var(--inset); transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease); }
+  .c .ic { flex: none; width: 20px; height: 20px; transition: color var(--dur) var(--ease); }
+  .c--today { background: var(--surface-neutral-default); color: var(--text-neutral-body); box-shadow: inset var(--hair) 0 0 var(--border-neutral-default), inset 0 calc(var(--hair) * -1) 0 var(--border-neutral-default); }
+  .c--today .ic { color: var(--icon-status-error); }
+  .c--today .txt { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); }
+  /* The strike draws from left to right on hover. */
+  .strike { background: linear-gradient(currentColor, currentColor) 0 55% / 0% var(--hair) no-repeat; transition: background-size 450ms var(--ease-out); }
+  .c--spind { position: relative; background: var(--surface-neutral-darkest); color: var(--text-neutral-onsurface); padding-left: calc(var(--inset) + var(--spacing-padding-container-sm)); box-shadow: inset 0 calc(var(--hair) * -1) 0 color-mix(in srgb, var(--border-neutral-white, #fff) 14%, transparent); }
+  .c--spind .txt { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); }
+  .c--spind::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--surface-cta-default); opacity: 0; transition: opacity var(--dur) var(--ease); }
+  .c-arrow {
+    position: absolute; left: 50%; top: 50%; z-index: 2;
+    display: grid; place-items: center; width: 32px; height: 32px;
+    transform: translate(-50%, -50%);
+    background: var(--surface-cta-default); color: var(--icon-cta-default);
   }
-  .panel { grid-column: 1 / -1; }
-  .panel-head { height: 96px; padding: var(--spacing-padding-container-sm) var(--spacing-padding-container-lg) var(--spacing-padding-container-3xl); }
-  .panel-title { font-size: calc(var(--fs-subtitle) * 1.4); line-height: 40px; }
-  .rows { display: grid; grid-auto-rows: 76px; }
-  .row { display: flex; align-items: center; gap: var(--spacing-gap-general-object-md); padding: 0 var(--spacing-padding-container-lg); }
-  .ic { flex: none; width: 20px; height: 20px; margin: 2px; } /* 20px icon in a 24px box */
-  .panel--today { background: var(--surface-neutral-default); outline: var(--hair) solid var(--border-neutral-default); outline-offset: calc(var(--hair) * -1); }
-  .panel--today .panel-title, .panel--today .txt { color: var(--text-neutral-body); }
-  .panel--today s { text-decoration-thickness: var(--hair); }
-  .panel--spind { background: var(--surface-action-default); color: var(--text-neutral-onsurface); }
-  .panel--spind .panel-title { color: var(--text-neutral-onsurface); }
-  .panel--spind .row { gap: var(--spacing-gap-text-md); padding: 0 var(--spacing-padding-container-xl); }
-  .panel--spind .txt { font-family: var(--font-display); font-weight: 500; }
+  /* Hover / keyboard focus */
+  .cmp-row:hover .c--today, .cmp-row:focus-visible .c--today { background: var(--surface-neutral-page-shade); color: var(--text-neutral-subtle); }
+  .cmp-row:hover .strike, .cmp-row:focus-visible .strike { background-size: 100% var(--hair); }
+  .cmp-row:hover .c--spind, .cmp-row:focus-visible .c--spind { background: var(--surface-neutral-dark); }
+  .cmp-row:hover .c--spind::before, .cmp-row:focus-visible .c--spind::before { opacity: 1; }
+  .cmp-row:hover .c--spind .ic, .cmp-row:focus-visible .c--spind .ic { color: var(--surface-cta-default); }
+  .cmp-row:focus-visible { box-shadow: inset 0 0 0 var(--border-width-focus) var(--border-focus); z-index: 3; }
   @media (prefers-reduced-motion: no-preference) {
-    :global(.js) .panel--spind .row { opacity: 0; transform: translateX(-12px); transition: opacity 500ms var(--ease), transform 600ms var(--ease-out); transition-delay: calc(500ms + var(--k) * 110ms); }
-    :global(.js) .panel--spind.is-visible .row { opacity: 1; transform: none; }
+    :global(.js) .cmp .cmp-row { opacity: 0; transform: translateY(12px); transition: opacity 500ms var(--ease), transform 600ms var(--ease-out); transition-delay: calc(300ms + var(--k) * 90ms); }
+    :global(.js) .cmp.is-visible .cmp-row { opacity: 1; transform: none; }
   }
-
-  @media (min-width: 960px) {
-    .compare { row-gap: 0; }
-    .panel--today { grid-column: 1 / span 6; }
-    .panel--spind { grid-column: 7 / span 6; }
-  }
-  @media (min-width: 1280px) { .panel-title { font-size: 28px; } }
+  @media (max-width: 767px) {
+    .cmp-head { display: none; }
+    .cmp-row { grid-template-columns: 1fr; margin-bottom: var(--spacing-gap-general-object-md); }
+    .c-arrow { left: auto; right: var(--inset); transform: translate(0, -50%) rotate(90deg); }
+    }
 </style>

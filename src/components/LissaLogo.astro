@@ -1,0 +1,16 @@
+---
+/**
+ * LISSA Asset logo, the one place the product is named (Integrations).
+ * Two files in public/images: -dark (dark lettering, for light surfaces) and -light (white lettering, for dark surfaces).
+ */
+interface Props { onDark?: boolean }
+const { onDark = false } = Astro.props;
+---
+<span class="lissa-logo">
+  <img src={`/images/lissa-asset-logo-${onDark ? 'light' : 'dark'}.svg`} alt="LISSA Asset" width="80" height="32" loading="lazy" />
+</span>
+
+<style>
+  .lissa-logo { display: inline-flex; align-items: center; height: 48px; }
+  .lissa-logo img { display: block; height: 32px; width: auto; }
+</style>

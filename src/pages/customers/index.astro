@@ -3,24 +3,29 @@
  * Customer stories, like cora.tech/customer-stories: logo wall, industry filter, featured story, cards.
  * Built when showStories is true. While flags.exampleProof is on, everything here is fictional and labelled "Example".
  */
+import DrawerHead from '../../components/DrawerHead.astro';
 import Base from '../../layouts/Base.astro';
 import StoryCard from '../../components/StoryCard.astro';
 import LogoStrip from '../../components/sections/LogoStrip.astro';
-import Contact from '../../components/sections/Contact.astro';
 import { getContent } from '../../content/site';
 const t = getContent('en');
 const c = t.customers;
 const stories = t.proof.stories;
 const industries = [...new Set(stories.map((s) => s.industry))];
 ---
-<Base title={`${c.title} | Spind`} description={c.intro}>
-  <header class="container cs-hero">
-    <h1>{c.title}</h1>
-    <p class="intro">{c.intro}</p>
-    <p class="note">{c.exampleNote}</p>
-  </header>
+<Base title={`${c.title} | Spind`} description={c.intro} darkHero>
+  <section class="space page-hero" aria-labelledby="cs-title" data-hero>
+    <div class="space-glow" aria-hidden="true"></div>
+    <header class="container cs-hero">
+      <h1 id="cs-title">{c.heroTitle}</h1>
+      <p class="intro">{c.intro}</p>
+      <p class="note">{c.exampleNote}</p>
+    </header>
+  </section>
 
-  <section class="container cs-list" aria-labelledby="cs-list-title">
+  <section class="section" aria-labelledby="cs-list-title">
+  <div class="container cs-list">
+    <DrawerHead label={c.title} />
     <h2 id="cs-list-title" class="sr-only">{c.title}</h2>
     <div class="filters" role="group" aria-label={c.filterLabel} data-filters>
       <button type="button" class="chip" aria-pressed="true" data-filter="">{c.all}</button>
@@ -31,10 +36,10 @@ const industries = [...new Set(stories.map((s) => s.industry))];
       {stories.slice(1).map((s, i) => <StoryCard slug={s.slug} i={i + 1} />)}
     </div>
     <p class="sr-only" aria-live="polite" data-filter-status></p>
+  </div>
   </section>
 
   <LogoStrip wall />
-  <Contact locale="en" />
 </Base>
 
 <script>
@@ -53,14 +58,14 @@ const industries = [...new Set(stories.map((s) => s.industry))];
 </script>
 
 <style>
-  .cs-hero { padding-top: calc(var(--header-h) + var(--spacing-padding-section-xs)); padding-bottom: var(--spacing-padding-section-xs); display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
+  .cs-hero { padding-top: var(--hero-top); padding-bottom: var(--hero-bottom); display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
   .cs-hero h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; }
-  .intro { max-width: 560px; color: var(--text-neutral-body); }
-  .note { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-gap-text-md) var(--spacing-gap-text-lg); color: var(--text-neutral-body); }
+  .cs-hero .intro { max-width: 560px; color: var(--text-neutral-ondark); }
+  .note { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-gap-text-md) var(--spacing-gap-text-lg); color: var(--text-neutral-placeholder-ondark); }
 
-  .cs-list { padding-bottom: var(--spacing-padding-section-xl); }
-  .filters { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-text-md); margin-bottom: 32px; }
-  .chip { height: 40px; padding: 0 var(--spacing-padding-container-sm); border: var(--hair) solid var(--border-neutral-default); background: var(--surface-neutral-default); color: var(--text-neutral-headings); font-family: var(--font-display); font-weight: 500; font-size: 16px; line-height: 24px; cursor: pointer; transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .cs-list.container { padding-bottom: var(--spacer) !important; }
+  .filters { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-text-md); margin-bottom: var(--spacing-gap-general-group-lg); }
+  .chip { height: 40px; padding: 0 var(--spacing-padding-container-sm); border: var(--hair) solid var(--border-neutral-default); background: var(--surface-neutral-default); color: var(--text-neutral-headings); font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px; cursor: pointer; transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
   .chip:hover { border-color: var(--border-neutral-strong); }
   .chip[aria-pressed='true'] { background: var(--surface-neutral-darkest); border-color: var(--border-neutral-dark); color: var(--text-neutral-onsurface); }
   .grid { display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
@@ -69,7 +74,6 @@ const industries = [...new Set(stories.map((s) => s.industry))];
     .grid > :global(.story--featured) { grid-column: 1 / -1; }
   }
   @media (min-width: 1280px) {
-    .cs-hero { padding-top: 148px; }
-    .cs-hero h1 { font-size: 56px; line-height: 64px; letter-spacing: -0.03em; }
+    .cs-hero h1 { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; }
   }
 </style>

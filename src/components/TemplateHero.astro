@@ -1,0 +1,45 @@
+---
+/**
+ * Template page hero (same as the use case pages): dark space band, copy on the left
+ * (label, title, intro, CTA + secondary), a visual on the right (slot, defaults to the locker).
+ */
+import LockerDrawing from './LockerDrawing.astro';
+interface Props { id: string; label?: string; title: string; intro: string; primary: string; primaryHref?: string; secondary?: string; secondaryHref?: string }
+const { id, label, title, intro, primary, primaryHref = '/contact', secondary, secondaryHref = '/business-case' } = Astro.props;
+---
+<section class="tpl-hero space" aria-labelledby={`${id}-title`} data-hero>
+  <div class="space-glow" aria-hidden="true"></div>
+  <div class="container tpl-grid">
+    <div class="tpl-copy">
+      {label && <p class="tpl-label">{label}</p>}
+      <h1 id={`${id}-title`} data-split>{title}</h1>
+      <p class="tpl-intro">{intro}</p>
+      <div class="tpl-actions">
+        <a class="btn btn--cta" href={primaryHref}>{primary}<span class="arrow" aria-hidden="true">→</span></a>
+        {secondary && <a class="btn btn--secondary" href={secondaryHref}>{secondary}</a>}
+      </div>
+    </div>
+    <div class="tpl-visual">
+      <slot><LockerDrawing id={`tpl-${id}`} modules={['master', 's24']} gap={17.5} animate accent={null} label="Spind locker" /></slot>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tpl-hero { padding-top: var(--hero-top); padding-bottom: var(--hero-bottom); }
+  .tpl-grid { display: flex; flex-direction: column; gap: var(--spacing-gap-general-section-md); }
+  .tpl-copy { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
+  .tpl-label { font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--surface-cta-default); }
+  .tpl-hero h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; max-width: 640px; }
+  .tpl-intro { max-width: 520px; }
+  .tpl-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-general-object-md); margin-top: var(--spacing-gap-text-md); }
+  .tpl-visual { width: 100%; max-width: 384px; }
+  @media (min-width: 960px) {
+    .tpl-grid { flex-direction: row; align-items: center; justify-content: space-between; }
+    .tpl-copy { width: 600px; }
+    .tpl-visual { width: 384px; }
+  }
+  @media (min-width: 1280px) {
+    .tpl-hero h1 { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; }
+  }
+</style>
