@@ -109,7 +109,7 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
   .sol-links { display: grid; gap: var(--spacing-gap-text-md); margin-top: var(--spacing-gap-text-sm); }
   .sol-links a { display: inline-flex; align-items: center; gap: var(--spacing-gap-text-md); color: var(--text-action-default); text-decoration: none; }
   .sol-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
-  .sol-links svg { fill: none; stroke: currentColor; stroke-width: 1.4; flex: none; }
+  .sol-links svg { fill: none; stroke: currentColor; stroke-width: var(--stroke); vector-effect: non-scaling-stroke; flex: none; }
   .text { display: grid; gap: var(--spacing-gap-general-section-md); max-width: 720px; }
   .text h2 { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); letter-spacing: 0; margin-bottom: var(--spacing-gap-text-md); }
   .text p { color: var(--text-neutral-body); }

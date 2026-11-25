@@ -1,0 +1,21 @@
+---
+/** Platform features: tiles with title and text, 3 per row. */
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+const t = getContent(Astro.props.locale);
+---
+<Section id="features" title={t.platformPage.featuresTitle} label="Features">
+  <ul class="tiles feats" role="list">
+    {t.platform.features.map((f, i) => (
+      <li class="tile tile--hover" data-reveal="drawer" data-spot style={`--d:${(i % 3) * 80}ms`}>
+        <div class="title-body"><h3>{f.title}</h3><p>{f.text}</p></div>
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<style>
+  .feats { grid-auto-rows: auto; }
+  .feats .tile { grid-column: 1 / -1; grid-row: auto; min-height: 160px; }
+  @media (min-width: 640px) { .feats .tile { grid-column: span 4; } }
+</style>

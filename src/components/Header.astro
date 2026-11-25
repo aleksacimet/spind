@@ -216,7 +216,7 @@ const flags: Record<string, string> = {
   /* Open menu item: boxed between two hairlines, like a pulled-out drawer front. */
   /* Open menu item: light fill only. No side lines, since they can't line up with the menu columns below. */
   .nav-trigger[aria-expanded='true'] { color: var(--text-action-default); } /* text colour only: a fill box would add edges that don't sit on the grid lines */
-  .chev { width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform var(--dur-fast) var(--ease); }
+  .chev { width: 6px; height: 6px; border-right: var(--hair) solid currentColor; border-bottom: var(--hair) solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform var(--dur-fast) var(--ease); }
   [aria-expanded='true'] > .chev, .m-group[open] .chev { transform: translateY(1px) rotate(-135deg); }
 
   /*
@@ -276,10 +276,12 @@ const flags: Record<string, string> = {
   }
   /* Same icon tile as the use case cards: 48px washed square, blue line icon; on hover the square turns blue and the icon redraws in white. */
   .dd-icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; background: var(--surface-action-washed); transition: background-color var(--dur-fast) var(--ease); }
-  .dd-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--icon-action-strong); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; transition: stroke var(--dur-fast) var(--ease); }
+  .dd-icon svg :is(path, circle, line, rect) { vector-effect: non-scaling-stroke; }
+  .dd-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--icon-action-strong); stroke-width: var(--stroke); stroke-linecap: round; stroke-linejoin: round; transition: stroke var(--dur-fast) var(--ease); }
   .dd-link:hover, .dd-link:focus-visible { background: var(--surface-action-washed); }
   .dd-link:hover .dd-icon, .dd-link:focus-visible .dd-icon { background: var(--surface-action-default); }
-  .dd-link:hover .dd-icon svg, .dd-link:focus-visible .dd-icon svg { stroke: var(--icon-neutral-onsurface); }
+  .dd-link:hover .dd-icon svg, .dd-link:focus-visible .dd-icon svg :is(path, circle, line, rect) { vector-effect: non-scaling-stroke; }
+  .dd-icon svg { stroke: var(--icon-neutral-onsurface); }
   @media (prefers-reduced-motion: no-preference) {
     .dd-link:hover .dd-icon path { animation: icon-draw 700ms var(--ease-out); }
   }

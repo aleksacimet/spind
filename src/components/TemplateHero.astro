@@ -4,8 +4,14 @@
  * (label, title, intro, CTA + secondary), a visual on the right (slot, defaults to the locker).
  */
 import LockerDrawing from './LockerDrawing.astro';
-interface Props { id: string; label?: string; title: string; intro: string; primary: string; primaryHref?: string; secondary?: string; secondaryHref?: string }
-const { id, label, title, intro, primary, primaryHref = '/contact', secondary, secondaryHref = '/business-case' } = Astro.props;
+interface Props {
+  id: string; label?: string; title: string; intro: string; primary: string; primaryHref?: string; secondary?: string; secondaryHref?: string;
+  /** false: copy only, no visual on the right (Integrations page). */
+  visual?: boolean;
+  /** Accessible label of the default locker drawing. */
+  visualLabel?: string;
+}
+const { id, label, title, intro, primary, primaryHref = '/contact', secondary, secondaryHref = '/business-case', visual = true, visualLabel = 'Spind locker' } = Astro.props;
 ---
 <section class="tpl-hero space" aria-labelledby={`${id}-title`} data-hero>
   <div class="space-glow" aria-hidden="true"></div>
@@ -19,9 +25,11 @@ const { id, label, title, intro, primary, primaryHref = '/contact', secondary, s
         {secondary && <a class="btn btn--secondary" href={secondaryHref}>{secondary}</a>}
       </div>
     </div>
-    <div class="tpl-visual">
-      <slot><LockerDrawing id={`tpl-${id}`} modules={['master', 's24']} gap={17.5} animate accent={null} label="Spind locker" /></slot>
-    </div>
+    {visual && (
+      <div class="tpl-visual">
+        <slot><LockerDrawing id={`tpl-${id}`} modules={['master', 's24']} gap={17.5} animate accent={null} label={visualLabel} /></slot>
+      </div>
+    )}
   </div>
 </section>
 

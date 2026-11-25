@@ -32,8 +32,10 @@ const t = getContent(Astro.props.locale);
     /* Locker width; 3 modules standing apart (635 x 300 viewBox), height about 0.47 of the width. */
     --lw: calc(var(--cell) * 4);
     --locker-top: var(--cell);
-    padding-bottom: var(--u);
+    padding-bottom: var(--spacing-gap-general-group-lg);
   }
+  /* The hero runs straight into the logo marquee: no line and no spacer under the buttons. */
+  :global(main) > .hero { border-bottom: 0; margin-bottom: 0; }
 
   .band {
     position: absolute;
@@ -73,7 +75,7 @@ const t = getContent(Astro.props.locale);
   }
   @media (min-width: 1280px) {
     /* Figma: header 84 + 48 gap, locker 800 x 382, band 415, gaps 64 / 32, bottom 56 */
-    .hero { --lw: 800px; --locker-top: 132px; padding-bottom: var(--spacing-padding-section-sm); }
+    .hero { --lw: 800px; --locker-top: 132px; padding-bottom: 32px; }
     .band { height: calc(132px + 640px * 0.354); } /* ends ~3/4 down the (20% smaller) locker */
     .hero-title { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; max-width: 776px; margin-top: var(--spacing-gap-general-section-lg); }
     .hero-actions { margin-top: 32px; }

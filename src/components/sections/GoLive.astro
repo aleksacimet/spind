@@ -32,7 +32,7 @@ const weeks = Math.max(...g.phases.map((p) => p.to));
 
 <style>
   /* White panel rail to rail, like the tile grids; text starts on the --inset line. */
-  .tl { --step: 180ms; --start: 300ms; --pt: 12px; --line: 2px; background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); padding: var(--pad-block) var(--inset); }
+  .tl { --step: 180ms; --start: 300ms; --pt: 12px; --line: var(--hair); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); padding: var(--pad-block) var(--inset); }
   .tl-body { position: relative; }
   .tl-ruler { display: none; }
 

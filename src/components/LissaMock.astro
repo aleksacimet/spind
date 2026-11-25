@@ -185,7 +185,7 @@ const nav = [
     background: var(--l-page);
     -webkit-font-smoothing: antialiased;
   }
-  .ic { width: 1.25em; height: 1.25em; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .ic { width: 1.25em; height: 1.25em; fill: none; stroke: currentColor; stroke-width: var(--stroke); vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; flex: none; }
   .ic.sm { width: 1em; height: 1em; }
 
   /* Sidebar */
@@ -250,7 +250,7 @@ const nav = [
   .sn { width: 17.5em; }
   .sn .ic { color: var(--l-body); }
   .check { display: flex; align-items: center; gap: 1em; margin-left: 1.5em; color: var(--l-body); }
-  .cb { width: 1.1em; height: 1.1em; border: 2px solid var(--l-body); border-radius: 0.2em; }
+  .cb { width: 1.1em; height: 1.1em; border: var(--hair) solid var(--l-body); border-radius: 0.2em; }
   .thead, .trow { display: grid; grid-template-columns: 13.75em 26.6em 26.6em 12.5em 10em 1fr; align-items: center; padding: 0 1em; }
   .thead { height: 3em; color: var(--l-body); text-transform: uppercase; }
   .thead span { display: flex; align-items: center; gap: 0.25em; }
@@ -258,7 +258,7 @@ const nav = [
   .trow { height: 4em; background: #fff; color: var(--l-body); }
   .atype { display: flex; align-items: center; gap: 0.5em; }
   .aic { width: 2.5em; height: 2.5em; border-radius: 999px; background: var(--l-subtle); display: grid; place-items: center; color: var(--l-action); }
-  .qr { width: 1.4em; height: 1.4em; fill: none; stroke: var(--l-action); stroke-width: 1.6; margin-left: 3em; }
+  .qr { width: 1.4em; height: 1.4em; fill: none; stroke: var(--l-action); stroke-width: var(--stroke); vector-effect: non-scaling-stroke; margin-left: 3em; }
   .st-pending { color: #C26A00; }
   .st-expired { color: var(--l-ph); }
   .st-completed { color: var(--l-ok); }

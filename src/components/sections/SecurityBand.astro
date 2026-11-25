@@ -1,0 +1,38 @@
+---
+/** Security band: dark glow band with a label strip, title and a 2-column grid of icon items. One component, used wherever security is shown. */
+import DrawerHead from '../DrawerHead.astro';
+import { getContent } from '../../content/site';
+import { integrationIcons } from '../../content/icons';
+interface Props { locale?: string; title: string; items: { key: string; title: string; text: string }[] }
+const { locale, title, items } = Astro.props;
+const t = getContent(locale);
+---
+<section class="section sec-band glow-band on-accent" aria-labelledby="sec-title" data-hero>
+  <div class="space-glow" aria-hidden="true"></div>
+  <div class="container">
+    <DrawerHead label={t.sectionLabels.security} />
+    <h2 id="sec-title" class="sec-title" data-split>{title}</h2>
+    <ul class="sec-grid" role="list">
+      {items.map((s, i) => (
+        <li class="sec-item glow-panel" data-reveal="drawer" style={`--d:${i * 80}ms`}>
+          <svg class="line-icon sec-ic" viewBox="0 0 22 22" width="28" height="28" aria-hidden="true"><path d={integrationIcons[s.key]} pathLength="1" /></svg>
+          <div class="title-body"><h3>{s.title}</h3><p>{s.text}</p></div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* Security band */
+  .sec-band { padding-block: 0 var(--spacer); }
+  .sec-band .sec-title { padding-top: var(--head-pad); }
+  .sec-title { color: var(--text-neutral-onsurface); max-width: 560px; margin-bottom: var(--head-pad); }
+  .sec-grid { display: grid; gap: var(--spacing-gap-general-group-md); }
+  .sec-item { display: flex; gap: var(--spacing-gap-general-object-lg); padding: var(--pad-block) var(--inset); }
+  .sec-ic { flex: none; stroke: var(--surface-cta-default); }
+  .sec-item h3 { color: var(--text-neutral-onsurface); }
+  .sec-item p { color: var(--text-neutral-ondark); }
+  @media (min-width: 960px) { .sec-grid { grid-template-columns: repeat(2, 1fr); } }
+
+</style>

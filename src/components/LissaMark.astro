@@ -1,0 +1,35 @@
+---
+/**
+ * LISSA Asset logomark (from lissa_logomark.svg), inverted: white mark on an indigo tile.
+ * Hover on the parent card (.lissa-card): the tile turns washed indigo, the mark indigo, and its three parts
+ * redraw in place one after another (a wipe, nothing moves).
+ */
+---
+<span class="lissa-mark" aria-hidden="true">
+  <svg viewBox="12 8 24 32" width="24" height="32">
+    <path class="lm lm-1" d="M16.8643 35.2949H12V19.4297C11.9921 18.8474 12.0983 18.2692 12.3125 17.7295C12.5268 17.1897 12.8452 16.6987 13.248 16.2861L16.8643 12.6572V35.2949Z" />
+    <path class="lm lm-2" d="M31.04 12.6816H35.9287V28.5713C35.9286 29.1508 35.8158 29.7247 35.5977 30.2598C35.3794 30.795 35.0591 31.2808 34.6562 31.6895L31.04 35.3193V12.7002H16.8643L20.2578 9.26758C21.064 8.45593 22.1508 8.00023 23.2832 8H31.04V12.6816Z" />
+    <path class="lm lm-3" d="M31.0098 35.3193L27.6348 38.7275C26.8321 39.5379 25.7501 39.9943 24.6211 40H16.8643L16.8525 35.3193H31.0098Z" />
+  </svg>
+</span>
+
+<style>
+  .lissa-mark {
+    flex: none; display: grid; place-items: center; width: 48px; height: 48px;
+    background: var(--surface-action-default);
+    transition: background-color var(--dur) var(--ease);
+  }
+  .lm { fill: var(--neutral-white); transition: fill var(--dur) var(--ease); }
+  :global(.lissa-card:is(:hover, :focus-visible)) .lissa-mark { background: var(--surface-action-washed); }
+  :global(.lissa-card:is(:hover, :focus-visible)) .lm { fill: var(--surface-action-default); }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.lissa-card:is(:hover, :focus-visible)) .lm { animation: lm-wipe 520ms var(--ease-out) both; }
+    :global(.lissa-card:is(:hover, :focus-visible)) .lm-1 { animation-name: lm-wipe-up; }
+    :global(.lissa-card:is(:hover, :focus-visible)) .lm-2 { animation-delay: 120ms; animation-name: lm-wipe-down; }
+    :global(.lissa-card:is(:hover, :focus-visible)) .lm-3 { animation-delay: 240ms; }
+  }
+  /* The parts are revealed by a clip, so they stay exactly where they are. */
+  @keyframes lm-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes lm-wipe-up { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes lm-wipe-down { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+</style>

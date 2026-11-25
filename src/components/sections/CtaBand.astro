@@ -1,0 +1,26 @@
+---
+/** Closing CTA: label strip (NEXT STEP) and a dark band with title, text and a CTA button. One component for every page that closes with a call to action. */
+import DrawerHead from '../DrawerHead.astro';
+import { getContent } from '../../content/site';
+interface Props { locale?: string; id?: string; title: string; text?: string; cta: string; href?: string }
+const { locale, id = 'cta', title, text, cta, href = '/contact' } = Astro.props;
+const t = getContent(locale);
+---
+<section class="section" aria-labelledby={`${id}-title`}>
+  <div class="container">
+    <DrawerHead label={t.sectionLabels.cta} />
+    <div class="cta-band glow-band on-accent" data-reveal data-hero>
+      <div class="space-glow" aria-hidden="true"></div>
+      <div class="title-body"><h2 id={`${id}-title`}>{title}</h2>{text && <p>{text}</p>}</div>
+      <a class="btn btn--cta" href={href}>{cta}<span class="arrow" aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Closing CTA */
+  .cta-band { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-gap-general-object-lg); padding: var(--pad-block) var(--inset); }
+  .cta-band h2 { color: var(--text-neutral-onsurface); font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: -0.01em; } /* a band title, not a section title */
+  .cta-band p { color: var(--text-neutral-ondark); max-width: 560px; }
+  @media (min-width: 960px) { .cta-band { flex-direction: row; align-items: center; justify-content: space-between; } }
+</style>

@@ -1,8 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import TemplateHero from '../components/TemplateHero.astro';
-import Section from '../components/Section.astro';
 import Platform from '../components/sections/Platform.astro';
+import Features from '../components/sections/Features.astro';
 import Integrations from '../components/sections/Integrations.astro';
 import GoLive from '../components/sections/GoLive.astro';
 import Faq from '../components/sections/Faq.astro';
@@ -14,22 +14,8 @@ const P = t.platformPage;
 <Base title={`${P.label} | Spind`} description={P.meta} locale={locale} darkHero>
   <TemplateHero id="platform-page" label={P.label} title={P.title} intro={P.intro} primary={P.primary} secondary={P.secondary} />
   <Platform locale={locale} />
-  <Section id="features" title={P.featuresTitle} label="Features">
-    <ul class="tiles feats" role="list">
-      {t.platform.features.map((f, i) => (
-        <li class="tile tile--hover" data-reveal="drawer" data-spot style={`--d:${(i % 3) * 80}ms`}>
-          <div class="title-body"><h3>{f.title}</h3><p>{f.text}</p></div>
-        </li>
-      ))}
-    </ul>
-  </Section>
+  <Features locale={locale} />
   <Integrations locale={locale} />
   <GoLive locale={locale} />
   <Faq locale={locale} />
 </Base>
-
-<style>
-  .feats { grid-auto-rows: auto; }
-  .feats .tile { grid-column: 1 / -1; grid-row: auto; min-height: 160px; }
-  @media (min-width: 640px) { .feats .tile { grid-column: span 4; } }
-</style>

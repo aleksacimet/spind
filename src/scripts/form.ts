@@ -84,6 +84,7 @@ export function initContactForm() {
       if (!res.ok) throw new Error(String(res.status));
       form.reset();
       setStatus(msg.msgSuccess!, 'ok');
+      document.dispatchEvent(new CustomEvent('spind:sent'));
     } catch {
       setStatus(msg.msgFailure!, 'error');
     } finally {

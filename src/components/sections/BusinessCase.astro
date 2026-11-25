@@ -74,8 +74,8 @@ const h = (n: number) => Math.round(n).toLocaleString('de-DE');
   input[type='range']::-webkit-slider-runnable-track { height: 4px; background: linear-gradient(to right, var(--surface-action-default) var(--p), var(--surface-neutral-track) var(--p)); }
   input[type='range']::-moz-range-track { height: 4px; background: var(--surface-neutral-track); }
   input[type='range']::-moz-range-progress { height: 4px; background: var(--surface-action-default); }
-  input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; background: var(--surface-neutral-default); border: 2px solid var(--border-action-default); border-radius: 0; transform: rotate(45deg) scale(0.8); transition: transform var(--dur-fast) var(--ease); }
-  input[type='range']::-moz-range-thumb { width: 16px; height: 16px; background: var(--surface-neutral-default); border: 2px solid var(--border-action-default); border-radius: 0; transform: rotate(45deg); }
+  input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; margin-top: -8px; background: var(--surface-neutral-default); border: var(--hair) solid var(--border-action-default); border-radius: 0; transform: rotate(45deg) scale(0.8); transition: transform var(--dur-fast) var(--ease); }
+  input[type='range']::-moz-range-thumb { width: 16px; height: 16px; background: var(--surface-neutral-default); border: var(--hair) solid var(--border-action-default); border-radius: 0; transform: rotate(45deg); }
   input[type='range']:hover::-webkit-slider-thumb, input[type='range']:focus-visible::-webkit-slider-thumb { transform: rotate(45deg) scale(1); background: var(--surface-action-default); }
 
   .calc-result { background: var(--surface-neutral-dark); color: var(--text-neutral-onsurface); border-color: transparent; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }

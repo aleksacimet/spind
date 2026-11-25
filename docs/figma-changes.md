@@ -13,6 +13,17 @@ When a batch is built, move it from To build to Built and note the date.
 
 _Nothing waiting. Add new Figma changes here._
 
+## Built in code only, Figma still to update (2026-11-25, round 2)
+
+- Home hero: the full-width line under the buttons is gone and the bottom padding is smaller (32px desktop, 32px below). The hero runs straight into the logo marquee.
+- Home logo strip: no "Trusted by IT teams in enterprises" label strip and no lines above and below it (only on home, right under the hero). The customers page logo wall keeps its label.
+- "Touchpoints for one faulty device" (Problem) title is left aligned like every other section.
+- Shared section components: use case pages and the Integrations page now use the same hero component as Platform and Workflows (TemplateHero; Integrations has no visual). New components: SecurityBand, CtaBand (closing CTA) and Features (platform features). Change a section once and every page that shows it follows.
+- Integrations, LISSA Asset card: logomark only (no wordmark), inverted: white mark on an indigo 48px tile. The whole card is a link (to /integrations). Hover: tile turns washed indigo, mark indigo and its three parts redraw in place one after another; title turns blue; "Read full" (underlined, blue) fades in under the text, its space reserved so nothing moves. On touch screens "Read full" is always shown.
+- Interface sounds (Web Audio, very quiet, no files): tap on buttons/links/cards, select on steps/modules/filters, open/close on FAQ, menus and dropdowns, a soft tick on sliders, a three-note chime when the contact form is sent. Footer has a "Sound: On/Off" switch, remembered per browser.
+- One stroke width everywhere: 1px (token Border width/Hair, was 0.5px). Grid lines, borders, dividers, icon strokes (non-scaling), illustration lines, timeline track, slider thumb, tab underline all use it. Only the 2px keyboard focus ring stays thicker (accessibility).
+- Video: the cursor is a pointer over the whole player, even while the video is a placeholder.
+
 ## Built in code only, Figma still to update (2026-11-25)
 
 - Grid lines quieter: line colour Ice/400 at 18% (was 30%), on dark white at 9% (was 15%). Border/Neutral/Default now uses the same line colour, so cards and grid lines are one colour.

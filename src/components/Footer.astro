@@ -48,6 +48,7 @@ const groups = t.nav.groups.map((g) => ({
   </div>
   <div class="container footer-bottom full-line full-line--top">
     <p>© {year} <a href={t.footer.rightsUrl} target="_blank" rel="noopener">{t.footer.rightsOwner}</a></p>
+    <button type="button" class="sound-toggle" data-sound-toggle aria-pressed="true" data-on={t.footer.soundOn} data-off={t.footer.soundOff}>{t.footer.sound}: <span data-sound-state>{t.footer.soundOn}</span></button>
     <p class="rights">{t.footer.rights} <a class="cimet-link" href={t.footer.rightsUrl} target="_blank" rel="noopener"><CimetLogo onDark height={16} /></a></p>
   </div>
 </footer>
@@ -72,6 +73,8 @@ const groups = t.nav.groups.map((g) => ({
   }
   .footer-bottom a { color: inherit; text-underline-offset: 4px; }
   .footer-bottom a:hover { color: var(--text-neutral-onsurface); }
+  .sound-toggle { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; transition: color var(--dur-fast) var(--ease); }
+  .sound-toggle:hover { color: var(--text-neutral-onsurface); }
   .rights { display: flex; align-items: center; gap: var(--spacing-gap-text-md); }
   .cimet-link { display: inline-flex; opacity: 0.85; transition: opacity var(--dur-fast) var(--ease); }
   .cimet-link:hover { opacity: 1; }

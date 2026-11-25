@@ -54,7 +54,7 @@ const initials = (name: string) => name.replace(/^Dr\.\s*/, '').split(/\s+/).map
   blockquote p { font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 28px; color: var(--text-neutral-headings); text-wrap: pretty; }
 
   .q-link { display: inline-flex; align-items: center; gap: var(--spacing-gap-text-md); flex: none; color: var(--icon-action-default); text-decoration: none; font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px; }
-  .q-arrow { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: square; }
+  .q-arrow { fill: none; stroke: currentColor; stroke-width: var(--stroke); vector-effect: non-scaling-stroke; stroke-linecap: square; }
   /* Hover on the arrow: "Read full" fades in next to it. Nothing moves. */
   .q-more { opacity: 0; transition: opacity var(--dur-fast) var(--ease); }
   .q-link:is(:hover, :focus-visible) .q-more { opacity: 1; }

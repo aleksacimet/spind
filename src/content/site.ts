@@ -246,6 +246,8 @@ const en = {
     title: 'Connected to the tools you already run',
     intro: '',
     hubTitle: 'Our application',
+    readFull: 'Read full',
+    lissaHref: '/integrations',
     hubText: 'One record for every locker, drawer, device and handover.',
     items: [
       { key: 'lissa', title: 'LISSA Asset', text: 'Every device in a drawer is an asset with its full history.', logo: true },
@@ -804,6 +806,9 @@ const en = {
     rightsUrl: 'https://cimet.rs/',
     rights: 'All rights reserved. Spind is a product of',
     legalNav: 'Legal',
+    sound: 'Sound',
+    soundOn: 'On',
+    soundOff: 'Off',
     pageNav: 'Sections',
     pricing: 'Pricing',
     checklist: 'Rollout checklist',

@@ -4,7 +4,7 @@ import { getContent } from '../../content/site';
 const t = getContent(Astro.props.locale);
 const p = t.problem;
 ---
-<Section id="problem" title={p.title} intro={p.intro} center class="section--problem">
+<Section id="problem" title={p.title} intro={p.intro} class="section--problem">
   <ul class="tiles pains" role="list" data-fit>
     {p.cards.map((c, i) => (
       <li class="tile tile--hover" data-reveal="drawer" style={`--d:${i * 80}ms`}>

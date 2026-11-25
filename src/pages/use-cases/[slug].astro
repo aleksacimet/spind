@@ -1,7 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Section from '../../components/Section.astro';
-import LockerDrawing from '../../components/LockerDrawing.astro';
+import TemplateHero from '../../components/TemplateHero.astro';
 import UseCaseCard from '../../components/UseCaseCard.astro';
 import { getContent } from '../../content/site';
 
@@ -16,22 +16,7 @@ const s = S.items.find((i) => i.slug === Astro.params.slug)!;
 const others = S.items.filter((i) => i.slug !== s.slug);
 ---
 <Base title={`${s.title} | Spind`} description={s.intro} locale={locale} darkHero>
-  <section class="sol-hero space" aria-labelledby="sol-title" data-hero>
-    <div class="space-glow" aria-hidden="true"></div>
-    <div class="container sol-hero-grid">
-      <div class="sol-copy">
-        <h1 id="sol-title">{s.heroTitle}</h1>
-        <p class="sol-intro">{s.intro}</p>
-        <div class="sol-actions">
-          <a class="btn btn--cta" href="/contact">{S.primary}<span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn--secondary" href="/business-case">{S.secondary}</a>
-        </div>
-      </div>
-      <div class="sol-visual">
-        <LockerDrawing id={`sol-${s.slug}`} modules={['master', 's24']} gap={17.5} animate accent={null} label={`${s.title} with a Spind locker`} />
-      </div>
-    </div>
-  </section>
+  <TemplateHero id="sol" title={s.heroTitle} intro={s.intro} primary={S.primary} secondary={S.secondary} visualLabel={`${s.title} with a Spind locker`} />
 
   <Section id="flow" title={S.flowTitle}>
     <ol class="tiles flow" role="list">
@@ -58,14 +43,6 @@ const others = S.items.filter((i) => i.slug !== s.slug);
 </Base>
 
 <style>
-  .sol-hero { padding-top: var(--hero-top); padding-bottom: var(--hero-bottom); }
-  .sol-hero-grid { display: flex; flex-direction: column; gap: var(--spacing-gap-general-section-md); }
-  .sol-copy { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
-  .sol-hero h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; max-width: 640px; }
-  .sol-intro { max-width: 520px; }
-  .sol-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-general-object-md); margin-top: var(--spacing-gap-text-md); }
-  .sol-visual { width: 100%; max-width: 384px; }
-
   .tiles { grid-auto-rows: auto; }
   .tiles .tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-text-md); }
   .tiles .tile h3 { margin: 0; }
@@ -78,12 +55,6 @@ const others = S.items.filter((i) => i.slug !== s.slug);
     .tiles .tile { grid-column: span 4; }
   }
   @media (min-width: 960px) {
-    .sol-hero-grid { flex-direction: row; align-items: center; justify-content: space-between; }
-    .sol-copy { width: 600px; }
-    .sol-visual { width: 384px; }
     .flow .tile { grid-column: span 3; min-height: 260px; }
-  }
-  @media (min-width: 1280px) {
-    .sol-hero h1 { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; }
   }
 </style>

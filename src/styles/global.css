@@ -452,7 +452,8 @@ main > .section.glow-band--page:last-child { margin-bottom: 0; border-bottom: 0;
 
 /* ===== Motion layer (site-wide) ===== */
 /* Line icons: shared stroke style (Figma Icon/*, 22px grid). */
-.line-icon { fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.line-icon :is(path, circle, line, rect, polyline) { vector-effect: non-scaling-stroke; }
+.line-icon { fill: none; stroke-width: var(--stroke); stroke-linecap: round; stroke-linejoin: round; }
 @keyframes icon-draw { from { stroke-dasharray: 1; stroke-dashoffset: 1; } to { stroke-dasharray: 1; stroke-dashoffset: 0; } }
 
 /* Spotlight: on hover a faint neutral grey light follows the cursor inside a card (main.ts sets --mx / --my). */

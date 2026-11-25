@@ -2,16 +2,17 @@
 import MockLogo from '../MockLogo.astro';
 import DrawerHead from '../DrawerHead.astro';
 import { getContent, flags } from '../../content/site';
-interface Props { locale?: string; wall?: boolean }
-const { locale, wall = false } = Astro.props;
+/** bare: no label strip and no lines (home, right under the hero). */
+interface Props { locale?: string; wall?: boolean; bare?: boolean }
+const { locale, wall = false, bare = false } = Astro.props;
 const t = getContent(locale);
 const logos = t.proof.logos;
 ---
 <!-- Social proof logos: a constant, infinite horizontal scroll (two identical sets, the second one hidden from screen readers). -->
 {flags.exampleProof && (
-  <section class:list={['section logos', { 'logos--wall': wall }]} aria-label={t.sectionLabels.logos}>
+  <section class:list={['section logos', { 'logos--wall': wall, 'logos--bare': bare }]} aria-label={t.sectionLabels.logos}>
     <div class="container">
-    <DrawerHead label={t.sectionLabels.logos} />
+    {!bare && <DrawerHead label={t.sectionLabels.logos} />}
     <div class="marquee">
       <div class="track">
         {[0, 1].map((copy) => (
@@ -44,6 +45,9 @@ const logos = t.proof.logos;
     .set[aria-hidden] { display: none; }
   }
 
+
+  :global(main) > .logos--bare { border-top: 0; }
+  .logos--bare .marquee { padding-top: var(--spacing-gap-general-object-lg); }
 
   .logos--wall .set { gap: var(--spacing-gap-general-section-xl); padding-right: var(--spacing-padding-section-xl); }
 </style>

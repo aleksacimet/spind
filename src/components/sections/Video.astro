@@ -24,6 +24,8 @@ const v = t.video;
 </Section>
 
 <style>
+  /* Pointer cursor over the whole video, even while there is nothing to play yet. */
+  .player, .player * { cursor: pointer; }
   .player { position: relative; aspect-ratio: 16 / 9; background: var(--surface-neutral-dark); overflow: hidden; }
   .player video { width: 100%; height: 100%; object-fit: cover; display: block; }
   .poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -39,7 +41,6 @@ const v = t.video;
     border: 0; border-radius: var(--scale-max);
     background: var(--surface-cta-default);
     color: var(--icon-cta-default);
-    cursor: default;
   }
   .play svg { fill: currentColor; }
   .player:hover .play { box-shadow: 0 0 32px color-mix(in srgb, var(--surface-cta-default) 45%, transparent); }

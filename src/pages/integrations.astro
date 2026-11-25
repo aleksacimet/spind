@@ -1,7 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
-import DrawerHead from '../components/DrawerHead.astro';
+import TemplateHero from '../components/TemplateHero.astro';
+import SecurityBand from '../components/sections/SecurityBand.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
 import LissaLogo from '../components/LissaLogo.astro';
 import GoLive from '../components/sections/GoLive.astro';
 import Faq from '../components/sections/Faq.astro';
@@ -16,18 +18,7 @@ const icon = (k: string) => integrationIcons[k];
 <!-- Integrations page for enterprise IT (ideas from Cora's "REST APIs / Plugins / Data security" slide):
      landscape map, systems, connection methods, security, rollout, FAQ, CTA. -->
 <Base title={`${P.label} | Spind`} description={P.meta} locale={locale} darkHero>
-  <section class="ip-hero space" aria-labelledby="ip-title" data-hero>
-    <div class="space-glow" aria-hidden="true"></div>
-    <div class="container"><div class="ip-hero-inner">
-      <p class="label ip-label">{P.label}</p>
-      <h1 id="ip-title" data-split>{P.title}</h1>
-      <p class="ip-intro">{P.intro}</p>
-      <div class="ip-actions">
-        <a class="btn btn--cta" href="/contact">{P.primary}<span class="arrow" aria-hidden="true">→</span></a>
-        <a class="btn btn--secondary" href="/business-case">{P.secondary}</a>
-      </div>
-    </div></div>
-  </section>
+  <TemplateHero id="ip" label={P.label} title={P.title} intro={P.intro} primary={P.primary} secondary={P.secondary} visual={false} />
 
   <!-- Landscape map: your systems -> LISSA Asset -> Spind lockers at every site. Dots flow along the lines. -->
   <Section id="map" title={P.mapTitle} intro={P.mapIntro}>
@@ -90,45 +81,15 @@ const icon = (k: string) => integrationIcons[k];
     </ul>
   </Section>
 
-  <section class="section sec-band glow-band on-accent" aria-labelledby="sec-title" data-hero>
-    <div class="space-glow" aria-hidden="true"></div>
-    <div class="container">
-      <DrawerHead label={t.sectionLabels.security} />
-      <h2 id="sec-title" class="sec-title" data-split>{P.securityTitle}</h2>
-      <ul class="sec-grid" role="list">
-        {P.security.map((s, i) => (
-          <li class="sec-item glow-panel" data-reveal="drawer" style={`--d:${i * 80}ms`}>
-            <svg class="line-icon sec-ic" viewBox="0 0 22 22" width="28" height="28" aria-hidden="true"><path d={icon(s.key)} pathLength="1" /></svg>
-            <div class="title-body"><h3>{s.title}</h3><p>{s.text}</p></div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
+  <SecurityBand title={P.securityTitle} items={P.security} />
 
   <GoLive locale={locale} />
   <Faq locale={locale} id="integration-faq" title={P.faqTitle} items={P.faq} />
 
-  <section class="section" aria-labelledby="ip-cta-title">
-    <div class="container">
-      <DrawerHead label={t.sectionLabels.cta} />
-      <div class="cta-band glow-band on-accent" data-reveal data-hero>
-        <div class="space-glow" aria-hidden="true"></div>
-        <div class="title-body"><h2 id="ip-cta-title">{P.ctaTitle}</h2><p>{P.ctaText}</p></div>
-        <a class="btn btn--cta" href="/contact">{P.cta}<span class="arrow" aria-hidden="true">→</span></a>
-      </div>
-    </div>
-  </section>
+  <CtaBand id="ip-cta" title={P.ctaTitle} text={P.ctaText} cta={P.cta} />
 </Base>
 
 <style>
-  .ip-hero { padding-top: var(--hero-top); padding-bottom: var(--hero-bottom); }
-  .ip-hero-inner { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); max-width: 760px; }
-  .ip-label { color: var(--surface-cta-default); }
-  .ip-hero h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; }
-  .ip-intro { max-width: 600px; }
-  .ip-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-general-object-md); margin-top: var(--spacing-gap-text-md); }
-
   /* Landscape map */
   .map { display: grid; gap: var(--spacing-gap-general-object-lg); align-items: center; padding: var(--pad-block) var(--inset); }
   .map-h { color: var(--text-neutral-subtle); margin-bottom: var(--spacing-gap-text-lg); }
@@ -136,9 +97,9 @@ const icon = (k: string) => integrationIcons[k];
   .chip, .site { display: flex; align-items: center; gap: var(--spacing-gap-text-lg); padding: var(--spacing-padding-container-xs) var(--spacing-padding-container-sm); background: var(--surface-neutral-default); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-headings); }
   .chip svg { stroke: var(--icon-action-strong); flex: none; }
   .site svg { flex: none; }
-  .lk { fill: var(--surface-neutral-default); stroke: var(--border-neutral-strong); stroke-width: 1; }
+  .lk { fill: var(--surface-neutral-default); stroke: var(--border-neutral-strong); stroke-width: var(--stroke); vector-effect: non-scaling-stroke; }
   .lk-scr { fill: #1E2530; }
-  .lk-ln { stroke: var(--border-neutral-default); stroke-width: 1; }
+  .lk-ln { stroke: var(--border-neutral-default); stroke-width: var(--stroke); vector-effect: non-scaling-stroke; }
   .map-hub { display: grid; justify-items: center; text-align: center; gap: var(--spacing-gap-text-md); padding: var(--pad-block) var(--inset); min-height: 260px; align-content: center; }
   .hub-title { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); color: var(--text-neutral-onsurface); margin-top: var(--spacing-gap-text-md); }
   .hub-text { color: var(--text-neutral-ondark); max-width: 240px; }
@@ -147,7 +108,7 @@ const icon = (k: string) => integrationIcons[k];
   @media (min-width: 960px) {
     .map { grid-template-columns: 1fr 96px 1.1fr 96px 1fr; }
     .map-link { display: grid; gap: 40px; }
-    .map-link span { height: 2px; background: repeating-linear-gradient(90deg, var(--border-action-default) 0 6px, transparent 6px 14px); background-size: 14px 2px; opacity: 0.6; }
+    .map-link span { height: var(--hair); background: repeating-linear-gradient(90deg, var(--border-action-default) 0 6px, transparent 6px 14px); background-size: 14px var(--hair); opacity: 0.6; }
   }
   @media (min-width: 960px) and (prefers-reduced-motion: no-preference) {
     .map-link span { animation: flow 1.2s linear infinite; }
@@ -172,23 +133,4 @@ const icon = (k: string) => integrationIcons[k];
     .four .tile { grid-column: span 3; min-height: 220px; }
   }
 
-  /* Security band */
-  .sec-band { padding-block: 0 var(--spacer); }
-  .sec-band .sec-title { padding-top: var(--head-pad); }
-  .sec-title { color: var(--text-neutral-onsurface); max-width: 560px; margin-bottom: var(--head-pad); }
-  .sec-grid { display: grid; gap: var(--spacing-gap-general-group-md); }
-  .sec-item { display: flex; gap: var(--spacing-gap-general-object-lg); padding: var(--pad-block) var(--inset); }
-  .sec-ic { flex: none; stroke: var(--surface-cta-default); }
-  .sec-item h3 { color: var(--text-neutral-onsurface); }
-  .sec-item p { color: var(--text-neutral-ondark); }
-  @media (min-width: 960px) { .sec-grid { grid-template-columns: repeat(2, 1fr); } }
-
-  /* Closing CTA */
-  .cta-band { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-gap-general-object-lg); padding: var(--pad-block) var(--inset); }
-  .cta-band h2 { color: var(--text-neutral-onsurface); font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: -0.01em; } /* a band title, not a section title */
-  .cta-band p { color: var(--text-neutral-ondark); max-width: 560px; }
-  @media (min-width: 960px) { .cta-band { flex-direction: row; align-items: center; justify-content: space-between; } }
-  @media (min-width: 1280px) {
-    .ip-hero h1 { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; }
-  }
 </style>
