@@ -111,7 +111,7 @@ const keys = ['master', 's24', 'n8', 'm124'] as const;
   .fit:is(:has([data-fit-drawer='wide']:is(:hover, :focus-visible)), [data-show='wide']) .draw--wide { opacity: 1; }
   .fit:is(:has([data-fit-drawer]:is(:hover, :focus-visible)), [data-show]) .fit-hint { opacity: 0; }
   .fit:is(:has([data-fit-drawer='small']:is(:hover, :focus-visible)), [data-show='small']) .draw--small :is(.d-open, .d-dim),
-  .fit:is(:has([data-fit-drawer='wide']:is(:hover, :focus-visible)), [data-show='wide']) .draw--wide :is(.d-open, .d-dim) { stroke-dashoffset: 0; transition: stroke-dashoffset 700ms var(--ease-out); }
+  .fit:is(:has([data-fit-drawer='wide']:is(:hover, :focus-visible)), [data-show='wide']) .draw--wide :is(.d-open, .d-dim) { stroke-dashoffset: 0; transition: stroke-dashoffset 300ms var(--ease-out); }
   .fit:is(:has([data-fit-drawer='small']:is(:hover, :focus-visible)), [data-show='small']) .draw--small :is(.d-dev, .d-t),
   .fit:is(:has([data-fit-drawer='wide']:is(:hover, :focus-visible)), [data-show='wide']) .draw--wide :is(.d-dev, .d-t) { opacity: 1; transition-delay: 350ms; }
   /* The hovered card's twin: the device card for the hovered drawer gets the same washed fill. */

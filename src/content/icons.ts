@@ -54,3 +54,13 @@ const all: Record<string, string> = { ...solutionIcons, ...productIcons };
 export const iconFor = (item: { href: string; icon?: string }) => all[item.icon ?? item.href.replace('/use-cases/', '').replace('#', '')];
 /** Icon for a tile link, from its /use-cases/<slug> href. */
 export const iconForHref = (href: string) => solutionIcons[href.replace('/use-cases/', '')];
+
+/** Platform feature cards (22×22 line icons, same style as the rest). */
+export const featureIcons: Record<string, string> = {
+  status: 'M2 11h4l2-5 4 10 2-5h6',
+  capacity: 'M3 3h16v16H3zM3 9h16M3 14h16M11 9v10',
+  requests: 'M5 3h12v16H5zM8 8l1.5 1.5L12 7M8 13l1.5 1.5L12 12M14 8h1M14 13h1',
+  expiry: 'M11 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM11 8v4l3 2M8 1.5h6',
+  log: 'M5 3h12v16H5zM8 7h6M8 10.5h6M8 14h4',
+  maps: 'M2 5l6-2 6 2 6-2v14l-6 2-6-2-6 2zM8 3v14M14 5v14',
+};

@@ -11,6 +11,7 @@ const n = t.integrations;
   <div class="intg">
     <div class="hub glow-band on-accent" data-reveal="drawer" data-hero>
       <div class="space-glow" aria-hidden="true"></div>
+      <div class="hub-head">
       <div class="hub-mark" aria-hidden="true">
         <svg viewBox="0 0 120 120" width="120" height="120">
           <circle class="ring ring--3" cx="60" cy="60" r="56" />
@@ -21,9 +22,10 @@ const n = t.integrations;
           {[0, 1, 2, 3].map((k) => <circle class="orbit" r="3" style={`--k:${k}`} cx="60" cy="4" />)}
         </svg>
       </div>
-      <div class="title-body">
-        <h3>{n.hubTitle}</h3>
-        <p>{n.hubText}</p>
+        <div class="title-body">
+          <h3>{n.hubTitle}</h3>
+          <p>{n.hubText}</p>
+        </div>
       </div>
       <p class="hub-note">{n.note}</p>
       <a class="btn btn--cta hub-btn" href="/integrations">{n.more}<span class="arrow" aria-hidden="true">→</span></a>
@@ -38,7 +40,7 @@ const n = t.integrations;
               <p>{it.text}</p>
               <span class="read-full">{n.readFull}</span>
             </div>
-            <span class="pulse" aria-hidden="true"></span>
+            <span class="avail"><span class="avail-dot" aria-hidden="true"></span>{n.available}</span>
           </a>
         </li>
       ) : (
@@ -48,7 +50,7 @@ const n = t.integrations;
             <h3>{it.title}</h3>
             <p>{it.text}</p>
           </div>
-          <span class="pulse" aria-hidden="true"></span>
+          <span class="avail"><span class="avail-dot" aria-hidden="true"></span>{n.available}</span>
         </li>
       )))}
     </ul>
@@ -62,57 +64,72 @@ const n = t.integrations;
   .hub p { color: var(--text-neutral-ondark); max-width: 360px; }
   .hub .hub-note { margin-top: auto; font-size: 16px; line-height: 24px; color: var(--text-neutral-decorative); }
   .hub-btn { align-self: flex-start; }
+  /* Our application: title and subtitle right next to the Spind mark and its rings. */
+  .hub-head { display: flex; align-items: center; gap: var(--spacing-gap-general-object-lg); }
+  .hub-head .title-body { min-width: 0; }
+  .hub-mark { flex: none; }
+  .intg-item :global(.lissa-mark) { width: 40px; height: 40px; }
   .hub-mark svg { overflow: visible; }
   .ring { fill: none; stroke: color-mix(in srgb, var(--neutral-white) 18%, transparent); stroke-width: var(--stroke); vector-effect: non-scaling-stroke; }
   .orbit { fill: var(--surface-cta-default); transform-origin: 60px 60px; transform: rotate(calc(var(--k) * 90deg)); }
 
   .intg-list { display: grid; grid-template-columns: 1fr; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
-  .intg-item { grid-row: auto; min-height: 0; display: flex; gap: var(--spacing-gap-general-object-lg); align-items: flex-start; padding: var(--pad-block) var(--inset); transition: background-color var(--dur) var(--ease), clip-path 750ms var(--ease-out) var(--d, 0ms); }
-  .intg-item h3 { margin: 0; transition: color var(--dur-fast) var(--ease); }
+  .intg-item { grid-row: auto; min-height: 0; display: flex; gap: 16px; align-items: flex-start; padding: 20px var(--inset) 20px 20px; padding-right: 120px; transition: background-color var(--dur) var(--ease), clip-path 750ms var(--ease-out) var(--d, 0ms); }
+  .intg-item h3 { margin: 0; font-size: 18px; line-height: 24px; transition: color var(--dur-fast) var(--ease); }
   /* Title and subtitle read as one text block: subtitle 16px at 1.6 line height, 4px under the title. */
   .intg-item p, .hub .title-body p { font-size: 16px; line-height: 1.6; }
-  .intg-icon { flex: none; display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-action-washed); transition: background-color var(--dur) var(--ease); }
+  .intg-item p { font-size: 15px; line-height: 1.5; }
+  .intg-icon { flex: none; display: grid; place-items: center; width: 40px; height: 40px; background: var(--surface-action-washed); transition: background-color var(--dur) var(--ease); }
   .intg-icon svg { stroke: var(--icon-action-strong); transition: stroke var(--dur-fast) var(--ease); }
-  /* Live dot: the connection is up. */
-  .pulse { position: absolute; top: var(--pad-block); right: var(--inset); width: 8px; height: 8px; border-radius: 50%; background: #2F9E6B; }
+  /* "Available" pill (overline type: Geist Mono caps): the connection is up; the dot blinks. */
+  .avail {
+    position: absolute; top: 16px; right: 16px;
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 24px; padding: 0 10px; border-radius: 999px;
+    background: color-mix(in srgb, #2F9E6B 12%, transparent);
+    font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #1F7A50;
+  }
+  .avail-dot { width: 6px; height: 6px; border-radius: 50%; background: #2F9E6B; }
   .intg-item:hover { background: var(--surface-action-washed); }
   .intg-item:hover h3 { color: var(--text-action-default); }
   .intg-item:hover .intg-icon { background: var(--surface-action-default); }
   .intg-item:hover .intg-icon svg { stroke: var(--icon-neutral-onsurface); }
-  .intg-item:hover .intg-icon path { animation: icon-draw 700ms var(--ease-out); }
+  .intg-item:hover .intg-icon path { animation: icon-draw 300ms var(--ease-out); }
 
   @media (prefers-reduced-motion: no-preference) {
     .ring--1 { animation: ring 3s var(--ease) infinite; }
     .ring--2 { animation: ring 3s var(--ease) 400ms infinite; }
     .ring--3 { animation: ring 3s var(--ease) 800ms infinite; }
     .orbit { animation: orbit 12s linear infinite; }
-    .pulse::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: inherit; animation: ping 2.4s var(--ease-out) infinite; animation-delay: var(--d, 0ms); }
+    .avail { animation: blink 2s var(--ease) infinite; animation-delay: var(--d, 0ms); }
   }
   @keyframes ring { 0%, 100% { stroke: color-mix(in srgb, var(--neutral-white) 12%, transparent); } 50% { stroke: color-mix(in srgb, var(--neutral-white) 34%, transparent); } }
   @keyframes orbit { from { transform: rotate(calc(var(--k) * 90deg)); } to { transform: rotate(calc(var(--k) * 90deg + 360deg)); } }
-  @keyframes ping { 0% { transform: scale(1); opacity: 0.6; } 80%, 100% { transform: scale(3); opacity: 0; } }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
 
   /* LISSA card is a link: whole card clickable, "Read full" (underlined) fades in on hover; its space is kept so nothing moves. */
   .intg-cell { display: grid; }
   .lissa-card { color: inherit; text-decoration: none; cursor: pointer; }
   .lissa-card:focus-visible { outline: var(--border-width-focus) solid var(--border-focus); outline-offset: calc(var(--border-width-focus) * -1); }
   .read-full {
-    display: inline-block; margin-top: var(--spacing-gap-text-md);
+    position: absolute; right: 16px; bottom: 16px; /* sits in the card corner so the card stays compact */
     font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px;
     color: var(--text-action-default); text-decoration: underline; text-decoration-thickness: var(--hair); text-underline-offset: 4px;
     opacity: 0; transition: opacity var(--dur-fast) var(--ease);
   }
   .lissa-card:is(:hover, :focus-visible) .read-full { opacity: 1; }
-  .lissa-card:is(:hover, :focus-visible) { background: var(--surface-action-washed); }
-  .lissa-card:is(:hover, :focus-visible) h3 { color: var(--text-action-default); }
+  /* LISSA card is purple (LISSA indigo), not the site blue. */
+  .lissa-card:is(:hover, :focus-visible) { background: #EEEEFE; }
+  .lissa-card:is(:hover, :focus-visible) h3, .lissa-card .read-full { color: var(--indigo-500); }
   @media (hover: none) { .read-full { opacity: 1; } }
 
   @media (min-width: 640px) { .intg-list { grid-template-columns: 1fr 1fr; } }
   @media (min-width: 960px) {
     .intg { grid-template-columns: 5fr 7fr; gap: 0; }
-    .intg-item { flex-direction: column; } /* narrow desktop: icon above the text */
+    .intg-item { flex-direction: column; padding-right: 20px; padding-top: 56px; } /* narrow desktop: icon above the text, pill above */
   }
   @media (min-width: 1280px) {
-    .intg-item { flex-direction: row; } /* compact cards: icon beside the text, height follows the content */
+    .intg-item { flex-direction: row; padding-top: 20px; padding-right: 116px; } /* compact cards: icon beside the text, height follows the content */
   }
 </style>

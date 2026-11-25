@@ -221,8 +221,8 @@
   /* Motion */
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --dur-fast: 300ms;
-  --dur: 500ms;
+  --dur-fast: 120ms; /* hovers: quick */
+  --dur: 180ms;
   --dur-slow: 700ms;
 
   --shadow-lift: 0 14px 32px -12px rgba(22, 25, 30, 0.14), 0 2px 6px rgba(22, 25, 30, 0.04);

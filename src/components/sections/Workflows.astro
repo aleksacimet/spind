@@ -12,7 +12,10 @@ const w = t.workflows;
       <UseCaseCard slug={c.slug} title={c.title} text={c.text} delay={(i % 3) * 90 + Math.floor(i / 3) * 120} />
     ))}
   </ul>
+</Section>
 
+<!-- Today vs with Spind is its own section (own label strip, title and grid lines), so it no longer runs straight on from the use case cards. -->
+<Section id="compare" title={w.compareTitle}>
   <!-- Today vs with Spind: one row per pair. Hover (or focus) a row: today is crossed out, the Spind side lights up. -->
   <div class="cmp" data-reveal="drawer">
     <div class="cmp-head" aria-hidden="true">
@@ -53,7 +56,7 @@ const w = t.workflows;
   .c--today .ic { color: var(--icon-status-error); }
   .c--today .txt { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); }
   /* The strike draws from left to right on hover. */
-  .strike { background: linear-gradient(currentColor, currentColor) 0 55% / 0% var(--hair) no-repeat; transition: background-size 450ms var(--ease-out); }
+  .strike { background: linear-gradient(currentColor, currentColor) 0 55% / 0% var(--hair) no-repeat; transition: background-size 200ms var(--ease-out); }
   .c--spind { position: relative; background: var(--surface-neutral-darkest); color: var(--text-neutral-onsurface); padding-left: calc(var(--inset) + var(--spacing-padding-container-sm)); box-shadow: inset 0 calc(var(--hair) * -1) 0 color-mix(in srgb, var(--border-neutral-white, #fff) 14%, transparent); }
   /* The last row stands on the section's bottom grid line, so it drops its own bottom line. */
   @media (min-width: 768px) {

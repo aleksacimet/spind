@@ -4,7 +4,7 @@
  * - header state, mobile menu, active nav
  * - reveals (fade, drawer clip, title lines)
  * - hero: random drawers open and close
- * - how it works: scroll story drives the locker screen
+ * - how it works: timed tabs drive the locker screen
  * - modules highlight, counters, LISSA mock tabs
  */
 import { initContactForm } from './form';
@@ -129,31 +129,45 @@ document.addEventListener('keydown', (e) => {
 });
 document.addEventListener('click', (e) => { if (openDD() && !(e.target as Element).closest('[data-dd]')) setDD(null); });
 
-/* ---------- How it works: steps advance on their own while in view; hover, focus or click shows a step ---------- */
+/* ---------- How it works: timed tabs, a new step every 5s (not tied to scrolling); click or arrow keys pick a step ---------- */
 const story = document.querySelector<HTMLElement>('[data-story]');
 const storyLocker = story?.querySelector<SVGSVGElement>('[data-locker]');
-const storySteps = story ? [...story.querySelectorAll<HTMLElement>('[data-step]')] : [];
+const storyTabs = story ? [...story.querySelectorAll<HTMLButtonElement>('[role="tab"]')] : [];
+const storyCopy = story ? [...story.querySelectorAll<HTMLElement>('[data-copy]')] : [];
+const STEP_MS = 5000;
 let storyState = -1;
+let storyTimer = 0;
 function setStory(i: number) {
-  if (i === storyState || !storyLocker) return;
+  if (!story) return;
   storyState = i;
-  storyLocker.dataset.state = String(Math.max(0, i));
-  storySteps.forEach((s, k) => s.classList.toggle('is-active', k === i));
-}
-if (story && storySteps.length) {
-  setStory(0);
-  let timer = 0;
-  let held = false;
-  const stop = () => window.clearInterval(timer);
-  const start = () => { stop(); if (motionOK() && !held) timer = window.setInterval(() => setStory((storyState + 1) % storySteps.length), 3200); };
-  storySteps.forEach((s, k) => {
-    const pick = () => { held = true; stop(); setStory(k); };
-    s.addEventListener('pointerenter', pick);
-    s.addEventListener('focus', pick);
-    s.addEventListener('click', pick);
+  if (storyLocker) storyLocker.dataset.state = String(i);
+  storyTabs.forEach((t, k) => {
+    const on = k === i;
+    t.setAttribute('aria-selected', String(on));
+    t.tabIndex = on ? 0 : -1;
+    // Restart the progress line animation on the newly active tab.
+    const bar = t.querySelector<HTMLElement>('.tab-progress');
+    if (on && bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; }
   });
-  story.querySelector('.story-steps')?.addEventListener('pointerleave', () => { held = false; start(); });
-  new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()), { threshold: 0.3 }).observe(story);
+  storyCopy.forEach((c, k) => { c.hidden = k !== i; });
+  story.querySelector('[role="tabpanel"]')?.setAttribute('aria-labelledby', storyTabs[i]?.id ?? '');
+  window.clearTimeout(storyTimer);
+  if (motionOK()) storyTimer = window.setTimeout(() => setStory((i + 1) % storyTabs.length), STEP_MS);
+}
+if (story && storyTabs.length) {
+  story.classList.toggle('is-playing', motionOK());
+  setStory(0);
+  storyTabs.forEach((t, k) => {
+    t.addEventListener('click', () => setStory(k));
+    t.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      const n = (k + d + storyTabs.length) % storyTabs.length;
+      setStory(n);
+      storyTabs[n].focus();
+    });
+  });
 }
 
 /* ---------- Scroll loop ---------- */

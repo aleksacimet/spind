@@ -5,71 +5,109 @@ import { getContent } from '../../content/site';
 const t = getContent(Astro.props.locale);
 const h = t.how;
 ---
-<!-- Figma 31:222: steps list on the left (600px, 122px rows, active row blue), locker centred in the space on the right. Steps advance on their own; hover or click a step to show it. -->
+<!-- Timed tabs: four tabs across the top, each with a progress line that fills over 5s, then the next tab opens.
+     Below: the active step's text on the left, the locker on the dark surface on the right. Not tied to scrolling;
+     clicking a tab opens it and restarts its 5s. -->
 <Section id="how-it-works" title={h.title} intro={h.intro}>
-  <div class="story" data-story>
-    <div class="story-stage space" data-hero>
-      <div class="space-glow" aria-hidden="true"></div>
-      <div class="stage-inner">
-        <LockerDrawing
-          id="story"
-          modules={['master', 's24']}
-          accent={{ module: 's24', index: 7 }}
-          screen={h.screen}
-          label={h.lockerLabel}
-        />
-      </div>
-    </div>
-    <ol class="story-steps" role="list">
+  <div class="story" data-story style="--step-dur: 5000ms">
+    <div class="story-tabs" role="tablist" aria-label={h.title}>
       {h.steps.map((s, i) => (
-        <li class="story-step" data-step={i} tabindex="0">
-          <span class="num tabular" aria-hidden="true" data-num={String(i + 1).padStart(2, '0')}></span>
-          <div class="step-body">
+        <button
+          class="story-tab"
+          type="button"
+          role="tab"
+          id={`story-tab-${i}`}
+          aria-controls="story-panel"
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+          data-step={i}
+        >
+          <span class="tab-num tabular" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <span class="tab-title">{s.title}</span>
+          <span class="tab-progress" aria-hidden="true"></span>
+        </button>
+      ))}
+    </div>
+    <div class="story-panel" id="story-panel" role="tabpanel" aria-labelledby="story-tab-0">
+      <div class="story-copy">
+        {h.steps.map((s, i) => (
+          <div class="step-copy" data-copy={i} hidden={i !== 0}>
+            <span class="step-role">{s.role}</span>
             <h3>{s.title}</h3>
             <p>{s.text}</p>
           </div>
-        </li>
-      ))}
-    </ol>
+        ))}
+      </div>
+      <div class="story-stage space" data-hero>
+        <div class="space-glow" aria-hidden="true"></div>
+        <div class="stage-inner">
+          <LockerDrawing
+            id="story"
+            modules={['master', 's24']}
+            accent={{ module: 's24', index: 7 }}
+            screen={h.screen}
+            label={h.lockerLabel}
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </Section>
 
 <style>
-  .story { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
-  /* The locker sits in its own box next to the steps: the dark hero surface (.space), framed by a hairline. */
-  .story-stage { display: flex; align-items: center; justify-content: center; padding: var(--pad-block) var(--inset); } /* dark space surface like the heroes; blue glow follows the mouse */
-  .stage-inner { width: 80%; max-width: 400px; }
+  .story { display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
 
-  .story-steps { list-style: none; padding: 0; display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
-  .story-step {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-gap-general-object-lg);
-    min-height: 120px;
-    padding: var(--pad-block) var(--inset);
+  /* Tabs: one row of four, hairline frame like the other card grids. */
+  .story-tabs { display: grid; grid-template-columns: repeat(2, 1fr); }
+  .story-tab {
+    position: relative;
+    display: flex; align-items: center; gap: var(--spacing-gap-general-object-md, 12px);
+    min-height: 80px;
+    padding: 0 var(--inset);
     background: var(--surface-neutral-default);
+    border: 0;
     border-top: var(--hair) solid var(--border-neutral-default);
     border-left: var(--hair) solid var(--border-neutral-default);
+    color: var(--text-neutral-headings);
+    text-align: left;
     cursor: pointer;
-    outline: none;
+    font: inherit;
     transition: background-color var(--dur) var(--ease);
   }
-  .story-step:focus-visible { box-shadow: inset 0 0 0 var(--border-width-focus) var(--border-focus); }
-  /* Step number (Figma: Geist 31/44, light and decorative, bold white when active) */
-  .num::before { content: attr(data-num); }
-  .num { flex: none; width: 44px; font-family: var(--font-display); font-weight: 400; font-size: 31px; line-height: 44px; color: var(--text-neutral-decorative); transition: color var(--dur) var(--ease); }
-  .step-body { display: grid; gap: var(--spacing-gap-text-sm); }
-  .story-step h3 { font-size: 18px; line-height: 24px; letter-spacing: 0; color: var(--text-neutral-headings); }
-  .story-step p { font-weight: 400; font-size: 16px; line-height: 28px; color: var(--text-neutral-body); }
-  .story-step:not(.is-active):hover { background: var(--surface-neutral-page); }
-  /* Active step (Figma): Surface/Action/500 blue, white text, bold number */
-  .story-step.is-active { background: var(--surface-action-default); border-color: transparent; }
-  .story-step.is-active .num { font-weight: 700; }
-  .story-step.is-active .num, .story-step.is-active h3, .story-step.is-active p { color: var(--text-neutral-onsurface); }
+  .story-tab:hover { background: var(--surface-action-washed); }
+  .story-tab:focus-visible { outline: none; box-shadow: inset 0 0 0 var(--border-width-focus) var(--border-focus); }
+  .tab-num { font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; color: var(--text-neutral-decorative); transition: color var(--dur) var(--ease); }
+  .tab-title { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 24px; transition: color var(--dur) var(--ease); }
+  .story-tab[aria-selected='true'] .tab-num,
+  .story-tab[aria-selected='true'] .tab-title { color: var(--text-action-default); }
+
+  /* Progress line along the bottom of the active tab: fills left to right over --step-dur. */
+  .tab-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--surface-action-default); transform: scaleX(0); transform-origin: left center; }
+  .story-tab[aria-selected='true'] .tab-progress { transform: scaleX(1); }
+  @media (prefers-reduced-motion: no-preference) {
+    .story.is-playing .story-tab[aria-selected='true'] .tab-progress { animation: tab-fill var(--step-dur) linear forwards; }
+  }
+  @keyframes tab-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  /* Panel: text on the left, locker on the dark surface on the right. */
+  .story-panel { display: grid; border-top: var(--hair) solid var(--border-neutral-default); }
+  .story-copy { display: grid; align-content: center; padding: var(--pad-block) var(--inset); background: var(--surface-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); }
+  .step-copy { display: grid; gap: var(--spacing-gap-text-sm); max-width: 440px; }
+  .step-copy[hidden] { display: none; }
+  .step-role { font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-action-default); margin-bottom: var(--spacing-gap-text-md, 8px); }
+  .step-copy h3 { font-size: 32px; line-height: 40px; color: var(--text-neutral-headings); }
+  .step-copy p { font-weight: 400; font-size: 18px; line-height: 1.6; color: var(--text-neutral-body); }
+  @media (prefers-reduced-motion: no-preference) {
+    .step-copy:not([hidden]) { animation: copy-in 500ms var(--ease-out); }
+  }
+  @keyframes copy-in { from { opacity: 0; } to { opacity: 1; } }
+
+  .story-stage { display: flex; align-items: center; justify-content: center; min-height: 360px; padding: var(--pad-block) var(--inset); }
+  .stage-inner { width: 80%; max-width: 400px; }
 
   @media (min-width: 960px) {
-    .story { flex-direction: row-reverse; align-items: stretch; gap: 0; }
-    .story-stage { flex: 1; min-width: 0; margin-left: calc(var(--hair) * -1); }
-    .story-steps { width: 600px; flex: none; }
+    .story-tabs { grid-template-columns: repeat(4, 1fr); }
+    .story-panel { grid-template-columns: 5fr 7fr; }
+    .story-stage { min-height: 520px; }
   }
 </style>

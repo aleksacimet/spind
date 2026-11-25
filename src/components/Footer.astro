@@ -47,9 +47,11 @@ const groups = t.nav.groups.map((g) => ({
     </div>
   </div>
   <div class="container footer-bottom full-line full-line--top">
-    <p>© {year} <a href={t.footer.rightsUrl} target="_blank" rel="noopener">{t.footer.rightsOwner}</a></p>
-    <button type="button" class="sound-toggle" data-sound-toggle aria-pressed="true" data-on={t.footer.soundOn} data-off={t.footer.soundOff}>{t.footer.sound}: <span data-sound-state>{t.footer.soundOn}</span></button>
-    <p class="rights">{t.footer.rights} <a class="cimet-link" href={t.footer.rightsUrl} target="_blank" rel="noopener"><CimetLogo onDark height={16} /></a></p>
+    <p class="copy">{t.footer.copyright} © {year} <a href={t.footer.rightsUrl} target="_blank" rel="noopener">{t.footer.rightsOwner}</a>. {t.footer.rights}</p>
+    <div class="footer-bottom-right">
+      <button type="button" class="sound-toggle" data-sound-toggle aria-pressed="true" data-on={t.footer.soundOn} data-off={t.footer.soundOff}>{t.footer.sound}: <span data-sound-state>{t.footer.soundOn}</span></button>
+      <p class="rights">{t.footer.productOf} <a class="cimet-link" href={t.footer.rightsUrl} target="_blank" rel="noopener"><CimetLogo onDark height={16} /></a></p>
+    </div>
   </div>
 </footer>
 
@@ -71,6 +73,8 @@ const groups = t.nav.groups.map((g) => ({
   @media (min-width: 960px) {
     .footer-grid { flex-direction: row; justify-content: space-between; }
   }
+  /* Bottom line: copyright on the left, "Spind is a product of" on the right. */
+  .footer-bottom-right { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-gap-text-md) var(--spacing-gap-general-object-lg); }
   .footer-bottom a { color: inherit; text-underline-offset: 4px; }
   .footer-bottom a:hover { color: var(--text-neutral-onsurface); }
   .sound-toggle { padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; transition: color var(--dur-fast) var(--ease); }

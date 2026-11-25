@@ -224,7 +224,7 @@ main > .section.glow-band, main > article > .section.glow-band {
    right and comes back in from the left); the label and the button stay still. */
 .btn .arrow { display: inline-block; }
 @media (prefers-reduced-motion: no-preference) {
-  .btn:hover:not(:disabled) .arrow, .btn:focus-visible .arrow { animation: arrow-through 600ms var(--ease-out); }
+  .btn:hover:not(:disabled) .arrow, .btn:focus-visible .arrow { animation: arrow-through 300ms var(--ease-out); }
 }
 @keyframes arrow-through {
   0% { transform: translateX(0); opacity: 1; }
@@ -469,5 +469,5 @@ main > .section.glow-band--page:last-child { margin-bottom: 0; border-bottom: 0;
 
   /* CTA shine: a light band sweeps across on hover. */
   .btn--cta::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%); transform: translateX(-110%); }
-  .btn--cta:hover::after { transform: translateX(110%); transition: transform 700ms var(--ease-out); }
+  .btn--cta:hover::after { transform: translateX(110%); transition: transform 350ms var(--ease-out); }
 }

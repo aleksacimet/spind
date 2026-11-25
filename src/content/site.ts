@@ -149,6 +149,7 @@ const en = {
     'how-it-works': 'How it works',
     modules: 'Modules and sizes',
     workflows: 'Use cases',
+    compare: 'Today vs Spind',
     platform: 'Platform',
     integrations: 'Integrations',
     clients: 'Clients',
@@ -204,6 +205,7 @@ const en = {
   },
 
   workflows: {
+    compareTitle: 'What changes with Spind',
     title: 'Built to save time and increase efficiency',
     intro: '',
     cards: [
@@ -231,12 +233,12 @@ const en = {
     title: 'Full control from one application',
     intro: '',
     features: [
-      { title: 'Live status', text: "Track locker's availability" },
-      { title: 'Capacity', text: 'What you can do with space you have' },
-      { title: 'Requests', text: 'Pending, done, cancelled or expired' },
-      { title: 'Code expiry', text: 'Choose how long you want codes to last' },
-      { title: 'Activity log', text: 'Every fill, pickup and return, per locker' },
-      { title: 'Maps', text: 'Find any locker by branch, location or serial' },
+      { key: 'status', title: 'Live status', text: "Track locker's availability" },
+      { key: 'capacity', title: 'Capacity', text: 'What you can do with space you have' },
+      { key: 'requests', title: 'Requests', text: 'Pending, done, cancelled or expired' },
+      { key: 'expiry', title: 'Code expiry', text: 'Choose how long you want codes to last' },
+      { key: 'log', title: 'Activity log', text: 'Every fill, pickup and return, per locker' },
+      { key: 'maps', title: 'Maps', text: 'Find any locker by branch, location or serial' },
     ],
     mockLabel: 'Our application: locker overview and recent requests',
   },
@@ -247,6 +249,7 @@ const en = {
     intro: '',
     hubTitle: 'Our application',
     readFull: 'Read full',
+    available: 'Available',
     lissaHref: '/integrations',
     hubText: 'One record for every locker, drawer, device and handover.',
     items: [
@@ -810,7 +813,9 @@ const en = {
     privacy: 'Privacy',
     rightsOwner: 'Cimet',
     rightsUrl: 'https://cimet.rs/',
-    rights: 'All rights reserved. Spind is a product of',
+    rights: 'All rights reserved.',
+    productOf: 'Spind is a product of',
+    copyright: 'Copyright',
     legalNav: 'Legal',
     sound: 'Sound',
     soundOn: 'On',

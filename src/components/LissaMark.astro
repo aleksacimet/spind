@@ -1,6 +1,6 @@
 ---
 /**
- * LISSA Asset logomark (from lissa_logomark.svg), inverted: white mark on an indigo tile.
+ * LISSA Asset logomark (from lissa_logomark.svg), as supplied: indigo #5757F5 mark on a #EEEEFE tile.
  * Hover on the parent card (.lissa-card): the tile turns washed indigo, the mark indigo, and its three parts
  * redraw in place one after another (a wipe, nothing moves).
  */
@@ -16,17 +16,17 @@
 <style>
   .lissa-mark {
     flex: none; display: grid; place-items: center; width: 48px; height: 48px;
-    background: var(--surface-action-default);
+    background: #EEEEFE; /* LISSA logomark as supplied: lavender tile, indigo mark */
     transition: background-color var(--dur) var(--ease);
   }
-  .lm { fill: var(--neutral-white); transition: fill var(--dur) var(--ease); }
-  :global(.lissa-card:is(:hover, :focus-visible)) .lissa-mark { background: var(--surface-action-washed); }
-  :global(.lissa-card:is(:hover, :focus-visible)) .lm { fill: var(--surface-action-default); }
+  .lm { fill: var(--indigo-500); transition: fill var(--dur) var(--ease); }
+  :global(.lissa-card:is(:hover, :focus-visible)) .lissa-mark { background: var(--indigo-500); }
+  :global(.lissa-card:is(:hover, :focus-visible)) .lm { fill: var(--neutral-white); }
   @media (prefers-reduced-motion: no-preference) {
-    :global(.lissa-card:is(:hover, :focus-visible)) .lm { animation: lm-wipe 520ms var(--ease-out) both; }
+    :global(.lissa-card:is(:hover, :focus-visible)) .lm { animation: lm-wipe 260ms var(--ease-out) both; }
     :global(.lissa-card:is(:hover, :focus-visible)) .lm-1 { animation-name: lm-wipe-up; }
-    :global(.lissa-card:is(:hover, :focus-visible)) .lm-2 { animation-delay: 120ms; animation-name: lm-wipe-down; }
-    :global(.lissa-card:is(:hover, :focus-visible)) .lm-3 { animation-delay: 240ms; }
+    :global(.lissa-card:is(:hover, :focus-visible)) .lm-2 { animation-delay: 60ms; animation-name: lm-wipe-down; }
+    :global(.lissa-card:is(:hover, :focus-visible)) .lm-3 { animation-delay: 120ms; }
   }
   /* The parts are revealed by a clip, so they stay exactly where they are. */
   @keyframes lm-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }

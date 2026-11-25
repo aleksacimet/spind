@@ -2,12 +2,14 @@
 /** Platform features: tiles with title and text, 3 per row. */
 import Section from '../Section.astro';
 import { getContent } from '../../content/site';
+import { featureIcons } from '../../content/icons';
 const t = getContent(Astro.props.locale);
 ---
 <Section id="features" title={t.platformPage.featuresTitle} label="Features">
   <ul class="tiles feats" role="list">
     {t.platform.features.map((f, i) => (
       <li class="tile tile--hover" data-reveal="drawer" data-spot style={`--d:${(i % 3) * 80}ms`}>
+        <span class="ic-box" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={featureIcons[f.key]} pathLength="1" /></svg></span>
         <div class="title-body"><h3>{f.title}</h3><p>{f.text}</p></div>
       </li>
     ))}
@@ -16,6 +18,10 @@ const t = getContent(Astro.props.locale);
 
 <style>
   .feats { grid-auto-rows: auto; }
-  .feats .tile { grid-column: 1 / -1; grid-row: auto; min-height: 160px; }
+  .feats .tile { grid-column: 1 / -1; grid-row: auto; min-height: 160px; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
+  .ic-box { display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-action-washed); transition: background-color var(--dur) var(--ease); }
+  .ic-box svg { stroke: var(--icon-action-strong); transition: stroke var(--dur-fast) var(--ease); }
+  .feats .tile:hover .ic-box { background: var(--surface-action-default); }
+  .feats .tile:hover .ic-box svg { stroke: var(--icon-neutral-onsurface); }
   @media (min-width: 640px) { .feats .tile { grid-column: span 4; } }
 </style>

@@ -283,11 +283,16 @@ const flags: Record<string, string> = {
   .dd-link:hover .dd-icon, .dd-link:focus-visible .dd-icon { background: var(--surface-action-default); }
   .dd-link:hover .dd-icon svg, .dd-link:focus-visible .dd-icon svg { stroke: var(--icon-neutral-onsurface); }
   @media (prefers-reduced-motion: no-preference) {
-    .dd-link:hover .dd-icon path { animation: icon-draw 700ms var(--ease-out); }
+    .dd-link:hover .dd-icon path { animation: icon-draw 300ms var(--ease-out); }
   }
   .dd-link:hover .dd-label { color: var(--text-action-default); }
   .dd-label { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 24px; color: var(--text-neutral-headings); transition: color var(--dur-fast) var(--ease); }
-  .dd-text { font-size: 16px; line-height: 24px; color: var(--text-neutral-body); }
+  /* Menu items show only the name; the subtitle opens under it on hover or focus. Title sits centred on the 48px icon at rest. */
+  .dd-link .title-body { display: grid; grid-template-rows: auto 0fr; gap: 0; padding-top: 12px; transition: grid-template-rows var(--dur-fast) var(--ease); }
+  .dd-text { min-height: 0; overflow: hidden; opacity: 0; font-size: 16px; line-height: 24px; color: var(--text-neutral-body); transition: opacity var(--dur-fast) var(--ease); }
+  .dd-link:is(:hover, :focus-visible) .title-body { grid-template-rows: auto 1fr; }
+  .dd-link:is(:hover, :focus-visible) .dd-text { opacity: 1; }
+  @media (hover: none) { .dd-link .title-body { grid-template-rows: auto 1fr; } .dd-text { opacity: 1; } }
   .dd-feature {
     flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start;
     gap: var(--spacing-gap-text-lg);

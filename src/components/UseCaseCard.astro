@@ -32,7 +32,7 @@ const { slug, title, text, delay = 0 } = Astro.props;
   .uc:hover h3, .uc:focus-within h3 { color: var(--text-action-default); }
   .uc:hover .uc-icon, .uc:focus-within .uc-icon { background: var(--surface-action-default); }
   .uc:hover .uc-icon svg, .uc:focus-within .uc-icon svg { stroke: var(--icon-neutral-onsurface); }
-  .uc:hover .uc-icon path, .uc:focus-within .uc-icon path { animation: icon-draw 700ms var(--ease-out); }
+  .uc:hover .uc-icon path, .uc:focus-within .uc-icon path { animation: icon-draw 300ms var(--ease-out); }
   .uc:hover .arrow, .uc:focus-within .arrow { opacity: 1; }
   @media (min-width: 640px) { .uc { grid-column: span 4; } }
 </style>
