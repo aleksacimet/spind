@@ -5,19 +5,21 @@ import { getContent } from '../content/site';
 interface Props { locale?: string }
 const t = getContent(Astro.props.locale);
 ---
-<!-- Centred hero, as designed in Figma: locker, headline, buttons. The band ends at the locker's middle.
-     The blue glow and the open drawer follow the mouse (see the hero block in scripts/main.ts). -->
+<!-- Centred hero: a 3D locker (three.js, scripts/hero-locker.ts), headline, buttons. The dark band ends 3/4 down the locker.
+     The blue glow follows the mouse (scripts/main.ts); the locker turns toward the mouse while it is over the stage.
+     Without JS or WebGL the flat SVG drawing shows in the same place. -->
 <section class="hero" aria-labelledby="hero-title" data-snap data-hero>
   <div class="band space on-accent" aria-hidden="true"><div class="space-glow"></div></div>
 
   <div class="container hero-inner">
-    <div class="hero-locker">
-      <LockerDrawing id="hero" modules={['master', 's24', 'n8']} gap={17.5} animate accent={null} label={t.hero.lockerLabel} />
+    <div class="hero-stage" data-hero-stage data-label={t.hero.lockerLabel} data-screen={JSON.stringify(t.hero.screen)}>
+      <div class="hero-fallback">
+        <LockerDrawing id="hero" modules={['master', 's24', 'n8']} gap={17.5} animate accent={null} label={t.hero.lockerLabel} />
+      </div>
     </div>
 
     <h1 id="hero-title" class="hero-title">{t.hero.title}</h1>
     <p class="hero-intro">{t.hero.intro}</p>
-
 
     <div class="hero-actions">
       <a class="btn btn--cta" href="/contact">{t.hero.primary}<span class="arrow" aria-hidden="true">→</span></a>
@@ -29,9 +31,13 @@ const t = getContent(Astro.props.locale);
 <style>
   .hero {
     position: relative;
-    /* Locker width; 3 modules standing apart (635 x 300 viewBox), height about 0.47 of the width. */
-    --lw: calc(var(--cell) * 4);
-    --locker-top: var(--cell);
+    /* Stage height drives the locker size. The 3D camera keeps the same vertical framing at every width:
+       front top edge at --f-top, floor line at --f-floor, band end (3/4 down the front) at --f-band. */
+    --stage-h: calc(var(--container) * 0.48);
+    --f-top: 0.063;
+    --f-floor: 0.93;
+    --f-band: 0.72;
+    --locker-top: calc(var(--header-h) + var(--u));
     padding-bottom: var(--spacing-gap-general-group-lg);
   }
   /* The hero runs straight into the logo marquee: no line and no spacer under the buttons. */
@@ -40,8 +46,7 @@ const t = getContent(Astro.props.locale);
   .band {
     position: absolute;
     inset: 0 0 auto 0;
-    /* The band ends three quarters down the locker, as in Figma (415 at a 382px tall locker). */
-    height: calc(var(--locker-top) + var(--lw) * 0.8 * 0.35);
+    height: calc(var(--locker-top) + var(--stage-h) * var(--f-band));
     position: absolute; /* .space supplies the dark background, glow and grain */
   }
 
@@ -54,10 +59,37 @@ const t = getContent(Astro.props.locale);
     padding-top: var(--locker-top);
     padding-inline: var(--inset);
   }
-  .hero-locker { width: calc(var(--lw) * 0.8); } /* locker drawn 20% smaller than its slot */
 
-  .hero-title { margin-top: var(--spacing-gap-general-group-lg); max-width: calc(var(--cell) * 7); text-wrap: wrap; } /* line breaks as in Figma, not balanced */
+  /* Full viewport width, so the locker can turn without being cut off. */
+  .hero-stage {
+    position: relative;
+    width: 100vw;
+    height: var(--stage-h);
+    margin-inline: calc(50% - 50vw);
+    touch-action: pan-y;
+  }
+  .hero-stage :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    transition: opacity 700ms var(--ease);
+  }
+  .hero-stage:global(.is-3d) :global(canvas) { opacity: 1; }
 
+  /* Flat drawing: same place and size as the 3D front. Hidden while JS builds the 3D locker. */
+  .hero-fallback {
+    position: absolute;
+    left: 50%;
+    top: calc(var(--stage-h) * var(--f-top));
+    width: calc(var(--stage-h) * (var(--f-floor) - var(--f-top)) * 635 / 300);
+    transform: translateX(-50%);
+  }
+  :global(.js) .hero-stage:not(:global(.is-fallback)) .hero-fallback { visibility: hidden; }
+
+  .hero-title { margin-top: var(--spacing-gap-general-object-md); max-width: calc(var(--cell) * 7); text-wrap: wrap; } /* line breaks as in Figma, not balanced */
 
   .hero-intro { margin-top: var(--spacing-gap-general-object-md); max-width: 600px; color: var(--text-neutral-body); }
   .hero-actions { margin-top: var(--u); display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-gap-general-object-md); }
@@ -67,17 +99,16 @@ const t = getContent(Astro.props.locale);
     .hero-actions .btn { flex: 1 1 100%; }
   }
   @media (min-width: 640px) {
-    .hero { --lw: calc(var(--cell) * 6); }
+    .hero { --stage-h: calc(var(--container) * 0.47); }
   }
   @media (min-width: 960px) {
-    .hero { --lw: calc(var(--cell) * 7); }
+    .hero { --stage-h: calc(var(--container) * 0.44); }
     .hero-title { font-size: calc(var(--cell) * 0.44); line-height: round(up, calc(var(--u) * 2.25), 4px); }
   }
   @media (min-width: 1280px) {
-    /* Figma: header 84 + 48 gap, locker 800 x 382, band 415, gaps 64 / 32, bottom 56 */
-    .hero { --lw: 800px; --locker-top: 132px; padding-bottom: 32px; }
-    .band { height: calc(132px + 640px * 0.354); } /* ends ~3/4 down the (20% smaller) locker */
-    .hero-title { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; max-width: 776px; margin-top: var(--spacing-gap-general-section-lg); }
+    /* Locker about 880 wide on a 900 tall screen (was 640), smaller on short screens so the buttons stay in view. */
+    .hero { --stage-h: clamp(400px, calc(100svh - 420px), 520px); --locker-top: 96px; padding-bottom: 32px; }
+    .hero-title { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; max-width: 776px; margin-top: 24px; }
     .hero-actions { margin-top: 32px; }
   }
 

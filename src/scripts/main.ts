@@ -246,6 +246,14 @@ if (motionOK() && window.matchMedia('(hover: hover) and (pointer: fine)').matche
   });
 }
 
+/* ---------- Home hero: 3D locker. three.js loads in its own file, only on pages that have the stage. ---------- */
+const heroStage = document.querySelector<HTMLElement>('[data-hero-stage]');
+if (heroStage) {
+  import('./hero-locker')
+    .then((m) => m.initHeroLocker(heroStage))
+    .catch(() => heroStage.classList.add('is-fallback'));
+}
+
 /* ---------- Modules highlight ---------- */
 document.querySelectorAll<HTMLElement>('[data-modules]').forEach((figure) => {
   const buttons = [...figure.querySelectorAll<HTMLButtonElement>('[data-module-btn]')];

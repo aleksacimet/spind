@@ -13,6 +13,15 @@ When a batch is built, move it from To build to Built and note the date.
 
 _Nothing waiting. Add new Figma changes here._
 
+## Built in code only, Figma still to update (2026-11-25, round 4)
+
+- Home hero locker is real 3D (three.js, `src/scripts/hero-locker.ts`), white powder-coated steel lit like a product shot: bevelled edges, drawer fronts 8 mm proud with dark gaps and soft edge shading, recessed dark plinth, soft floor and contact shadows, black glass touch screen with a reflection, badge reader and camera, return slot, service panel with vents and a key lock. Same three modules and drawer counts as before (Otto, Lotte 3 x 8, Bruno 8 wide), 600 x 910 x 500 mm each, 60 mm apart.
+- Bigger: about 880 px wide on a 1440 x 900 screen (was 640). Height follows the screen height (400 to 520 px stage) so the buttons stay in view on short laptops. The dark band still ends 3/4 down the locker.
+- Spind logo on Otto's service panel: small (78 mm on a 600 mm module, about 35 px) and light grey, top left. The flat SVG locker (use case heroes, How it works, Modules, no-JS fallback) got the same small light grey logo (Text/Neutral/Decorative).
+- Hover: the locker turns toward the mouse (up to ~10 degrees sideways, ~3 up/down) and springs back when the mouse leaves. This is the one exception to "nothing moves on hover", asked for by the user. Touch screens get a slow sway instead; reduced motion shows one still frame.
+- Every few seconds a drawer in the lower two thirds pops out about 13 cm (push latch, small overshoot), its compartment lights blue, its pull turns blue and the screen reads "Drawer NN is open" with a progress bar, then it closes. Screen text lives in `site.ts` (hero.screen) for translation.
+- Performance: three.js loads only on the home page, after the rest of the page (143 KB gzipped, own file). It renders only while something moves and pauses off screen. Without WebGL or JS the SVG drawing shows in the same place.
+
 ## Built in code only, Figma still to update (2026-11-25, round 3)
 
 - Home: no line under the logo marquee either; the Problem section's top line closes it.

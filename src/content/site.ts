@@ -130,6 +130,15 @@ const en = {
     primary: 'Book a call',
     secondary: 'See how it works',
     lockerLabel: 'Front view of a Spind locker with a master module and drawers, one drawer open',
+    /** Text on the touch screen of the 3D locker in the hero. {n} is the drawer number. */
+    screen: {
+      idleTitle: 'Pick up a device',
+      idleText: 'Tap your badge to start',
+      start: 'Start',
+      openTitle: 'Drawer {n} is open',
+      openText: 'Take your device and close it',
+      footer: 'Open 24/7',
+    },
   },
 
   problem: {
