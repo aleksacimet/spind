@@ -1,0 +1,60 @@
+---
+/**
+ * 3D Spind locker (three.js, scripts/hero-locker.ts). Fills its parent box: the parent sets width and height.
+ * The camera keeps one vertical framing at every size: front top edge at 6.3% of the height, floor line at 93%
+ * (exported as --f-top / --f-floor, so a page can line things up with the locker, like the home hero band).
+ * Without JS or WebGL the flat SVG drawing shows in the same place and size.
+ */
+import LockerDrawing from './LockerDrawing.astro';
+import { getContent } from '../content/site';
+
+type ModuleKey = 'master' | 's24' | 'n8' | 'm124';
+interface Props {
+  id: string;
+  label: string;
+  /** Left to right: master = Otto (screen), s24 = Lotte, n8 = Bruno, m124 = Greta. */
+  modules?: ModuleKey[];
+  locale?: string;
+  /** What the locker stands on: dark pages get a faint light pool on the floor instead of a shadow. */
+  surface?: 'light' | 'dark';
+}
+const { id, label, modules = ['master', 's24', 'n8'], locale, surface = 'light' } = Astro.props;
+const t = getContent(locale);
+// SVG drawing proportions (module 200 wide, 17.5 apart, 300 tall), for the fallback box.
+const svgRatio = (modules.length * 200 + (modules.length - 1) * 17.5) / 300;
+---
+<div class="locker3d" data-locker-3d data-modules={modules.join(',')} data-surface={surface} data-label={label} data-screen={JSON.stringify(t.hero.screen)} style={`--svg-ratio:${svgRatio}`}>
+  <div class="locker3d-fallback">
+    <LockerDrawing id={id} modules={modules} gap={17.5} animate accent={null} label={label} />
+  </div>
+</div>
+
+<style>
+  .locker3d {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    touch-action: pan-y;
+  }
+  .locker3d :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    transition: opacity 700ms var(--ease);
+  }
+  .locker3d:global(.is-3d) :global(canvas) { opacity: 1; }
+
+  .locker3d-fallback {
+    position: absolute;
+    left: 50%;
+    top: calc(var(--f-top, 0.063) * 100%);
+    height: calc((var(--f-floor, 0.93) - var(--f-top, 0.063)) * 100%);
+    aspect-ratio: var(--svg-ratio);
+    transform: translateX(-50%);
+  }
+  /* Hidden while JS builds the 3D locker; shown again if WebGL is missing (.is-fallback). */
+  :global(.js) .locker3d:not(:global(.is-fallback)) .locker3d-fallback { visibility: hidden; }
+</style>

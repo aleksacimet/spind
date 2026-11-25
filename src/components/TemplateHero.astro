@@ -1,17 +1,19 @@
 ---
 /**
  * Template page hero (same as the use case pages): dark space band, copy on the left
- * (label, title, intro, CTA + secondary), a visual on the right (slot, defaults to the locker).
+ * (label, title, intro, CTA + secondary), a visual on the right (slot, defaults to the 3D locker: Otto + Lotte,
+ * turns toward the mouse like the home hero).
  */
-import LockerDrawing from './LockerDrawing.astro';
+import Locker3D from './Locker3D.astro';
 interface Props {
   id: string; label?: string; title: string; intro: string; primary: string; primaryHref?: string; secondary?: string; secondaryHref?: string;
   /** false: copy only, no visual on the right (Integrations page). */
   visual?: boolean;
-  /** Accessible label of the default locker drawing. */
+  /** Accessible label of the default locker. */
   visualLabel?: string;
+  locale?: string;
 }
-const { id, label, title, intro, primary, primaryHref = '/contact', secondary, secondaryHref = '/business-case', visual = true, visualLabel = 'Spind locker' } = Astro.props;
+const { id, label, title, intro, primary, primaryHref = '/contact', secondary, secondaryHref = '/business-case', visual = true, visualLabel = 'Spind locker', locale } = Astro.props;
 ---
 <section class="tpl-hero space" aria-labelledby={`${id}-title`} data-hero>
   <div class="space-glow" aria-hidden="true"></div>
@@ -27,7 +29,7 @@ const { id, label, title, intro, primary, primaryHref = '/contact', secondary, s
     </div>
     {visual && (
       <div class="tpl-visual">
-        <slot><LockerDrawing id={`tpl-${id}`} modules={['master', 's24']} gap={17.5} animate accent={null} label={visualLabel} /></slot>
+        <slot><div class="tpl-stage"><Locker3D id={`tpl-${id}`} modules={['master', 's24']} label={visualLabel} locale={locale} surface="dark" /></div></slot>
       </div>
     )}
   </div>
@@ -42,6 +44,8 @@ const { id, label, title, intro, primary, primaryHref = '/contact', secondary, s
   .tpl-intro { max-width: 520px; }
   .tpl-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-general-object-md); margin-top: var(--spacing-gap-text-md); }
   .tpl-visual { width: 100%; max-width: 384px; }
+  /* 3D locker box: the two modules fill about 85% of the width, with room to turn. */
+  .tpl-stage { width: 100%; aspect-ratio: 7 / 5; }
   @media (min-width: 960px) {
     .tpl-grid { flex-direction: row; align-items: center; justify-content: space-between; }
     .tpl-copy { width: 600px; }
@@ -49,5 +53,6 @@ const { id, label, title, intro, primary, primaryHref = '/contact', secondary, s
   }
   @media (min-width: 1280px) {
     .tpl-hero h1 { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; }
+    .tpl-visual { width: 512px; max-width: none; }
   }
 </style>

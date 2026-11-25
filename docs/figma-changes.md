@@ -20,7 +20,8 @@ _Nothing waiting. Add new Figma changes here._
 - Spind logo on Otto's service panel: small (78 mm on a 600 mm module, about 35 px) and light grey, top left. The flat SVG locker (use case heroes, How it works, Modules, no-JS fallback) got the same small light grey logo (Text/Neutral/Decorative).
 - Hover: the locker turns toward the mouse (up to ~10 degrees sideways, ~3 up/down) and springs back when the mouse leaves. This is the one exception to "nothing moves on hover", asked for by the user. Touch screens get a slow sway instead; reduced motion shows one still frame.
 - Every few seconds a drawer in the lower two thirds pops out about 13 cm (push latch, small overshoot), its compartment lights blue, its pull turns blue and the screen reads "Drawer NN is open" with a progress bar, then it closes. Screen text lives in `site.ts` (hero.screen) for translation.
-- Performance: three.js loads only on the home page, after the rest of the page (143 KB gzipped, own file). It renders only while something moves and pauses off screen. Without WebGL or JS the SVG drawing shows in the same place.
+- Performance: three.js loads only on pages with a 3D locker, after the rest of the page (143 KB gzipped, own file). It renders only while something moves and pauses off screen. Without WebGL or JS the SVG drawing shows in the same place.
+- Template page heroes (all six use cases, Platform, Workflows) use the same 3D locker: Otto + Lotte, turning toward the mouse, drawers popping. The visual is 512 px wide from 1280 (was 384), 384 below, in a 7:5 box. On these dark heroes a faint blue-white pool of light on the floor grounds the locker (a shadow can't show on dark). One shared component: `Locker3D.astro` (modules, label, surface light/dark).
 
 ## Built in code only, Figma still to update (2026-11-25, round 3)
 

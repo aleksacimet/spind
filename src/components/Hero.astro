@@ -1,21 +1,18 @@
 ---
-import LockerDrawing from './LockerDrawing.astro';
+import Locker3D from './Locker3D.astro';
 import { getContent } from '../content/site';
 
 interface Props { locale?: string }
 const t = getContent(Astro.props.locale);
 ---
-<!-- Centred hero: a 3D locker (three.js, scripts/hero-locker.ts), headline, buttons. The dark band ends 3/4 down the locker.
-     The blue glow follows the mouse (scripts/main.ts); the locker turns toward the mouse while it is over the stage.
-     Without JS or WebGL the flat SVG drawing shows in the same place. -->
+<!-- Centred hero: a 3D locker (Locker3D), headline, buttons. The dark band ends 3/4 down the locker.
+     The blue glow follows the mouse (scripts/main.ts); the locker turns toward the mouse while it is over the stage. -->
 <section class="hero" aria-labelledby="hero-title" data-snap data-hero>
   <div class="band space on-accent" aria-hidden="true"><div class="space-glow"></div></div>
 
   <div class="container hero-inner">
-    <div class="hero-stage" data-hero-stage data-label={t.hero.lockerLabel} data-screen={JSON.stringify(t.hero.screen)}>
-      <div class="hero-fallback">
-        <LockerDrawing id="hero" modules={['master', 's24', 'n8']} gap={17.5} animate accent={null} label={t.hero.lockerLabel} />
-      </div>
+    <div class="hero-stage">
+      <Locker3D id="hero" modules={['master', 's24', 'n8']} label={t.hero.lockerLabel} locale={Astro.props.locale} />
     </div>
 
     <h1 id="hero-title" class="hero-title">{t.hero.title}</h1>
@@ -31,11 +28,9 @@ const t = getContent(Astro.props.locale);
 <style>
   .hero {
     position: relative;
-    /* Stage height drives the locker size. The 3D camera keeps the same vertical framing at every width:
-       front top edge at --f-top, floor line at --f-floor, band end (3/4 down the front) at --f-band. */
+    /* Stage height drives the locker size. The 3D camera keeps the same vertical framing at every width
+       (see Locker3D): the band ends 3/4 down the locker front, at --f-band of the stage height. */
     --stage-h: calc(var(--container) * 0.48);
-    --f-top: 0.063;
-    --f-floor: 0.93;
     --f-band: 0.72;
     --locker-top: calc(var(--header-h) + var(--u));
     padding-bottom: var(--spacing-gap-general-group-lg);
@@ -62,32 +57,10 @@ const t = getContent(Astro.props.locale);
 
   /* Full viewport width, so the locker can turn without being cut off. */
   .hero-stage {
-    position: relative;
     width: 100vw;
     height: var(--stage-h);
     margin-inline: calc(50% - 50vw);
-    touch-action: pan-y;
   }
-  .hero-stage :global(canvas) {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-    opacity: 0;
-    transition: opacity 700ms var(--ease);
-  }
-  .hero-stage:global(.is-3d) :global(canvas) { opacity: 1; }
-
-  /* Flat drawing: same place and size as the 3D front. Hidden while JS builds the 3D locker. */
-  .hero-fallback {
-    position: absolute;
-    left: 50%;
-    top: calc(var(--stage-h) * var(--f-top));
-    width: calc(var(--stage-h) * (var(--f-floor) - var(--f-top)) * 635 / 300);
-    transform: translateX(-50%);
-  }
-  :global(.js) .hero-stage:not(:global(.is-fallback)) .hero-fallback { visibility: hidden; }
 
   .hero-title { margin-top: var(--spacing-gap-general-object-md); max-width: calc(var(--cell) * 7); text-wrap: wrap; } /* line breaks as in Figma, not balanced */
 

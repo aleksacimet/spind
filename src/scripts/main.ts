@@ -246,12 +246,12 @@ if (motionOK() && window.matchMedia('(hover: hover) and (pointer: fine)').matche
   });
 }
 
-/* ---------- Home hero: 3D locker. three.js loads in its own file, only on pages that have the stage. ---------- */
-const heroStage = document.querySelector<HTMLElement>('[data-hero-stage]');
-if (heroStage) {
+/* ---------- 3D lockers (home hero, template page heroes). three.js loads in its own file, only where one is on the page. ---------- */
+const lockers3d = [...document.querySelectorAll<HTMLElement>('[data-locker-3d]')];
+if (lockers3d.length) {
   import('./hero-locker')
-    .then((m) => m.initHeroLocker(heroStage))
-    .catch(() => heroStage.classList.add('is-fallback'));
+    .then((m) => lockers3d.forEach((el) => m.initHeroLocker(el)))
+    .catch(() => lockers3d.forEach((el) => el.classList.add('is-fallback')));
 }
 
 /* ---------- Modules highlight ---------- */

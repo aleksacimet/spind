@@ -1,7 +1,8 @@
 /**
- * Home hero locker in real 3D (three.js), lit like a product shot.
- * Three white Spind modules stand on the floor: Otto (touch screen, readers, service panel with a small grey logo),
- * Lotte (24 small drawers) and Bruno (8 wide drawers).
+ * Spind locker in real 3D (three.js), lit like a product shot. Used by Locker3D.astro (home hero, template page heroes).
+ * White modules stand on the floor, left to right as listed in data-modules: Otto (master: touch screen, readers,
+ * service panel with a small grey logo), Lotte (s24: 24 small drawers), Bruno (n8: 8 wide drawers),
+ * Greta (m124: 12 small, then 4 wide).
  *
  * - Mouse over the stage: the locker turns a little toward the pointer and springs back when it leaves.
  *   This is the one hover motion on the site (asked for on 2026-11-25).
@@ -230,6 +231,24 @@ export function initHeroLocker(stage: HTMLElement) {
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   scene.add(floor);
+  // On a dark page a shadow can't show, so the floor gets a faint pool of light instead (like a spot on a dark stage).
+  if (stage.dataset.surface === 'dark') {
+    const [c, ctx] = makeCanvas(256, 256);
+    const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.5, 'rgba(255,255,255,0.4)');
+    g.addColorStop(0.92, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 256, 256);
+    const pool = new Mesh(
+      new PlaneGeometry(1.45, 0.8),
+      new MeshBasicMaterial({ color: 0xc9dcff, alphaMap: texture(c, false), transparent: true, opacity: 0.14, depthWrite: false, toneMapped: false })
+    );
+    pool.rotation.x = -Math.PI / 2;
+    pool.position.set(0, 0.0004, 0.06);
+    pool.renderOrder = -2;
+    scene.add(pool);
+  }
 
   /* ---------- Materials ---------- */
   // White powder-coated steel: matte with a faint sheen that moves as the locker turns.
@@ -346,17 +365,19 @@ export function initHeroLocker(stage: HTMLElement) {
     drawers.push({ n, g, w, h, kind, handle, light, max: kind === 'wide' ? 0.15 : 0.13 });
   }
 
-  function drawerModule(x: number, cols: number, first: number) {
+  /** rows: drawers per row, top to bottom (8 rows). */
+  function drawerModule(x: number, rows: number[], first: number) {
     const m = cabinet(x);
     const fw = W - FM * 2;
     const fh = BODY - FM * 2;
     const x0 = -fw / 2;
     const y0 = PL + FM;
     opening(m, x0, y0, fw, fh);
-    const w = (fw - DG * (cols + 1)) / cols;
     const h = (fh - DG * 9) / 8;
     let n = first;
     for (let r = 0; r < 8; r++) {
+      const cols = rows[r];
+      const w = (fw - DG * (cols + 1)) / cols;
       for (let c = 0; c < cols; c++) {
         const cx = x0 + DG + w / 2 + c * (w + DG);
         const cy = TOP - FM - DG - h / 2 - r * (h + DG);
@@ -536,10 +557,19 @@ export function initHeroLocker(stage: HTMLElement) {
     m.add(keyway);
   }
 
+  const ROWS: Record<string, number[]> = {
+    s24: [3, 3, 3, 3, 3, 3, 3, 3],
+    n8: [1, 1, 1, 1, 1, 1, 1, 1],
+    m124: [3, 3, 3, 3, 1, 1, 1, 1],
+  };
+  const keys = (stage.dataset.modules || 'master,s24,n8').split(',').filter((k) => k === 'master' || ROWS[k]);
   const step = W + GAP;
-  otto(-step);
-  const next = drawerModule(0, 3, 1);
-  drawerModule(step, 1, next);
+  let nextDrawer = 1;
+  keys.forEach((k, i) => {
+    const x = (i - (keys.length - 1) / 2) * step; // centred on the turn axis
+    if (k === 'master') otto(x);
+    else nextDrawer = drawerModule(x, ROWS[k], nextDrawer);
+  });
 
   /* ---------- Trays and devices (built the first time a drawer opens) ---------- */
   const phoneGeo = rbox(0.074, 0.008, 0.156, 0.004, 3);
