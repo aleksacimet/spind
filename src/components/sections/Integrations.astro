@@ -26,7 +26,7 @@ const n = t.integrations;
         <p>{n.hubText}</p>
       </div>
       <p class="hub-note">{n.note}</p>
-      <a class="btn btn--secondary hub-btn" href="/integrations">{n.more}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--cta hub-btn" href="/integrations">{n.more}<span class="arrow" aria-hidden="true">→</span></a>
     </div>
     <ul class="intg-list" role="list">
       {n.items.map((it, i) => (
@@ -59,6 +59,8 @@ const n = t.integrations;
   .intg-list { display: grid; grid-template-columns: 1fr; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
   .intg-item { grid-row: auto; min-height: 0; display: flex; gap: var(--spacing-gap-general-object-lg); align-items: flex-start; padding: var(--pad-block) var(--inset); transition: background-color var(--dur) var(--ease), clip-path 750ms var(--ease-out) var(--d, 0ms); }
   .intg-item h3 { margin: 0; transition: color var(--dur-fast) var(--ease); }
+  /* Title and subtitle read as one text block: subtitle 16px at 1.6 line height, 4px under the title. */
+  .intg-item p, .hub .title-body p { font-size: 16px; line-height: 1.6; }
   .intg-icon { flex: none; display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-action-washed); transition: background-color var(--dur) var(--ease); }
   .intg-icon svg { stroke: var(--icon-action-strong); transition: stroke var(--dur-fast) var(--ease); }
   /* Live dot: the connection is up. */
@@ -83,6 +85,9 @@ const n = t.integrations;
   @media (min-width: 640px) { .intg-list { grid-template-columns: 1fr 1fr; } }
   @media (min-width: 960px) {
     .intg { grid-template-columns: 5fr 7fr; gap: 0; }
-    .intg-item { min-height: 200px; flex-direction: column; }
+    .intg-item { flex-direction: column; } /* narrow desktop: icon above the text */
+  }
+  @media (min-width: 1280px) {
+    .intg-item { flex-direction: row; } /* compact cards: icon beside the text, height follows the content */
   }
 </style>

@@ -62,7 +62,7 @@ const keys = ['master', 's24', 'n8', 'm124'] as const;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     align-items: end;
-    height: calc(var(--u) * 2);
+    /* no extra height: the label text starts exactly --head-pad under the title */
   }
   .module-label {
     justify-self: center;
@@ -80,7 +80,6 @@ const keys = ['master', 's24', 'n8', 'm124'] as const;
   }
   .module-label:hover, .module-label[aria-pressed='true'] { color: var(--text-action-default); border-bottom-color: var(--border-action-default); }
 
-  @media (min-width: 1280px) { .module-labels { height: 56px; } }
   .mod-figure :global(.locker) { filter: none; }
   .mod-figure[data-active] :global(.mod) { opacity: 0.25; }
   .mod-figure[data-active] :global(.mod.is-active) { opacity: 1; }
@@ -90,6 +89,8 @@ const keys = ['master', 's24', 'n8', 'm124'] as const;
     :global(.js) .mod-figure[data-active] .mod-locker.is-visible :global(.mod:not(.is-active)) { opacity: 0.25; transition-delay: 0ms; }
   }
 
+  /* Same gap below the locker as above and below the title (--head-pad). */
+  .fit { margin-top: var(--head-pad); }
   .fit-head { grid-column: span 4; --rows: 1; background: var(--surface-neutral-dark); border-color: transparent; box-shadow: none; }
   .fit-head h3 { color: var(--text-neutral-onsurface); }
   .fit-head { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-md); }
@@ -105,13 +106,17 @@ const keys = ['master', 's24', 'n8', 'm124'] as const;
   .d-t--dev { fill: var(--surface-cta-default); }
   @media (min-width: 640px) { .fit-draw { display: block; } }
 
-  .fit:has([data-fit-drawer='small']:is(:hover, :focus-visible)) .draw--small,
-  .fit:has([data-fit-drawer='wide']:is(:hover, :focus-visible)) .draw--wide { opacity: 1; }
-  .fit:has([data-fit-drawer]:is(:hover, :focus-visible)) .fit-hint { opacity: 0; }
-  .fit:has([data-fit-drawer='small']:is(:hover, :focus-visible)) .draw--small :is(.d-open, .d-dim),
-  .fit:has([data-fit-drawer='wide']:is(:hover, :focus-visible)) .draw--wide :is(.d-open, .d-dim) { stroke-dashoffset: 0; transition: stroke-dashoffset 700ms var(--ease-out); }
-  .fit:has([data-fit-drawer='small']:is(:hover, :focus-visible)) .draw--small :is(.d-dev, .d-t),
-  .fit:has([data-fit-drawer='wide']:is(:hover, :focus-visible)) .draw--wide :is(.d-dev, .d-t) { opacity: 1; transition-delay: 350ms; }
+  /* Shown by hovering a device card, or a drawer on the locker (main.ts sets data-show on .fit). */
+  .fit:is(:has([data-fit-drawer='small']:is(:hover, :focus-visible)), [data-show='small']) .draw--small,
+  .fit:is(:has([data-fit-drawer='wide']:is(:hover, :focus-visible)), [data-show='wide']) .draw--wide { opacity: 1; }
+  .fit:is(:has([data-fit-drawer]:is(:hover, :focus-visible)), [data-show]) .fit-hint { opacity: 0; }
+  .fit:is(:has([data-fit-drawer='small']:is(:hover, :focus-visible)), [data-show='small']) .draw--small :is(.d-open, .d-dim),
+  .fit:is(:has([data-fit-drawer='wide']:is(:hover, :focus-visible)), [data-show='wide']) .draw--wide :is(.d-open, .d-dim) { stroke-dashoffset: 0; transition: stroke-dashoffset 700ms var(--ease-out); }
+  .fit:is(:has([data-fit-drawer='small']:is(:hover, :focus-visible)), [data-show='small']) .draw--small :is(.d-dev, .d-t),
+  .fit:is(:has([data-fit-drawer='wide']:is(:hover, :focus-visible)), [data-show='wide']) .draw--wide :is(.d-dev, .d-t) { opacity: 1; transition-delay: 350ms; }
+  /* The hovered card's twin: the device card for the hovered drawer gets the same washed fill. */
+  .fit[data-show='small'] [data-fit-drawer='small'], .fit[data-show='wide'] [data-fit-drawer='wide'] { background: var(--surface-action-washed); }
+  .mod-locker :global(.dr) { cursor: pointer; }
   @media (prefers-reduced-motion: reduce) { .d-open, .d-dim { stroke-dashoffset: 0; } }
   .fit-item { grid-column: span 2; --rows: 2; display: flex; flex-direction: column; }
   /* Two example devices: each takes the remaining half next to the title tile on desktop. */

@@ -6,16 +6,12 @@ interface Props { locale?: string; wall?: boolean }
 const { locale, wall = false } = Astro.props;
 const t = getContent(locale);
 const logos = t.proof.logos;
-const titleId = wall ? 'logos-wall-title' : 'logos-title';
 ---
 <!-- Social proof logos: a constant, infinite horizontal scroll (two identical sets, the second one hidden from screen readers). -->
 {flags.exampleProof && (
-  <section class:list={['section logos', { 'logos--wall': wall }]} aria-labelledby={titleId}>
+  <section class:list={['section logos', { 'logos--wall': wall }]} aria-label={t.sectionLabels.logos}>
     <div class="container">
     <DrawerHead label={t.sectionLabels.logos} />
-    <div class="logos-head">
-      <h2 id={titleId} class:list={[wall ? 'wall-title' : 'label']}>{t.customers.logosTitle}</h2>
-    </div>
     <div class="marquee">
       <div class="track">
         {[0, 1].map((copy) => (
@@ -30,9 +26,7 @@ const titleId = wall ? 'logos-wall-title' : 'logos-title';
 )}
 
 <style>
-  .marquee { margin-inline: calc(var(--inset) * -1); padding-bottom: var(--spacer); } /* logos scroll rail to rail */
-  .logos-head { display: flex; justify-content: center; padding-block: var(--head-pad); }
-  .logos-head .label { color: var(--text-neutral-body); }
+  .marquee { margin-inline: calc(var(--inset) * -1); padding-block: var(--head-pad) var(--spacer); } /* logos scroll rail to rail */
   .marquee { overflow: hidden; }
   .track { display: flex; width: max-content; }
   .set { display: flex; align-items: center; gap: var(--spacing-gap-general-section-lg); padding-right: var(--spacing-padding-section-md); }
@@ -51,7 +45,5 @@ const titleId = wall ? 'logos-wall-title' : 'logos-title';
   }
 
 
-  .logos--wall .logos-head { justify-content: flex-start; }
-  .wall-title { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; }
   .logos--wall .set { gap: var(--spacing-gap-general-section-xl); padding-right: var(--spacing-padding-section-xl); }
 </style>

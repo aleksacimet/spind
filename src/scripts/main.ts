@@ -287,6 +287,16 @@ document.querySelectorAll<HTMLElement>('[data-modules]').forEach((figure) => {
   });
 });
 
+/* ---------- Drawer size example (Modules): hovering a drawer on the locker draws a device in a drawer of that size ---------- */
+document.querySelectorAll<HTMLElement>('[data-modules]').forEach((figure) => {
+  const fit = figure.closest('section')?.querySelector<HTMLElement>('.fit');
+  if (!fit) return;
+  figure.querySelectorAll<SVGGElement>('.mod-locker .dr').forEach((dr) => {
+    dr.addEventListener('pointerenter', () => { fit.dataset.show = dr.dataset.kind ?? ''; dr.classList.add('is-open'); });
+    dr.addEventListener('pointerleave', () => { delete fit.dataset.show; dr.classList.remove('is-open'); });
+  });
+});
+
 /* ---------- Counters ---------- */
 const counters = document.querySelectorAll<HTMLElement>('[data-count]');
 if (counters.length && motionOK()) {

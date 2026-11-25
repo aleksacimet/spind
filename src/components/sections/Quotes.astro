@@ -15,20 +15,24 @@ const initials = (name: string) => name.replace(/^Dr\.\s*/, '').split(/\s+/).map
     <ul class="quotes" role="list">
       {stories.map((s, i) => (
         <li class:list={['q-card', { 'q-card--accent': i === 0 }]} data-reveal="drawer" style={`--d:${i * 100}ms`}>
-          <div class="q-top">
-            <MockLogo key={s.logo} name={logoName(s.logo)} />
-          </div>
-          <blockquote>
-            <p>“{s.quote.text}”</p>
-          </blockquote>
-          <div class="q-foot">
-            <div class="person">
-              {s.quote.photo
-                ? <img class="avatar" src={s.quote.photo} alt="" width="48" height="48" loading="lazy" />
-                : <span class="avatar" aria-hidden="true">{initials(s.quote.name)}</span>}
-              <p class="who title-body"><strong>{s.quote.name}</strong><span>{s.quote.role}</span></p>
+          <div class="q-body">
+            <div class="q-top">
+              <MockLogo key={s.logo} name={logoName(s.logo)} />
+              {/* Figma 122:1061: arrow top right; "Read full" appears next to it when the arrow is hovered. */}
+              <a class="q-link" href={`/customers/${s.slug}`}>
+                <span class="q-more">{t.customers.readFull}</span><span class="sr-only">: {s.company}</span>
+                <svg class="q-arrow" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M7 17 17 7M8.5 7H17v8.5" /></svg>
+              </a>
             </div>
-            <a class="q-link" href={`/customers/${s.slug}`}>{t.customers.read}<span class="sr-only">: {s.company}</span><span class="arrow" aria-hidden="true">→</span></a>
+            <blockquote>
+              <p>“{s.quote.text}”</p>
+            </blockquote>
+          </div>
+          <div class="person">
+            {s.quote.photo
+              ? <img class="avatar" src={s.quote.photo} alt="" width="48" height="48" loading="lazy" />
+              : <span class="avatar" aria-hidden="true">{initials(s.quote.name)}</span>}
+            <p class="who"><strong>{s.quote.name}</strong><span>{s.quote.role}</span></p>
           </div>
         </li>
       ))}
@@ -37,27 +41,38 @@ const initials = (name: string) => name.replace(/^Dr\.\s*/, '').split(/\s+/).map
 )}
 
 <style>
+  /* Testimonial card, 1:1 with Figma "Card" (122:1061): logo + arrow, quote, person at the bottom. */
   .quotes { display: grid; gap: 0; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
-  .q-card { display: flex; flex-direction: column; gap: var(--spacing-gap-general-group-lg); padding: var(--pad-block) var(--inset); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); }
-  .q-top { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-general-object-md); }
+  .q-card {
+    display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-gap-general-group-lg);
+    padding: var(--pad-block) var(--inset);
+    background: var(--surface-neutral-default);
+    border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default);
+  }
+  .q-body { display: grid; gap: 32px; }
+  .q-top { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
   blockquote p { font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 28px; color: var(--text-neutral-headings); text-wrap: pretty; }
-  .q-foot { margin-top: auto; display: grid; gap: var(--spacing-gap-general-object-md); }
+
+  .q-link { display: inline-flex; align-items: center; gap: var(--spacing-gap-text-md); flex: none; color: var(--icon-action-default); text-decoration: none; font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px; }
+  .q-arrow { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: square; }
+  /* Hover on the arrow: "Read full" fades in next to it. Nothing moves. */
+  .q-more { opacity: 0; transition: opacity var(--dur-fast) var(--ease); }
+  .q-link:is(:hover, :focus-visible) .q-more { opacity: 1; }
+
   .person { display: flex; align-items: center; gap: var(--spacing-gap-general-object-md); }
   .avatar {
     flex: none; display: grid; place-items: center;
     width: 48px; height: 48px; border-radius: var(--scale-max); object-fit: cover;
     background: var(--surface-action-washed); color: var(--text-action-default);
-    font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 1;
+    font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 16px;
   }
-  .q-card--accent .avatar { background: var(--surface-action-hover); color: var(--text-neutral-onsurface); }
-  .who { display: grid; }
-  .who strong { color: var(--text-neutral-headings); }
+  .who { display: grid; gap: var(--spacing-gap-text-sm); font-size: 16px; line-height: 28px; }
+  .who strong { font-weight: 600; color: var(--text-neutral-headings); }
   .who span { color: var(--text-neutral-body); }
-  .q-link { display: inline-flex; gap: var(--spacing-gap-text-md); width: fit-content; font-family: var(--font-display); font-weight: 600; color: var(--text-action-default); text-decoration: none; }
-  .q-link .arrow { transition: transform var(--dur-fast) var(--ease); }
+
   .q-card--accent { background: var(--surface-action-default); border-color: transparent; }
-  .q-card--accent blockquote p, .q-card--accent .who strong, .q-card--accent .who span, .q-card--accent .q-link { color: var(--text-neutral-onsurface); }
-  .q-card--accent :global(.mock-logo) { color: var(--text-neutral-onsurface); }
+  .q-card--accent :is(blockquote p, .who strong, .who span, .q-link), .q-card--accent :global(.mock-logo) { color: var(--text-neutral-onsurface); }
+  .q-card--accent .avatar { background: var(--surface-action-hover); color: var(--text-neutral-onsurface); }
   @media (min-width: 960px) {
     .quotes { grid-template-columns: repeat(3, 1fr); }
     .q-card { min-height: 400px; }

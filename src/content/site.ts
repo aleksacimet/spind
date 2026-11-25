@@ -169,7 +169,7 @@ const en = {
     'business-case': 'Business case',
     stories: 'Customer stories',
     cta: 'Next step',
-    logos: 'Customers',
+    logos: 'Trusted by IT teams in enterprises',
     features: 'Features',
   } as Record<string, string>,
 
@@ -192,15 +192,15 @@ const en = {
     labels: { master: 'Otto', s24: 'Lotte', n8: 'Bruno', m124: 'Greta' },
     height: '850 MM',
     lockerLabel: 'Spind modules side by side: Otto, Lotte, Bruno and Greta, 850 mm high',
-    fitTitle: 'Drawer size examples',
+    fitTitle: 'Drawer size example',
     fit: [
       // Two reference devices: the largest common phone and laptop sizes.
-      { device: 'iPhone 17 Pro Max', size: '163 × 78 × 9', opening: '175 × 90', result: '12 mm spare', drawer: 'small', draw: { w: 175, h: 90, dw: 163, dh: 9 } },
-      { device: 'MacBook Pro 16″', size: '356 × 248 × 17', opening: '500 × 90', result: '144 mm spare', drawer: 'wide', draw: { w: 500, h: 90, dw: 356, dh: 17 } },
+      { device: 'iPhone 17 Pro Max', size: '163 × 78 × 9', opening: '175 × 90', result: '12 mm spare left', drawer: 'small', draw: { w: 175, h: 90, dw: 163, dh: 9 } },
+      { device: 'MacBook Pro 16″', size: '356 × 248 × 17', opening: '500 × 90', result: '144 mm spare left', drawer: 'wide', draw: { w: 500, h: 90, dw: 356, dh: 17 } },
     ],
     fitHead: { size: 'Size (mm)', opening: 'Opening W × H (mm)' },
-    /** Front view drawn in the 'Drawer size examples' tile on hover: drawer opening and the device lying in it, in mm. */
-    fitHint: 'Hover a device to see it in its drawer',
+    /** Front view drawn in the 'Drawer size example' tile when a drawer on the locker (or a device card) is hovered, in mm. */
+    fitHint: 'Hover a drawer to see what fits in it',
   },
 
   workflows: {
@@ -537,9 +537,9 @@ const en = {
     exampleNote: 'Example stories: the companies, people, logos and numbers below are fictional and show the layout only.',
     all: 'All',
     filterLabel: 'Filter by industry',
-    logosTitle: 'Trusted by IT teams in every industry',
     featured: 'Featured story',
     read: 'Read the story',
+    readFull: 'Read full',
     quotesTitle: 'What IT teams say',
     quotesCta: 'All customer stories',
     facts: { industry: 'Industry', sites: 'Sites', lockers: 'Lockers', solutions: 'Solutions' },

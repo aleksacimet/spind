@@ -84,13 +84,13 @@ strong { font-weight: 600; }
 
 .section { position: relative; padding-block: 0 var(--spacer); }
 /*
- * Grid relationships (after the reference): white page outside the rails; every section is a light panel
- * between the rails, closed by hairlines that run the full screen width; the white strip between two panels
+ * Grid relationships (after the reference): one white page; sections have no fill of their own (same as the page),
+ * they sit between the rails, closed by hairlines that run the full screen width; the white strip between two panels
  * is the spacer. Content sits --inset from the rails; label strips run rail to rail.
  */
 .section:not(.glow-band) > .container {
   position: relative;
-  background: var(--surface-neutral-page);
+  background: transparent; /* sections share the page fill */
   padding-inline: var(--inset);
   padding-bottom: var(--spacer);
 }
@@ -126,7 +126,7 @@ main > .section.glow-band, main > article > .section.glow-band {
   clip-path: inset(0 0 0 var(--hair));
 }
 .section:not(.glow-band) > .container > :is(.faq-grid, .legal-body, .st-body, .cs-list-inner) { padding-bottom: var(--spacer); }
-.section--shade { background-color: color-mix(in srgb, var(--surface-neutral-page-shade) 70%, transparent); }
+.section--shade { background-color: transparent; } /* no section gets its own fill */
 .section--shade, .on-tint, .panel--today, .tile--shade { --text-neutral-subtle: var(--text-neutral-body); }
 .section--strong-intro .section-head .intro { color: var(--text-neutral-body); }
 
