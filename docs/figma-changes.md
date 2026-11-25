@@ -13,6 +13,10 @@ When a batch is built, move it from To build to Built and note the date.
 
 _Nothing waiting. Add new Figma changes here._
 
+## Built in code only, Figma still to update (2026-11-25, round 6)
+
+- Footer: the "Sound: On/Off" switch is gone. Interface sounds are always on and even quieter (about half as loud, softer low-pass, slightly lower and shorter tones). A previously saved "off" is cleared.
+
 ## Built in code only, Figma still to update (2026-11-25, round 5)
 
 - 3D lockers (home hero, template heroes, How it works) restyled as a modern clay render: one matte light material (Ice-tinted white, fronts a touch lighter), softer light and shadows, bigger rounded edges. No dark outlines: drawer gaps are 2.5 mm soft grey grooves with soft shading toward each gap, fronts stand 4 mm proud (was 8). Pulls replaced by fine light strips (grey, blue when the drawer is open). Vents and the return slot are shallow grooves, the plinth is a soft grey. Techno accents: blue ring around the badge reader, blue compartment light, the screen.
