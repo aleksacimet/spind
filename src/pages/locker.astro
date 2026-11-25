@@ -1,0 +1,16 @@
+---
+/** The locker, technically: the 3D locker hero, Modules and sizes (moved here from the home page) and a closing call to action. */
+import Base from '../layouts/Base.astro';
+import TemplateHero from '../components/TemplateHero.astro';
+import Modules from '../components/sections/Modules.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+import { getContent } from '../content/site';
+const locale = 'en';
+const t = getContent(locale);
+const L = t.lockerPage;
+---
+<Base title={`${L.label} | Spind`} description={L.meta} locale={locale} darkHero>
+  <TemplateHero id="locker-page" label={L.label} title={L.title} intro={L.intro} primary={L.primary} secondary={L.secondary} visualLabel={L.visualLabel} />
+  <Modules locale={locale} />
+  <CtaBand id="locker-cta" locale={locale} title={L.ctaTitle} text={L.ctaText} cta={L.cta} />
+</Base>

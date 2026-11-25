@@ -13,6 +13,11 @@ When a batch is built, move it from To build to Built and note the date.
 
 _Nothing waiting. Add new Figma changes here._
 
+## Built in code only, Figma still to update (2026-11-25, round 7)
+
+- Modules and sizes is off the home page. New page **/locker** ("Locker") describes the product technically: template hero with the 3D locker (label LOCKER, title "Four modules, one locker for every device", intro "Otto, Lotte, Bruno and Greta are 850 mm high and combine into one locker for phones, laptops and accessories."), the full Modules and sizes section (module labels, 850 mm drawing, drawer size examples) and a closing CTA band ("Plan the locker for your site"). The Product menu item "Modules and sizes" and the footer link now go to /locker.
+- Home order now: hero, logos, Problem, How it works, Integrations, stories, Pricing, Go live, FAQ, Video.
+
 ## Built in code only, Figma still to update (2026-11-25, round 6)
 
 - Yellow accents follow the same rule as the CTA (one "signal colour": Signal blue on light, yellow on dark). Changed on light: the Go live end point (now Blue/600 on the white timeline panel), selected text (Blue/600 with white text on light surfaces, yellow with black on dark ones) and the text cursor in input fields. Unchanged, because they sit on dark surfaces: the Spind column marker and icon in the Workflows comparison (dark column), the contact form number buttons, the calculator values and slider, the video play button, the security band icons, the Integrations orbit dots, the drawer size drawing and the template hero labels.

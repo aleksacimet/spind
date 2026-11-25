@@ -55,7 +55,7 @@ const en = {
             title: 'Spind locker',
             items: [
               { label: 'How it works', text: 'Request, code, open and logged', href: '#how-it-works' },
-              { label: 'Modules and sizes', text: 'Otto, Lotte, Bruno and Greta', href: '#modules' },
+              { label: 'Modules and sizes', text: 'Otto, Lotte, Bruno and Greta', href: '/locker' },
             ],
           },
           {
@@ -282,6 +282,19 @@ const en = {
     primary: 'Book a demo',
     secondary: 'Calculate your business case',
     featuresTitle: 'What IT sees in our application',
+  },
+  /** The locker itself, technically: modules, heights and drawer sizes (moved off the home page). */
+  lockerPage: {
+    label: 'Locker',
+    title: 'Four modules, one locker for every device',
+    intro: 'Otto, Lotte, Bruno and Greta are 850 mm high and combine into one locker for phones, laptops and accessories.',
+    meta: 'The Spind locker: the Otto screen module, Lotte with 24 small drawers, Bruno with 8 wide drawers and Greta with both, 850 mm high, with drawer sizes for phones and laptops.',
+    primary: 'Book a call',
+    secondary: 'Calculate your business case',
+    visualLabel: 'Spind locker with the Otto screen module and Lotte drawer module',
+    ctaTitle: 'Plan the locker for your site',
+    ctaText: 'Tell us which devices you hand out and we suggest the modules and drawer sizes for your first site.',
+    cta: 'Book a call',
   },
   workflowsPage: {
     label: 'Workflows',
