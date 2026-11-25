@@ -5,8 +5,9 @@ import { getContent } from '../../content/site';
 const t = getContent(Astro.props.locale);
 const h = t.how;
 ---
-<!-- Tabs: four steps across the top. Nothing changes on its own: hover only fills a tab, a click opens it.
-     Below: the 3D locker (same model as the home hero) on a grey surface; its screen follows the opened step.
+<!-- Tabs: four steps across the top. The steps play on their own: the open tab's bottom line is a progress bar that fills
+     in 5 s, then the next step opens (looping). A click opens a step and plays on from there. Hover only fills a tab.
+     Below: one 3D locker (Otto with 8 drawers under the screen) on a darker grey surface; its screen follows the step.
      It turns toward the mouse and a drawer opens while the mouse is over it. The step text is for screen readers. -->
 <Section id="how-it-works" title={h.title} intro={h.intro}>
   <div class="story" data-story>
@@ -33,7 +34,7 @@ const h = t.how;
         <p class="sr-only" data-copy={i} hidden={i !== 0}>{s.role}: {s.text}</p>
       ))}
       <div class="story-stage">
-        <Locker3D id="story" modules={['master', 's24', 'n8']} label={h.lockerLabel} story={h.screen} storyDrawer={8} locale={Astro.props.locale} />
+        <Locker3D id="story" modules={['compact']} label={h.lockerLabel} story={h.screen} storyDrawer={8} locale={Astro.props.locale} />
       </div>
     </div>
   </div>
@@ -66,22 +67,28 @@ const h = t.how;
   .story-tab[aria-selected='true'] .tab-num,
   .story-tab[aria-selected='true'] .tab-title { color: var(--text-action-default); }
 
-  /* Opened tab: blue line along its bottom. */
-  .tab-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--surface-action-default); opacity: 0; }
+  /* Opened tab: its bottom line is the step's progress bar. A pale blue track, the blue fill runs left to right in
+     --step-time, then main.ts opens the next step. Without motion (or before JS) the line is simply full. */
+  .story { --step-time: 5s; }
+  .tab-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--surface-action-washed); opacity: 0; overflow: hidden; }
+  .tab-progress::after { content: ''; position: absolute; inset: 0; background: var(--surface-action-default); transform-origin: left; }
   .story-tab[aria-selected='true'] .tab-progress { opacity: 1; }
+  :global(.story.is-playing) .story-tab[aria-selected='true'] .tab-progress::after { animation: tab-fill var(--step-time) linear both; }
+  :global(.story.is-paused) .story-tab[aria-selected='true'] .tab-progress::after { animation-play-state: paused; }
+  @keyframes tab-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-  /* Panel: the locker on the grey surface, full width under the tabs. Its height sets the locker size
-     (Locker3D keeps the same vertical framing at every width). */
+  /* Panel: one locker on a darker grey surface (Ice/200, a studio backdrop for the white locker), full width under
+     the tabs. The stage height sets the locker size (Locker3D keeps the same vertical framing at every width). */
   .story-panel { border-top: var(--hair) solid var(--border-neutral-default); }
   .story-stage {
-    background: var(--surface-neutral-page-shade);
+    background: var(--neutral-200);
     border-left: var(--hair) solid var(--border-neutral-default);
-    aspect-ratio: 2.5 / 1;
+    aspect-ratio: 4 / 3;
   }
-  @media (min-width: 640px) { .story-stage { aspect-ratio: 2.45 / 1; } }
+  @media (min-width: 640px) { .story-stage { aspect-ratio: 16 / 9; } }
   @media (min-width: 960px) {
     .story-tabs { grid-template-columns: repeat(4, 1fr); }
-    .story-stage { aspect-ratio: auto; height: 420px; }
+    .story-stage { aspect-ratio: auto; height: 460px; }
   }
-  @media (min-width: 1280px) { .story-stage { height: 520px; } }
+  @media (min-width: 1280px) { .story-stage { height: 560px; } }
 </style>

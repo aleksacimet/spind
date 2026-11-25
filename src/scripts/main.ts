@@ -129,7 +129,9 @@ document.addEventListener('keydown', (e) => {
 });
 document.addEventListener('click', (e) => { if (openDD() && !(e.target as Element).closest('[data-dd]')) setDD(null); });
 
-/* ---------- How it works: tabs change only on click (or arrow keys); nothing advances on its own ---------- */
+/* ---------- How it works: steps play on their own (5 s each, looping); the open tab's bottom line is the progress bar ----------
+   The CSS animation on that line is the timer: when it ends, the next step opens. It plays only while the section is on
+   screen, pauses while a tab has keyboard focus, and doesn't run at all with reduced motion (then tabs are click only). */
 const story = document.querySelector<HTMLElement>('[data-story]');
 // The 3D locker and its flat fallback drawing both follow the step (data-state 0-3).
 const storyLockers = story ? [...story.querySelectorAll<HTMLElement | SVGSVGElement>('[data-locker], [data-locker-3d]')] : [];
@@ -142,16 +144,37 @@ function setStory(i: number) {
   storyCopy.forEach((c, k) => { c.hidden = k !== i; });
   story.querySelector('[role="tabpanel"]')?.setAttribute('aria-labelledby', storyTabs[i]?.id ?? '');
 }
+function restartStoryBar() {
+  if (!story?.classList.contains('is-playing')) return;
+  story.classList.remove('is-playing');
+  void story.offsetWidth; // restart the CSS animation from 0
+  story.classList.add('is-playing');
+}
 if (story && storyTabs.length) {
   setStory(0);
+  if (motionOK()) {
+    story.classList.add('is-playing', 'is-paused');
+    story.addEventListener('animationend', (e) => {
+      if (!(e.target as Element).closest('[role="tab"][aria-selected="true"]')) return;
+      const i = storyTabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+      setStory((i + 1) % storyTabs.length);
+    });
+    let onScreen = false;
+    let keyFocus = false;
+    const sync = () => story.classList.toggle('is-paused', !onScreen || keyFocus);
+    new IntersectionObserver((entries) => { onScreen = entries.some((en) => en.isIntersecting); sync(); }, { threshold: 0.35 }).observe(story);
+    story.addEventListener('focusin', (e) => { keyFocus = (e.target as Element).matches(':focus-visible'); sync(); });
+    story.addEventListener('focusout', () => { keyFocus = false; sync(); });
+  }
   storyTabs.forEach((t, k) => {
-    t.addEventListener('click', () => setStory(k));
+    t.addEventListener('click', () => { setStory(k); restartStoryBar(); });
     t.addEventListener('keydown', (e) => {
       const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
       if (!d) return;
       e.preventDefault();
       const n = (k + d + storyTabs.length) % storyTabs.length;
       setStory(n);
+      restartStoryBar();
       storyTabs[n].focus();
     });
   });

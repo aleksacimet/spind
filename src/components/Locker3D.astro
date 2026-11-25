@@ -8,11 +8,11 @@
 import LockerDrawing from './LockerDrawing.astro';
 import { getContent } from '../content/site';
 
-type ModuleKey = 'master' | 's24' | 'n8' | 'm124';
+type ModuleKey = 'master' | 's24' | 'n8' | 'm124' | 'compact';
 interface Props {
   id: string;
   label: string;
-  /** Left to right: master = Otto (screen), s24 = Lotte, n8 = Bruno, m124 = Greta. */
+  /** Left to right: master = Otto (screen), s24 = Lotte, n8 = Bruno, m124 = Greta, compact = Otto with 8 drawers. */
   modules?: ModuleKey[];
   locale?: string;
   /** What the locker stands on: dark pages get a faint light pool on the floor instead of a shadow. */
@@ -23,18 +23,20 @@ interface Props {
 }
 const { id, label, modules = ['master', 's24', 'n8'], locale, surface = 'light', story, storyDrawer = 8 } = Astro.props;
 const t = getContent(locale);
+// The flat fallback drawing has no compact module: it shows the plain Otto there.
+const flat = modules.map((m) => (m === 'compact' ? 'master' : m)) as Exclude<ModuleKey, 'compact'>[];
 // The flat drawing marks the story drawer per module: find which module drawer number storyDrawer falls in.
-const SIZES: Record<ModuleKey, number> = { master: 0, s24: 24, n8: 8, m124: 16 };
-let accent: { module: ModuleKey; index: number } | null = null;
+const SIZES: Record<ModuleKey, number> = { master: 0, s24: 24, n8: 8, m124: 16, compact: 0 };
+let accent: { module: Exclude<ModuleKey, 'compact'>; index: number } | null = null;
 if (story) {
   let left = storyDrawer;
-  for (const m of modules) {
+  for (const m of flat) {
     if (left <= SIZES[m]) { accent = { module: m, index: left - 1 }; break; }
     left -= SIZES[m];
   }
 }
 // SVG drawing proportions (module 200 wide, 17.5 apart, 300 tall), for the fallback box.
-const svgRatio = (modules.length * 200 + (modules.length - 1) * 17.5) / 300;
+const svgRatio = (flat.length * 200 + (flat.length - 1) * 17.5) / 300;
 ---
 <div
   class="locker3d"
@@ -49,7 +51,7 @@ const svgRatio = (modules.length * 200 + (modules.length - 1) * 17.5) / 300;
   style={`--svg-ratio:${svgRatio}`}
 >
   <div class="locker3d-fallback">
-    <LockerDrawing id={id} modules={modules} gap={17.5} animate={!story} accent={accent} screen={story ?? null} label={label} />
+    <LockerDrawing id={id} modules={flat} gap={17.5} animate={!story} accent={accent} screen={story ?? null} label={label} />
   </div>
 </div>
 

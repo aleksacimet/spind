@@ -3,7 +3,8 @@
  * Look: modern clay render. One matte light material, soft light and soft shadows, gaps are soft grooves (no dark
  * outlines), and a few techno accents that light up blue: drawer light strips, the reader ring, the screen.
  * Modules stand left to right as listed in data-modules: Otto (master: touch screen, readers, service panel with a
- * small grey logo), Lotte (s24: 24 small drawers), Bruno (n8: 8 wide drawers), Greta (m124: 12 small, then 4 wide).
+ * small grey logo), Lotte (s24: 24 small drawers), Bruno (n8: 8 wide drawers), Greta (m124: 12 small, then 4 wide),
+ * and compact: one Otto with 8 drawers under the screen instead of the service panel (How it works).
  *
  * - Mouse over the stage: the locker turns a little toward the pointer and springs back when it leaves.
  * - A drawer opens only while the mouse is over it (tap on touch screens): it pops out, its compartment lights blue,
@@ -397,26 +398,26 @@ export function initHeroLocker(stage: HTMLElement) {
     drawers.push(d);
   }
 
-  /** rows: drawers per row, top to bottom (8 rows). */
-  function drawerModule(x: number, rows: number[], first: number) {
-    const m = cabinet(x);
+  /** A field of drawers between yTop and yBottom. rows: drawers per row, top to bottom. Returns the next number. */
+  function drawerField(m: Group, rows: number[], yTop: number, yBottom: number, first: number) {
     const fw = W - FM * 2;
-    const fh = BODY - FM * 2;
+    const fh = yTop - yBottom;
     const x0 = -fw / 2;
-    const y0 = PL + FM;
-    opening(m, x0, y0, fw, fh);
-    const h = (fh - DG * 9) / 8;
+    opening(m, x0, yBottom, fw, fh);
+    const h = (fh - DG * (rows.length + 1)) / rows.length;
     let n = first;
-    for (let r = 0; r < 8; r++) {
-      const cols = rows[r];
+    rows.forEach((cols, r) => {
       const w = (fw - DG * (cols + 1)) / cols;
       for (let c = 0; c < cols; c++) {
         const cx = x0 + DG + w / 2 + c * (w + DG);
-        const cy = TOP - FM - DG - h / 2 - r * (h + DG);
+        const cy = yTop - DG - h / 2 - r * (h + DG);
         drawer(m, cx, cy, w, h, cols === 1 ? 'wide' : 'small', n++);
       }
-    }
+    });
     return n;
+  }
+  function drawerModule(x: number, rows: number[], first: number) {
+    return drawerField(cabinet(x), rows, TOP - FM, PL + FM, first);
   }
 
   /* ---------- Otto's screen ---------- */
@@ -595,7 +596,8 @@ export function initHeroLocker(stage: HTMLElement) {
   const refreshScreen = () => (story ? drawStory(storyStep) : drawScreen(hovered ? hovered.n : null));
 
   /* ---------- Otto: screen, readers, slot, service panel ---------- */
-  function otto(x: number) {
+  /** Otto: screen, readers and slot on top. Below: the service panel, or (compact) a field of drawers. */
+  function otto(x: number, below?: { rows: number[]; first: number }): number {
     const m = cabinet(x);
     // Touch screen behind one sheet of black glass.
     const sy = TOP - 0.06 - 0.125;
@@ -643,10 +645,23 @@ export function initHeroLocker(stage: HTMLElement) {
     slot.position.set(0, sy - 0.125 - 0.045, FZ - 0.0012);
     m.add(slot);
 
-    // Service panel: one big front with the logo, vents and a key lock.
-    const fw = W - FM * 2;
     const top = 0.47;
     const y0 = PL + FM;
+    const lw = 0.078;
+    const lh = (lw * 3687) / 8342;
+    const logoMat = () =>
+      new MeshStandardMaterial({ map: texture(logoCanvas('#b8c0ca', 1024)), transparent: true, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2 });
+
+    if (below) {
+      // Compact: the small grey logo sits on the frame between the slot and the drawers, left aligned with them.
+      const logo = new Mesh(new PlaneGeometry(lw, lh), logoMat());
+      logo.position.set(-W / 2 + FM + 0.034 + lw / 2, top + 0.042, FZ + 0.0003);
+      m.add(logo);
+      return drawerField(m, below.rows, top, y0, below.first);
+    }
+
+    // Service panel: one big front with the logo, vents and a key lock.
+    const fw = W - FM * 2;
     const fh = top - y0;
     opening(m, -fw / 2, y0, fw, fh);
     const pw = fw - DG * 2;
@@ -656,12 +671,7 @@ export function initHeroLocker(stage: HTMLElement) {
     m.add(panel);
 
     // Small light grey logo, printed, top left: there, but quiet.
-    const lw = 0.078;
-    const lh = (lw * 3687) / 8342;
-    const logo = new Mesh(
-      new PlaneGeometry(lw, lh),
-      new MeshStandardMaterial({ map: texture(logoCanvas('#b8c0ca', 1024)), transparent: true, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2 })
-    );
+    const logo = new Mesh(new PlaneGeometry(lw, lh), logoMat());
     logo.position.set(-pw / 2 + 0.034 + lw / 2, top - DG - 0.034 - lh / 2, FACE + 0.0002);
     m.add(logo);
 
@@ -680,6 +690,7 @@ export function initHeroLocker(stage: HTMLElement) {
     const keyway = new Mesh(rbox(0.002, 0.01, 0.002, 0.0008, 1), groove);
     keyway.position.set(lock.position.x, lock.position.y, FACE + 0.0028);
     m.add(keyway);
+    return 0;
   }
 
   const ROWS: Record<string, number[]> = {
@@ -687,12 +698,15 @@ export function initHeroLocker(stage: HTMLElement) {
     n8: [1, 1, 1, 1, 1, 1, 1, 1],
     m124: [3, 3, 3, 3, 1, 1, 1, 1],
   };
-  const keys = (stage.dataset.modules || 'master,s24,n8').split(',').filter((k) => k === 'master' || ROWS[k]);
+  // compact: one Otto with 8 drawers under the screen instead of the service panel (How it works).
+  const COMPACT_ROWS = [3, 3, 1, 1];
+  const keys = (stage.dataset.modules || 'master,s24,n8').split(',').filter((k) => k === 'master' || k === 'compact' || ROWS[k]);
   const step = W + GAP;
   let nextDrawer = 1;
   keys.forEach((k, i) => {
     const x = (i - (keys.length - 1) / 2) * step; // centred on the turn axis
     if (k === 'master') otto(x);
+    else if (k === 'compact') nextDrawer = otto(x, { rows: COMPACT_ROWS, first: nextDrawer });
     else nextDrawer = drawerModule(x, ROWS[k], nextDrawer);
   });
 

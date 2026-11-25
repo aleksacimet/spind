@@ -13,6 +13,14 @@ When a batch is built, move it from To build to Built and note the date.
 
 _Nothing waiting. Add new Figma changes here._
 
+## Built in code only, Figma still to update (2026-11-25, round 8)
+
+- How it works ("From request to device in 4 steps"):
+  - One locker instead of three: a compact Otto with the screen and the two reader circles on top, the return slot, the small grey logo, and 8 drawers below (two rows of 3 small, two wide). Every drawer opens while the mouse is over it (tap on touch); the locker turns toward the mouse.
+  - Darker grey stage behind it: Ice/200 #C3CCD7 (was Ice/75). Stage 560 px tall from 1280, 460 from 960, 16:9 from 640, 4:3 on phones.
+  - Steps play on their own again: 5 s per step, looping. The open tab's bottom line is the progress bar (pale blue track, blue fill running left to right); when it is full the next step opens. A click opens a step and plays on from there. It runs only while the section is on screen, pauses while a tab has keyboard focus, and with reduced motion the tabs are click only (line full).
+  - The screen follows the step as before; in the Open step drawer 08 (the bottom wide drawer) has the blue glow around it.
+
 ## Built in code only, Figma still to update (2026-11-25, round 7)
 
 - Modules and sizes is off the home page. New page **/locker** ("Locker") describes the product technically: template hero with the 3D locker (label LOCKER, title "Four modules, one locker for every device", intro "Otto, Lotte, Bruno and Greta are 850 mm high and combine into one locker for phones, laptops and accessories."), the full Modules and sizes section (module labels, 850 mm drawing, drawer size examples) and a closing CTA band ("Plan the locker for your site"). The Product menu item "Modules and sizes" and the footer link now go to /locker.
