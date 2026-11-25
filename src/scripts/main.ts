@@ -131,12 +131,13 @@ document.addEventListener('click', (e) => { if (openDD() && !(e.target as Elemen
 
 /* ---------- How it works: tabs change only on click (or arrow keys); nothing advances on its own ---------- */
 const story = document.querySelector<HTMLElement>('[data-story]');
-const storyLocker = story?.querySelector<SVGSVGElement>('[data-locker]');
+// The 3D locker and its flat fallback drawing both follow the step (data-state 0-3).
+const storyLockers = story ? [...story.querySelectorAll<HTMLElement | SVGSVGElement>('[data-locker], [data-locker-3d]')] : [];
 const storyTabs = story ? [...story.querySelectorAll<HTMLButtonElement>('[role="tab"]')] : [];
 const storyCopy = story ? [...story.querySelectorAll<HTMLElement>('[data-copy]')] : [];
 function setStory(i: number) {
   if (!story) return;
-  if (storyLocker) storyLocker.dataset.state = String(i);
+  storyLockers.forEach((l) => (l.dataset.state = String(i)));
   storyTabs.forEach((t, k) => { const on = k === i; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
   storyCopy.forEach((c, k) => { c.hidden = k !== i; });
   story.querySelector('[role="tabpanel"]')?.setAttribute('aria-labelledby', storyTabs[i]?.id ?? '');

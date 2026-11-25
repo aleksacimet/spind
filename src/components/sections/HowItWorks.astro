@@ -1,12 +1,13 @@
 ---
 import Section from '../Section.astro';
-import LockerDrawing from '../LockerDrawing.astro';
+import Locker3D from '../Locker3D.astro';
 import { getContent } from '../../content/site';
 const t = getContent(Astro.props.locale);
 const h = t.how;
 ---
 <!-- Tabs: four steps across the top. Nothing changes on its own: hover only fills a tab, a click opens it.
-     Below: the opened step's text on the left, the locker on a grey surface on the right. -->
+     Below: the 3D locker (same model as the home hero) on a grey surface; its screen follows the opened step.
+     It turns toward the mouse and a drawer opens while the mouse is over it. The step text is for screen readers. -->
 <Section id="how-it-works" title={h.title} intro={h.intro}>
   <div class="story" data-story>
     <div class="story-tabs" role="tablist" aria-label={h.title}>
@@ -28,25 +29,11 @@ const h = t.how;
       ))}
     </div>
     <div class="story-panel" id="story-panel" role="tabpanel" aria-labelledby="story-tab-0">
-      <div class="story-copy">
-        {h.steps.map((s, i) => (
-          <div class="step-copy" data-copy={i} hidden={i !== 0}>
-            <span class="step-role">{s.role}</span>
-            <h3>{s.title}</h3>
-            <p>{s.text}</p>
-          </div>
-        ))}
-      </div>
+      {h.steps.map((s, i) => (
+        <p class="sr-only" data-copy={i} hidden={i !== 0}>{s.role}: {s.text}</p>
+      ))}
       <div class="story-stage">
-        <div class="stage-inner">
-          <LockerDrawing
-            id="story"
-            modules={['master', 's24']}
-            accent={{ module: 's24', index: 7 }}
-            screen={h.screen}
-            label={h.lockerLabel}
-          />
-        </div>
+        <Locker3D id="story" modules={['master', 's24', 'n8']} label={h.lockerLabel} story={h.screen} storyDrawer={8} locale={Astro.props.locale} />
       </div>
     </div>
   </div>
@@ -83,25 +70,18 @@ const h = t.how;
   .tab-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--surface-action-default); opacity: 0; }
   .story-tab[aria-selected='true'] .tab-progress { opacity: 1; }
 
-  /* Panel: text on the left, locker on the dark surface on the right. */
-  .story-panel { display: grid; border-top: var(--hair) solid var(--border-neutral-default); }
-  .story-copy { display: grid; align-content: center; padding: var(--pad-block) var(--inset); background: var(--surface-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); }
-  .step-copy { display: grid; gap: var(--spacing-gap-text-sm); max-width: 440px; }
-  .step-copy[hidden] { display: none; }
-  .step-role { font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-action-default); margin-bottom: var(--spacing-gap-text-md, 8px); }
-  .step-copy h3 { font-size: 32px; line-height: 40px; color: var(--text-neutral-headings); }
-  .step-copy p { font-weight: 400; font-size: 18px; line-height: 1.6; color: var(--text-neutral-body); }
-  @media (prefers-reduced-motion: no-preference) {
-    .step-copy:not([hidden]) { animation: copy-in 500ms var(--ease-out); }
+  /* Panel: the locker on the grey surface, full width under the tabs. Its height sets the locker size
+     (Locker3D keeps the same vertical framing at every width). */
+  .story-panel { border-top: var(--hair) solid var(--border-neutral-default); }
+  .story-stage {
+    background: var(--surface-neutral-page-shade);
+    border-left: var(--hair) solid var(--border-neutral-default);
+    aspect-ratio: 2.5 / 1;
   }
-  @keyframes copy-in { from { opacity: 0; } to { opacity: 1; } }
-
-  .story-stage { background: var(--surface-neutral-page-shade); border-left: var(--hair) solid var(--border-neutral-default); display: flex; align-items: center; justify-content: center; min-height: 360px; padding: var(--pad-block) var(--inset); }
-  .stage-inner { width: 80%; max-width: 400px; }
-
+  @media (min-width: 640px) { .story-stage { aspect-ratio: 2.45 / 1; } }
   @media (min-width: 960px) {
     .story-tabs { grid-template-columns: repeat(4, 1fr); }
-    .story-panel { grid-template-columns: 5fr 7fr; }
-    .story-stage { min-height: 520px; }
+    .story-stage { aspect-ratio: auto; height: 420px; }
   }
+  @media (min-width: 1280px) { .story-stage { height: 520px; } }
 </style>

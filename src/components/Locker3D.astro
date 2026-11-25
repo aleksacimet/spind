@@ -17,15 +17,39 @@ interface Props {
   locale?: string;
   /** What the locker stands on: dark pages get a faint light pool on the floor instead of a shadow. */
   surface?: 'light' | 'dark';
+  /** How it works: screen text per step (the tabs set data-state 0-3) and the drawer that opens, numbered from 1. */
+  story?: { request: string; code: string; open: string; logged: string };
+  storyDrawer?: number;
 }
-const { id, label, modules = ['master', 's24', 'n8'], locale, surface = 'light' } = Astro.props;
+const { id, label, modules = ['master', 's24', 'n8'], locale, surface = 'light', story, storyDrawer = 8 } = Astro.props;
 const t = getContent(locale);
+// The flat drawing marks the story drawer per module: find which module drawer number storyDrawer falls in.
+const SIZES: Record<ModuleKey, number> = { master: 0, s24: 24, n8: 8, m124: 16 };
+let accent: { module: ModuleKey; index: number } | null = null;
+if (story) {
+  let left = storyDrawer;
+  for (const m of modules) {
+    if (left <= SIZES[m]) { accent = { module: m, index: left - 1 }; break; }
+    left -= SIZES[m];
+  }
+}
 // SVG drawing proportions (module 200 wide, 17.5 apart, 300 tall), for the fallback box.
 const svgRatio = (modules.length * 200 + (modules.length - 1) * 17.5) / 300;
 ---
-<div class="locker3d" data-locker-3d data-modules={modules.join(',')} data-surface={surface} data-label={label} data-screen={JSON.stringify(t.hero.screen)} style={`--svg-ratio:${svgRatio}`}>
+<div
+  class="locker3d"
+  data-locker-3d
+  data-modules={modules.join(',')}
+  data-surface={surface}
+  data-label={label}
+  data-screen={JSON.stringify(t.hero.screen)}
+  data-story-screen={story ? JSON.stringify(story) : undefined}
+  data-story-drawer={story ? storyDrawer : undefined}
+  data-state={story ? '0' : undefined}
+  style={`--svg-ratio:${svgRatio}`}
+>
   <div class="locker3d-fallback">
-    <LockerDrawing id={id} modules={modules} gap={17.5} animate accent={null} label={label} />
+    <LockerDrawing id={id} modules={modules} gap={17.5} animate={!story} accent={accent} screen={story ?? null} label={label} />
   </div>
 </div>
 

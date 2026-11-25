@@ -1,14 +1,18 @@
 /**
- * Spind locker in real 3D (three.js), lit like a product shot. Used by Locker3D.astro (home hero, template page heroes).
- * White modules stand on the floor, left to right as listed in data-modules: Otto (master: touch screen, readers,
- * service panel with a small grey logo), Lotte (s24: 24 small drawers), Bruno (n8: 8 wide drawers),
- * Greta (m124: 12 small, then 4 wide).
+ * Spind locker in real 3D (three.js). Used by Locker3D.astro: home hero, template page heroes, How it works.
+ * Look: modern clay render. One matte light material, soft light and soft shadows, gaps are soft grooves (no dark
+ * outlines), and a few techno accents that light up blue: drawer light strips, the reader ring, the screen.
+ * Modules stand left to right as listed in data-modules: Otto (master: touch screen, readers, service panel with a
+ * small grey logo), Lotte (s24: 24 small drawers), Bruno (n8: 8 wide drawers), Greta (m124: 12 small, then 4 wide).
  *
  * - Mouse over the stage: the locker turns a little toward the pointer and springs back when it leaves.
- *   This is the one hover motion on the site (asked for on 2026-11-25).
- * - Every few seconds a drawer slides out with a phone or laptop in it, the screen says which drawer, then it closes.
- * - Touch screens: a slow sway instead of the tilt. Reduced motion: one still frame.
+ * - A drawer opens only while the mouse is over it (tap on touch screens): it pops out, its compartment lights blue,
+ *   its light strip turns blue and the screen names it. Nothing opens on its own.
+ * - Story mode (data-story-screen): the How it works tabs set data-state 0-3 and the screen follows the step;
+ *   in the Open step the target drawer's light strip turns blue.
+ * - Touch screens: a slow sway instead of the tilt. Reduced motion: no turning, drawers snap open.
  * - Renders only while something moves and pauses off screen. If WebGL is missing, the SVG drawing stays.
+ * Hover motion here is a deliberate exception to the site's fill-only hover rule (asked for on 2026-11-25).
  */
 import {
   BoxGeometry,
@@ -17,7 +21,6 @@ import {
   CylinderGeometry,
   DirectionalLight,
   Group,
-  SpotLight,
   MathUtils,
   Mesh,
   MeshBasicMaterial,
@@ -28,9 +31,13 @@ import {
   PerspectiveCamera,
   PlaneGeometry,
   PMREMGenerator,
+  Raycaster,
+  RingGeometry,
   Scene,
   ShadowMaterial,
+  SpotLight,
   SRGBColorSpace,
+  Vector2,
   Vector3,
   WebGLRenderer,
   type BufferGeometry,
@@ -48,15 +55,15 @@ const PL = 0.05; // plinth height
 const BODY = 0.86; // cabinet above the plinth
 const TOP = PL + BODY;
 const FM = 0.022; // frame around the drawer field
-const DG = 0.003; // gap between drawers
-const FZ = D / 2; // front face
+const DG = 0.0025; // gap between drawers
+const FZ = D / 2; // front face of the cabinet
 const FRONT_T = 0.02; // drawer front thickness
-const FRONT_Z = FZ - 0.002; // drawer fronts stand 8 mm proud of the frame
+const FRONT_Z = FZ - 0.006; // drawer fronts stand 4 mm proud of the frame
 const FACE = FRONT_Z + FRONT_T / 2; // drawer front face
 
 /* Framing: the back top edge sits this far from the top of the stage, the front floor line this far down.
-   Only the vertical is fixed, so the hero CSS can place the dark band on the locker at any width. */
-export const FRAME = { top: 0.045, floor: 0.93 };
+   Only the vertical is fixed, so a page can line things up with the locker at any width (see Locker3D.astro). */
+const FRAME = { top: 0.045, floor: 0.93 };
 const CAM_DIST = 3.8;
 const CAM_ELEV = MathUtils.degToRad(9);
 
@@ -64,12 +71,30 @@ const CAM_ELEV = MathUtils.degToRad(9);
 const MAX_Y = 0.17; // ~10 degrees left and right
 const MAX_X = 0.05; // ~3 degrees up and down
 
-type Screen = { idleTitle: string; idleText: string; start: string; openTitle: string; openText: string; footer: string };
-type Drawer = { n: number; g: Group; w: number; h: number; kind: 'small' | 'wide'; handle: Mesh; light: Mesh; max: number; tray?: Group };
+/* Colours (sRGB hex) */
+const CLAY = 0xeceef1; // body
+const CLAY_FRONT = 0xf1f3f5; // drawer fronts, a touch lighter
+const GROOVE = 0xa9b1bb; // gaps between fronts
+const BLUE = 0x2e8eff;
 
-// Push latch: the drawer pops out fast, runs a touch past its stop and settles back.
-const easeOutBack = (t: number, s = 1.25) => 1 + (s + 1) * Math.pow(t - 1, 3) + s * Math.pow(t - 1, 2);
-const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+type Screen = { idleTitle: string; idleText: string; start: string; openTitle: string; openText: string; footer: string };
+type Story = { request: string; code: string; open: string; logged: string };
+type Drawer = {
+  n: number;
+  g: Group;
+  w: number;
+  h: number;
+  kind: 'small' | 'wide';
+  strip: Mesh;
+  light: Mesh;
+  max: number;
+  /** 0 closed, 1 open (springs past 1 a little) */
+  p: number;
+  v: number;
+  target: number;
+  tray?: Group;
+};
+
 const clamp1 = (v: number) => Math.max(-1, Math.min(1, v));
 
 function makeCanvas(w: number, h: number) {
@@ -101,7 +126,7 @@ function contactShadow(w: number, d: number, pad: number) {
       const x = ((i + 0.5) / S - 0.5) * tw;
       const z = ((j + 0.5) / S - 0.5) * td;
       const dist = Math.hypot(Math.max(Math.abs(x) - w / 2, 0), Math.max(Math.abs(z) - d / 2, 0));
-      const a = Math.pow(Math.max(0, 1 - dist / pad), 2.4);
+      const a = Math.pow(Math.max(0, 1 - dist / pad), 2.2);
       img.data[(j * S + i) * 4 + 3] = Math.round(a * 255);
     }
   }
@@ -109,20 +134,19 @@ function contactShadow(w: number, d: number, pad: number) {
   return { tex: texture(c, false), w: tw, d: td };
 }
 
-/** The Spind logo as a texture, in one flat colour on transparent. */
-function logoTexture(color: string) {
-  const w = 1024;
+/** The Spind logo in one flat colour on transparent. */
+function logoCanvas(color: string, w: number) {
   const h = Math.round((w * 3687) / 8342);
   const [c, ctx] = makeCanvas(w, h);
   ctx.scale(w / 8342, h / 3687);
   ctx.fillStyle = color;
   for (const p of LOGO_PATHS) ctx.fill(new Path2D(p.d), p.evenodd ? 'evenodd' : 'nonzero');
-  return texture(c);
+  return c;
 }
 
 /**
- * Soft occlusion on a drawer front: a few percent darker in the last 8 mm toward each gap,
- * and a little more along the bottom, so the gaps read as depth, not as drawn lines.
+ * Soft occlusion on a drawer front (clay look): darker in the last 12 mm toward each gap, most along the bottom,
+ * so a gap reads as a soft groove instead of a drawn line.
  */
 function frontShade(w: number, h: number) {
   const cw = 256;
@@ -130,19 +154,19 @@ function frontShade(w: number, h: number) {
   const [c, ctx] = makeCanvas(cw, ch);
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, cw, ch);
-  const ex = (0.008 / w) * cw;
-  const ey = (0.008 / h) * ch;
+  const ex = (0.012 / w) * cw;
+  const ey = (0.012 / h) * ch;
   const edge = (x0: number, y0: number, x1: number, y1: number, a: number) => {
     const g = ctx.createLinearGradient(x0, y0, x1, y1);
-    g.addColorStop(0, `rgba(70, 80, 95, ${a})`);
-    g.addColorStop(1, 'rgba(70, 80, 95, 0)');
+    g.addColorStop(0, `rgba(96, 108, 124, ${a})`);
+    g.addColorStop(1, 'rgba(96, 108, 124, 0)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, cw, ch);
   };
-  edge(0, 0, ex, 0, 0.07);
-  edge(cw, 0, cw - ex, 0, 0.07);
-  edge(0, 0, 0, ey, 0.05); // top of the face
-  edge(0, ch, 0, ch - ey, 0.09); // bottom of the face
+  edge(0, 0, ex, 0, 0.08);
+  edge(cw, 0, cw - ex, 0, 0.08);
+  edge(0, 0, 0, ey, 0.06); // top of the face
+  edge(0, ch, 0, ch - ey, 0.12); // bottom of the face
   return texture(c);
 }
 
@@ -160,12 +184,12 @@ function sheenTexture() {
   return texture(c);
 }
 
-/** Contactless reader symbol (three arcs) for the badge reader. */
+/** Contactless reader symbol (three arcs). */
 function nfcTexture() {
   const [c, ctx] = makeCanvas(256, 256);
   ctx.strokeStyle = 'rgba(230, 236, 243, 0.85)';
   ctx.lineCap = 'round';
-  ctx.lineWidth = 12;
+  ctx.lineWidth = 10;
   for (let k = 0; k < 3; k++) {
     ctx.beginPath();
     ctx.arc(92, 128, 26 + k * 28, -Math.PI / 4, Math.PI / 4);
@@ -173,7 +197,7 @@ function nfcTexture() {
   }
   ctx.fillStyle = 'rgba(230, 236, 243, 0.85)';
   ctx.beginPath();
-  ctx.arc(92, 128, 9, 0, Math.PI * 2);
+  ctx.arc(92, 128, 8, 0, Math.PI * 2);
   ctx.fill();
   return texture(c);
 }
@@ -182,6 +206,9 @@ export function initHeroLocker(stage: HTMLElement) {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const copy: Screen = JSON.parse(stage.dataset.screen || '{}');
+  const story: Story | null = stage.dataset.storyScreen ? JSON.parse(stage.dataset.storyScreen) : null;
+  const storyDrawer = Number(stage.dataset.storyDrawer || 0);
+  let storyStep = story ? Number(stage.dataset.state || 0) : -1;
 
   let renderer: WebGLRenderer;
   try {
@@ -193,7 +220,7 @@ export function initHeroLocker(stage: HTMLElement) {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 0);
   renderer.toneMapping = NeutralToneMapping;
-  renderer.toneMappingExposure = 0.95;
+  renderer.toneMappingExposure = 1;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFShadowMap;
 
@@ -202,32 +229,29 @@ export function initHeroLocker(stage: HTMLElement) {
   canvas.setAttribute('aria-label', stage.dataset.label || '');
   stage.appendChild(canvas);
 
-  /* ---------- Scene, light ---------- */
+  /* ---------- Scene, light: a big soft studio light, like a clay render ---------- */
   const scene = new Scene();
   const pmrem = new PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.5;
+  scene.environmentIntensity = 0.62;
   pmrem.dispose();
 
-  // Key: a soft spot from the front left, high, like a softbox in a studio. Its falloff gives the fronts a gentle
-  // top-to-bottom gradient; its shadow is short and soft and falls on the drawers below an open one.
-  const key = new SpotLight(0xffffff, 1.75, 0, 0.46, 0.95, 0);
-  key.position.set(-1.1, 3.9, 3.6);
+  const key = new SpotLight(0xffffff, 1.55, 0, 0.5, 1, 0);
+  key.position.set(-0.85, 4.5, 3.4); // high, so floor shadows stay short and inside the stage
   key.target.position.set(0.1, 0.72, 0);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.camera.near = 2;
   key.shadow.camera.far = 9;
-  key.shadow.radius = 6;
+  key.shadow.radius = 9;
   key.shadow.bias = -0.0003;
   key.shadow.normalBias = 0.01;
   scene.add(key, key.target);
-  // Cool fill from the right so the right sides read as grey steel, not flat.
-  const fill = new DirectionalLight(0xe4ecff, 0.28);
+  const fill = new DirectionalLight(0xe4ecff, 0.3);
   fill.position.set(3, 1.6, 2);
   scene.add(fill);
 
-  const floor = new Mesh(new PlaneGeometry(8, 8), new ShadowMaterial({ color: 0x0d1015, opacity: 0.09 }));
+  const floor = new Mesh(new PlaneGeometry(8, 8), new ShadowMaterial({ color: 0x0d1015, opacity: 0.08 }));
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   scene.add(floor);
@@ -251,22 +275,21 @@ export function initHeroLocker(stage: HTMLElement) {
   }
 
   /* ---------- Materials ---------- */
-  // White powder-coated steel: matte with a faint sheen that moves as the locker turns.
-  const white = new MeshPhysicalMaterial({ color: 0xf1f3f6, roughness: 0.5, clearcoat: 0.25, clearcoatRoughness: 0.45 });
-  const frontMat = white.clone();
-  frontMat.color.set(0xf6f7f9);
-  const recess = new MeshStandardMaterial({ color: 0x343b45, roughness: 0.95 });
-  const plinthMat = new MeshStandardMaterial({ color: 0x4f5763, roughness: 0.8 });
-  const slotMat = new MeshStandardMaterial({ color: 0x20262e, roughness: 0.7 });
-  const activeMat = new MeshStandardMaterial({ color: 0x0079ff, emissive: 0x1f86ff, emissiveIntensity: 1.6, roughness: 0.4 });
-  const glass = new MeshPhysicalMaterial({ color: 0x07090c, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.04 });
-  const readerMat = new MeshPhysicalMaterial({ color: 0x1b222c, roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.1 });
+  const clay = new MeshStandardMaterial({ color: CLAY, roughness: 0.78 });
+  const clayFront = new MeshStandardMaterial({ color: CLAY_FRONT, roughness: 0.74 });
+  const groove = new MeshStandardMaterial({ color: GROOVE, roughness: 0.95 });
+  const plinthMat = new MeshStandardMaterial({ color: 0xaab2bc, roughness: 0.9 });
+  const detail = new MeshStandardMaterial({ color: 0xc3cad2, roughness: 0.85 }); // vents, slot: shallow grooves
+  const stripMat = new MeshStandardMaterial({ color: 0xd3d9df, roughness: 0.6 }); // drawer light strip, off
+  const activeMat = new MeshStandardMaterial({ color: BLUE, emissive: BLUE, emissiveIntensity: 1.5, roughness: 0.4, toneMapped: false });
+  const glass = new MeshPhysicalMaterial({ color: 0x0b0e13, roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05 });
+  const readerMat = new MeshPhysicalMaterial({ color: 0x1b222c, roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.15 });
   const lensMat = new MeshPhysicalMaterial({ color: 0x14243a, roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0.02 });
-  const chrome = new MeshStandardMaterial({ color: 0xd5d9de, metalness: 1, roughness: 0.22 });
-  const trayMat = new MeshStandardMaterial({ color: 0xdfe4ea, roughness: 0.6 });
-  const trayFloor = new MeshStandardMaterial({ color: 0x0079ff, roughness: 0.55, emissive: 0x0a3f8a, emissiveIntensity: 0.35 });
-  const phoneMat = new MeshPhysicalMaterial({ color: 0x111419, roughness: 0.18, metalness: 0.4, clearcoat: 1, clearcoatRoughness: 0.05 });
-  const laptopMat = new MeshStandardMaterial({ color: 0xc8cdd3, metalness: 0.9, roughness: 0.32 });
+  const ringGlow = new MeshBasicMaterial({ color: BLUE, transparent: true, opacity: 0.85, toneMapped: false });
+  const metal = new MeshStandardMaterial({ color: 0xd5d9de, metalness: 1, roughness: 0.3 });
+  const trayMat = new MeshStandardMaterial({ color: 0xe3e7ec, roughness: 0.8 });
+  const phoneMat = new MeshPhysicalMaterial({ color: 0x1b1f26, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.08 });
+  const laptopMat = new MeshStandardMaterial({ color: 0xcfd4da, metalness: 0.7, roughness: 0.35 });
 
   /* ---------- Geometry cache ---------- */
   const geoCache = new Map<string, BufferGeometry>();
@@ -274,6 +297,12 @@ export function initHeroLocker(stage: HTMLElement) {
     const k = [w, h, d, r, seg].map((v) => v.toFixed(4)).join();
     let g = geoCache.get(k);
     if (!g) geoCache.set(k, (g = new RoundedBoxGeometry(w, h, d, seg, r)));
+    return g;
+  };
+  const plane = (w: number, h: number) => {
+    const k = `p${w.toFixed(4)}x${h.toFixed(4)}`;
+    let g = geoCache.get(k);
+    if (!g) geoCache.set(k, (g = new PlaneGeometry(w, h)));
     return g;
   };
   const mesh = (g: BufferGeometry, m: Material, shadows = true) => {
@@ -286,19 +315,19 @@ export function initHeroLocker(stage: HTMLElement) {
   /* ---------- Rig: everything that turns ---------- */
   const rig = new Group();
   scene.add(rig);
-  const ao = contactShadow(W, D, 0.14);
-  const aoMat = new MeshBasicMaterial({ color: 0x0d1015, alphaMap: ao.tex, transparent: true, opacity: 0.5, depthWrite: false });
+  const ao = contactShadow(W, D, 0.16);
+  const aoMat = new MeshBasicMaterial({ color: 0x0d1015, alphaMap: ao.tex, transparent: true, opacity: 0.42, depthWrite: false });
   const aoGeo = new PlaneGeometry(ao.w, ao.d);
 
   function cabinet(x: number) {
     const m = new Group();
     m.position.x = x;
     rig.add(m);
-    const body = mesh(rbox(W, BODY, D, 0.016, 5), white);
+    const body = mesh(rbox(W, BODY, D, 0.022, 6), clay);
     body.position.y = PL + BODY / 2;
     m.add(body);
-    // Recessed dark plinth: the cabinet looks like it stands a little above the floor.
-    const plinth = mesh(new BoxGeometry(W - 0.05, PL + 0.01, D - 0.09), plinthMat);
+    // Recessed plinth: the cabinet seems to float a little above the floor.
+    const plinth = mesh(rbox(W - 0.05, PL + 0.01, D - 0.09, 0.008, 2), plinthMat);
     plinth.position.set(0, (PL + 0.01) / 2, -0.02);
     m.add(plinth);
     const shadow = new Mesh(aoGeo, aoMat);
@@ -309,60 +338,63 @@ export function initHeroLocker(stage: HTMLElement) {
     return m;
   }
 
-  /** Dark opening behind the fronts: it shows in the gaps and when a drawer slides out. */
+  /** Opening behind the fronts: a soft grey groove in the gaps, the compartment when a drawer is out. */
   function opening(m: Group, x0: number, y0: number, w: number, h: number) {
-    const p = new Mesh(new PlaneGeometry(w, h), recess);
+    const p = new Mesh(plane(w, h), groove);
     p.position.set(x0 + w / 2, y0 + h / 2, FZ + 0.0004);
     m.add(p);
   }
 
+  /* ---------- Drawers ---------- */
   const drawers: Drawer[] = [];
+  const fronts: Mesh[] = [];
   // Compartment light: brightest at the top (the LED strip), fading down.
   const lightTex = (() => {
     const [c, ctx] = makeCanvas(4, 128);
     const gr = ctx.createLinearGradient(0, 0, 0, 128);
     gr.addColorStop(0, 'rgba(255,255,255,1)');
-    gr.addColorStop(0.12, 'rgba(255,255,255,0.9)');
-    gr.addColorStop(1, 'rgba(255,255,255,0.25)');
+    gr.addColorStop(0.15, 'rgba(255,255,255,0.85)');
+    gr.addColorStop(1, 'rgba(255,255,255,0.2)');
     ctx.fillStyle = gr;
     ctx.fillRect(0, 0, 4, 128);
     return texture(c, false);
   })();
-  const lightGeo = (w: number, h: number) => {
-    const k = `light${w.toFixed(4)}`;
-    let g = geoCache.get(k);
-    if (!g) geoCache.set(k, (g = new PlaneGeometry(w, h)));
-    return g;
-  };
-  const frontMats = new Map<string, MeshPhysicalMaterial>();
+  const frontMats = new Map<string, MeshStandardMaterial>();
   const frontFor = (w: number, h: number) => {
     const k = `${w.toFixed(4)}x${h.toFixed(4)}`;
     let m = frontMats.get(k);
     if (!m) {
-      m = frontMat.clone();
+      m = clayFront.clone();
       m.map = frontShade(w, h);
       frontMats.set(k, m);
     }
     return m;
   };
+
   function drawer(m: Group, cx: number, cy: number, w: number, h: number, kind: Drawer['kind'], n: number) {
     const g = new Group();
     g.position.set(cx, cy, 0);
     m.add(g);
-    const f = mesh(rbox(w, h, FRONT_T, 0.0045, 3), frontFor(w, h));
+    const f = mesh(rbox(w, h, FRONT_T, 0.006, 3), frontFor(w, h));
     f.position.z = FRONT_Z;
     g.add(f);
-    // Finger pull, bottom right (as on the drawing): a dark slot that lights blue when the drawer opens.
-    const hw = kind === 'wide' ? 0.08 : 0.042;
-    const handle = mesh(rbox(hw, 0.0055, 0.004, 0.0018, 1), slotMat, false);
-    handle.position.set(w / 2 - 0.016 - hw / 2, -h / 2 + 0.014, FACE - 0.0015);
-    g.add(handle);
-    // Compartment light: sits in the opening behind the front and only shows once the drawer slides out.
-    const light = new Mesh(lightGeo(w, h), new MeshBasicMaterial({ color: 0x2e8eff, alphaMap: lightTex, transparent: true, opacity: 0, toneMapped: false, depthWrite: false }));
+    // Light strip, bottom right where the pull was: a fine grey line that glows blue while the drawer is open.
+    const sw = kind === 'wide' ? 0.07 : 0.036;
+    const strip = mesh(rbox(sw, 0.003, 0.002, 0.0012, 1), stripMat, false);
+    strip.position.set(w / 2 - 0.016 - sw / 2, -h / 2 + 0.013, FACE - 0.0006);
+    g.add(strip);
+    // Compartment light: sits in the opening behind the front and shows once the drawer is out. It is a gap wider
+    // than the front, so in the How it works Open step the gaps around the waiting drawer glow blue.
+    const light = new Mesh(plane(w + DG * 2, h + DG * 2), new MeshBasicMaterial({ color: BLUE, alphaMap: lightTex, transparent: true, opacity: 0, toneMapped: false, depthWrite: false }));
     light.position.set(cx, cy, FZ + 0.0006);
     light.visible = false;
     m.add(light);
-    drawers.push({ n, g, w, h, kind, handle, light, max: kind === 'wide' ? 0.15 : 0.13 });
+    const d: Drawer = { n, g, w, h, kind, strip, light, max: kind === 'wide' ? 0.22 : 0.2, p: 0, v: 0, target: 0 };
+    // Pick targets: the front, and the opening behind it (so the drawer stays open while the mouse is over its compartment).
+    f.userData.drawer = d;
+    light.userData.drawer = d;
+    fronts.push(f, light);
+    drawers.push(d);
   }
 
   /** rows: drawers per row, top to bottom (8 rows). */
@@ -387,22 +419,26 @@ export function initHeroLocker(stage: HTMLElement) {
     return n;
   }
 
-  /* ---------- Otto: screen, readers, slot, service panel ---------- */
+  /* ---------- Otto's screen ---------- */
   const [scrCanvas, scr] = makeCanvas(1024, 640);
   const scrTex = texture(scrCanvas);
-  const fontDisplay = getComputedStyle(document.documentElement).getPropertyValue('--font-display').trim() || 'sans-serif';
-  const fontBody = getComputedStyle(document.documentElement).getPropertyValue('--font-body').trim() || 'sans-serif';
-  const logoWhite = (() => {
-    const w = 120;
-    const h = (w * 3687) / 8342;
-    const [c, ctx] = makeCanvas(w * 2, h * 2);
-    ctx.scale((w * 2) / 8342, (h * 2) / 3687);
-    ctx.fillStyle = '#ffffff';
-    for (const p of LOGO_PATHS) ctx.fill(new Path2D(p.d), p.evenodd ? 'evenodd' : 'nonzero');
-    return c;
+  const css = getComputedStyle(document.documentElement);
+  const fontDisplay = css.getPropertyValue('--font-display').trim() || 'sans-serif';
+  const fontBody = css.getPropertyValue('--font-body').trim() || 'sans-serif';
+  const logoWhite = logoCanvas('#ffffff', 240);
+  const pad2 = (n: number) => String(n).padStart(2, '0');
+
+  // Fixed QR-like pattern (decorative): three finder squares and seeded modules.
+  const qr = (() => {
+    const N = 21;
+    let seed = 7;
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const bits: boolean[] = [];
+    for (let i = 0; i < N * N; i++) bits.push(rnd() > 0.52);
+    return { N, bits };
   })();
 
-  function drawScreen(open: number | null) {
+  function screenBase(glowStrength: number) {
     const ctx = scr;
     const { width: w, height: h } = scrCanvas;
     const bg = ctx.createLinearGradient(0, 0, w, h);
@@ -411,72 +447,159 @@ export function initHeroLocker(stage: HTMLElement) {
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, w, h);
     const glow = ctx.createRadialGradient(w * 0.85, h * 0.1, 0, w * 0.85, h * 0.1, w * 0.7);
-    glow.addColorStop(0, open ? 'rgba(0, 121, 255, 0.45)' : 'rgba(46, 142, 255, 0.22)');
+    glow.addColorStop(0, `rgba(0, 121, 255, ${glowStrength})`);
     glow.addColorStop(1, 'rgba(46, 142, 255, 0)');
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, w, h);
-
     ctx.drawImage(logoWhite, 56, 44, 108, 108 * (3687 / 8342));
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
     ctx.font = `700 30px ${fontDisplay}`;
     ctx.textAlign = 'right';
     ctx.fillText('08:42', w - 56, 78);
     ctx.textAlign = 'left';
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = `700 64px ${fontDisplay}`;
-    ctx.fillText(open ? copy.openTitle.replace('{n}', String(open).padStart(2, '0')) : copy.idleTitle, 56, 270);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.66)';
-    ctx.font = `400 32px ${fontBody}`;
-    ctx.fillText(open ? copy.openText : copy.idleText, 56, 322);
-
-    if (open) {
-      // Progress bar instead of the button.
-      roundRect(ctx, 56, 384, 420, 12, 6);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
-      ctx.fill();
-      roundRect(ctx, 56, 384, 300, 12, 6);
-      ctx.fillStyle = '#2E8EFF';
-      ctx.fill();
-    } else {
-      roundRect(ctx, 56, 372, 248, 80, 40);
-      ctx.fillStyle = '#0079FF';
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.font = `700 32px ${fontDisplay}`;
-      ctx.fillText(`${copy.start}  →`, 96, 423);
-    }
-
-    // Mini map of the drawers on the right: one lights up blue when it is open.
-    const cols = 3;
-    const rows = 4;
-    const tw = 92;
-    const th = 50;
-    const gx = 12;
-    const ox = w - 56 - cols * tw - (cols - 1) * gx;
-    const oy = 196;
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        const k = r * cols + c;
-        roundRect(ctx, ox + c * (tw + gx), oy + r * (th + gx), tw, th, 8);
-        ctx.fillStyle = open && k === open % (cols * rows) ? '#0079FF' : 'rgba(255, 255, 255, 0.09)';
-        ctx.fill();
-      }
-    }
-
     ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
     ctx.fillRect(56, h - 92, w - 112, 2);
     ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
     ctx.font = `400 26px ${fontBody}`;
-    ctx.fillText(copy.footer, 56, h - 46);
+    ctx.fillText(copy.footer || '', 56, h - 46);
+  }
+  function title(text: string, sub?: string) {
+    scr.fillStyle = '#ffffff';
+    scr.font = `700 64px ${fontDisplay}`;
+    scr.fillText(text, 56, 270);
+    if (sub) {
+      scr.fillStyle = 'rgba(255, 255, 255, 0.66)';
+      scr.font = `400 32px ${fontBody}`;
+      scr.fillText(sub, 56, 322);
+    }
+  }
+  function miniMap(active: number | null) {
+    const cols = 3;
+    const tw = 92;
+    const th = 50;
+    const gx = 12;
+    const ox = scrCanvas.width - 56 - cols * tw - (cols - 1) * gx;
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < cols; c++) {
+        roundRect(scr, ox + c * (tw + gx), 196 + r * (th + gx), tw, th, 8);
+        scr.fillStyle = active !== null && r * cols + c === (active - 1) % 12 ? '#0079FF' : 'rgba(255, 255, 255, 0.09)';
+        scr.fill();
+      }
+    }
+  }
+  function progress(frac: number) {
+    roundRect(scr, 56, 384, 420, 12, 6);
+    scr.fillStyle = 'rgba(255, 255, 255, 0.14)';
+    scr.fill();
+    roundRect(scr, 56, 384, 420 * frac, 12, 6);
+    scr.fillStyle = '#2E8EFF';
+    scr.fill();
+  }
+
+  /** Idle or "drawer n is open" (home and template heroes). */
+  function drawScreen(open: number | null) {
+    screenBase(open ? 0.45 : 0.22);
+    if (open) {
+      title(copy.openTitle.replace('{n}', pad2(open)), copy.openText);
+      progress(0.7);
+    } else {
+      title(copy.idleTitle, copy.idleText);
+      roundRect(scr, 56, 372, 248, 80, 40);
+      scr.fillStyle = '#0079FF';
+      scr.fill();
+      scr.fillStyle = '#ffffff';
+      scr.font = `700 32px ${fontDisplay}`;
+      scr.fillText(`${copy.start}  →`, 96, 423);
+    }
+    miniMap(open);
     scrTex.needsUpdate = true;
   }
 
+  /** How it works steps: request, code, open, logged. */
+  function drawStory(step: number) {
+    if (!story) return;
+    screenBase(step === 2 ? 0.45 : 0.22);
+    if (step === 0) {
+      title(story.request);
+      roundRect(scr, 56, 300, 360, 14, 7);
+      scr.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      scr.fill();
+      roundRect(scr, 56, 330, 250, 14, 7);
+      scr.fillStyle = 'rgba(255, 255, 255, 0.25)';
+      scr.fill();
+      roundRect(scr, 56, 390, 200, 64, 32);
+      scr.fillStyle = '#0079FF';
+      scr.fill();
+      scr.fillStyle = '#ffffff';
+      scr.font = `700 32px ${fontDisplay}`;
+      scr.fillText('→', 140, 433);
+      miniMap(null);
+    } else if (step === 1) {
+      title(story.code);
+      const s = 9;
+      const ox = 56;
+      const oy = 300;
+      roundRect(scr, ox - 12, oy - 12, qr.N * s + 24, qr.N * s + 24, 10);
+      scr.fillStyle = '#ffffff';
+      scr.fill();
+      scr.fillStyle = '#0E1B2C';
+      const finder = (fx: number, fy: number) => {
+        scr.fillRect(ox + fx * s, oy + fy * s, 7 * s, 7 * s);
+        scr.fillStyle = '#ffffff';
+        scr.fillRect(ox + (fx + 1) * s, oy + (fy + 1) * s, 5 * s, 5 * s);
+        scr.fillStyle = '#0E1B2C';
+        scr.fillRect(ox + (fx + 2) * s, oy + (fy + 2) * s, 3 * s, 3 * s);
+      };
+      for (let y = 0; y < qr.N; y++) {
+        for (let x = 0; x < qr.N; x++) {
+          const inFinder = (x < 8 && y < 8) || (x > 12 && y < 8) || (x < 8 && y > 12);
+          if (!inFinder && qr.bits[y * qr.N + x]) scr.fillRect(ox + x * s, oy + y * s, s, s);
+        }
+      }
+      finder(0, 0);
+      finder(14, 0);
+      finder(0, 14);
+      for (let k = 0; k < 5; k++) {
+        roundRect(scr, 300 + k * 62, 380, 44, 44, 10);
+        scr.fillStyle = k < 3 ? '#2E8EFF' : 'rgba(255, 255, 255, 0.14)';
+        scr.fill();
+      }
+    } else if (step === 2) {
+      title(story.open);
+      progress(0.7);
+      scr.fillStyle = '#ffffff';
+      scr.font = `700 120px ${fontDisplay}`;
+      scr.fillText(pad2(storyDrawer), 56, 540);
+      miniMap(storyDrawer);
+    } else {
+      scr.fillStyle = '#2F9E6B';
+      scr.beginPath();
+      scr.arc(120, 300, 64, 0, Math.PI * 2);
+      scr.fill();
+      scr.strokeStyle = '#ffffff';
+      scr.lineWidth = 12;
+      scr.lineCap = 'round';
+      scr.lineJoin = 'round';
+      scr.beginPath();
+      scr.moveTo(90, 302);
+      scr.lineTo(112, 324);
+      scr.lineTo(152, 280);
+      scr.stroke();
+      scr.fillStyle = '#ffffff';
+      scr.font = `700 64px ${fontDisplay}`;
+      scr.fillText(story.logged, 220, 322);
+      miniMap(null);
+    }
+    scrTex.needsUpdate = true;
+  }
+  const refreshScreen = () => (story ? drawStory(storyStep) : drawScreen(hovered ? hovered.n : null));
+
+  /* ---------- Otto: screen, readers, slot, service panel ---------- */
   function otto(x: number) {
     const m = cabinet(x);
     // Touch screen behind one sheet of black glass.
     const sy = TOP - 0.06 - 0.125;
-    const bezel = mesh(rbox(0.36, 0.25, 0.014, 0.008, 3), glass);
+    const bezel = mesh(rbox(0.36, 0.25, 0.014, 0.012, 4), glass);
     bezel.position.set(0, sy, FZ + 0.001);
     m.add(bezel);
     const screen = new Mesh(
@@ -485,7 +608,6 @@ export function initHeroLocker(stage: HTMLElement) {
     );
     screen.position.set(0, sy + 0.004, FZ + 0.0082);
     m.add(screen);
-    // Glass sheen: a soft diagonal reflection across the whole glass, like a real kiosk under office light.
     const sheen = new Mesh(
       new PlaneGeometry(0.36, 0.25),
       new MeshBasicMaterial({ map: sheenTexture(), transparent: true, depthWrite: false, toneMapped: false, opacity: 0.9 })
@@ -493,32 +615,35 @@ export function initHeroLocker(stage: HTMLElement) {
     sheen.position.set(0, sy, FZ + 0.0085);
     m.add(sheen);
 
-    // Badge reader (left) and QR camera (right).
-    const readerGeo = new CylinderGeometry(0.028, 0.028, 0.006, 64);
+    // Badge reader (left, with a soft blue ring) and QR camera (right).
+    const readerGeo = new CylinderGeometry(0.026, 0.026, 0.006, 64);
     for (const side of [-1, 1]) {
       const r = mesh(readerGeo, readerMat, false);
       r.rotation.x = Math.PI / 2;
       r.position.set(side * 0.24, sy, FZ + 0.002);
       m.add(r);
     }
-    const nfc = new Mesh(new CircleGeometry(0.02, 48), new MeshBasicMaterial({ map: nfcTexture(), transparent: true, depthWrite: false }));
-    nfc.position.set(-0.24, sy, FZ + 0.0052);
+    const ring = new Mesh(new RingGeometry(0.0215, 0.0235, 64), ringGlow);
+    ring.position.set(-0.24, sy, FZ + 0.0052);
+    m.add(ring);
+    const nfc = new Mesh(new CircleGeometry(0.017, 48), new MeshBasicMaterial({ map: nfcTexture(), transparent: true, depthWrite: false }));
+    nfc.position.set(-0.24, sy, FZ + 0.0053);
     m.add(nfc);
-    const lens = mesh(new CylinderGeometry(0.009, 0.009, 0.003, 48), lensMat, false);
+    const lens = mesh(new CylinderGeometry(0.0085, 0.0085, 0.003, 48), lensMat, false);
     lens.rotation.x = Math.PI / 2;
     lens.position.set(0.24, sy, FZ + 0.0058);
     m.add(lens);
-    const ring = mesh(new CylinderGeometry(0.0125, 0.0125, 0.002, 48), chrome, false);
-    ring.rotation.x = Math.PI / 2;
-    ring.position.set(0.24, sy, FZ + 0.005);
-    m.add(ring);
+    const lensRing = mesh(new CylinderGeometry(0.0118, 0.0118, 0.002, 48), metal, false);
+    lensRing.rotation.x = Math.PI / 2;
+    lensRing.position.set(0.24, sy, FZ + 0.005);
+    m.add(lensRing);
 
-    // Return slot under the screen.
-    const slot = mesh(rbox(0.15, 0.008, 0.004, 0.003, 2), slotMat, false);
-    slot.position.set(0, sy - 0.125 - 0.045, FZ + 0.0005);
+    // Return slot under the screen: a shallow groove.
+    const slot = mesh(rbox(0.15, 0.006, 0.004, 0.0025, 2), detail, false);
+    slot.position.set(0, sy - 0.125 - 0.045, FZ - 0.0012);
     m.add(slot);
 
-    // Service panel: one big front, like a drawer, with the logo, vents and a key lock.
+    // Service panel: one big front with the logo, vents and a key lock.
     const fw = W - FM * 2;
     const top = 0.47;
     const y0 = PL + FM;
@@ -526,34 +651,34 @@ export function initHeroLocker(stage: HTMLElement) {
     opening(m, -fw / 2, y0, fw, fh);
     const pw = fw - DG * 2;
     const ph = fh - DG * 2;
-    const panel = mesh(rbox(pw, ph, FRONT_T, 0.0045, 3), frontFor(pw, ph));
+    const panel = mesh(rbox(pw, ph, FRONT_T, 0.006, 3), frontFor(pw, ph));
     panel.position.set(0, y0 + fh / 2, FRONT_Z);
     m.add(panel);
 
-    // Small grey logo, printed, top left: there, but quiet.
+    // Small light grey logo, printed, top left: there, but quiet.
     const lw = 0.078;
     const lh = (lw * 3687) / 8342;
     const logo = new Mesh(
       new PlaneGeometry(lw, lh),
-      new MeshStandardMaterial({ map: logoTexture('#b3bcc7'), transparent: true, roughness: 0.6, polygonOffset: true, polygonOffsetFactor: -2 })
+      new MeshStandardMaterial({ map: texture(logoCanvas('#b8c0ca', 1024)), transparent: true, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2 })
     );
     logo.position.set(-pw / 2 + 0.034 + lw / 2, top - DG - 0.034 - lh / 2, FACE + 0.0002);
     m.add(logo);
 
-    // Vents, bottom right.
-    const ventGeo = rbox(0.17, 0.0045, 0.004, 0.0018, 1);
+    // Vents, bottom right: shallow grooves.
+    const ventGeo = rbox(0.17, 0.0035, 0.003, 0.0015, 1);
     for (let k = 0; k < 7; k++) {
-      const v = new Mesh(ventGeo, slotMat);
-      v.position.set(pw / 2 - 0.034 - 0.085, y0 + 0.05 + k * 0.016, FACE - 0.0015);
+      const v = new Mesh(ventGeo, detail);
+      v.position.set(pw / 2 - 0.034 - 0.085, y0 + 0.05 + k * 0.016, FACE - 0.0012);
       m.add(v);
     }
     // Key lock, top right.
-    const lock = mesh(new CylinderGeometry(0.0095, 0.0095, 0.004, 40), chrome, false);
+    const lock = mesh(new CylinderGeometry(0.009, 0.009, 0.004, 40), metal, false);
     lock.rotation.x = Math.PI / 2;
-    lock.position.set(pw / 2 - 0.034 - 0.0095, top - DG - 0.045, FACE + 0.0015);
+    lock.position.set(pw / 2 - 0.034 - 0.009, top - DG - 0.045, FACE + 0.0012);
     m.add(lock);
-    const keyway = new Mesh(rbox(0.0022, 0.011, 0.002, 0.0008, 1), slotMat);
-    keyway.position.set(lock.position.x, lock.position.y, FACE + 0.0032);
+    const keyway = new Mesh(rbox(0.002, 0.01, 0.002, 0.0008, 1), groove);
+    keyway.position.set(lock.position.x, lock.position.y, FACE + 0.0028);
     m.add(keyway);
   }
 
@@ -582,7 +707,7 @@ export function initHeroLocker(stage: HTMLElement) {
     const ih = d.h - 0.024;
     const sideH = ih * 0.55;
     const zb = FRONT_Z - FRONT_T / 2; // back of the front
-    const bottom = mesh(new BoxGeometry(iw, 0.002, depth), trayFloor);
+    const bottom = mesh(new BoxGeometry(iw, 0.002, depth), trayMat);
     bottom.position.set(0, -ih / 2, zb - depth / 2);
     const left = mesh(new BoxGeometry(0.002, sideH, depth), trayMat);
     left.position.set(-iw / 2, -ih / 2 + sideH / 2, zb - depth / 2);
@@ -600,8 +725,7 @@ export function initHeroLocker(stage: HTMLElement) {
 
   /* ---------- Camera: fixed vertical framing ---------- */
   const camera = new PerspectiveCamera(15, 2, 0.5, 30);
-  const aimY = TOP / 2;
-  camera.position.set(0, aimY + Math.tan(CAM_ELEV) * CAM_DIST, CAM_DIST);
+  camera.position.set(0, TOP / 2 + Math.tan(CAM_ELEV) * CAM_DIST, CAM_DIST);
   {
     // Pitch and lens so that the back top edge lands on FRAME.top and the front floor line on FRAME.floor.
     const elev = (p: Vector3) => Math.atan2(p.y - camera.position.y, camera.position.z - p.z);
@@ -658,72 +782,69 @@ export function initHeroLocker(stage: HTMLElement) {
     return busy;
   }
 
-  // Ambient drawer: opens, holds, closes, waits.
-  let current: Drawer | null = null;
-  let phase: 'idle' | 'opening' | 'open' | 'closing' = 'idle';
-  let pt = 0;
-  let timer = 0;
-  let lastN = 0;
-  const OPEN_T = 0.95;
-  const HOLD_T = 2600;
-  const CLOSE_T = 0.85;
-  // Drawers in the lower two thirds, where the camera looks into them.
-  const candidates = drawers.filter((d) => d.g.position.y < TOP * 0.62);
-
-  function schedule(ms: number) {
-    window.clearTimeout(timer);
-    timer = window.setTimeout(openNext, ms);
-  }
-  function openNext() {
-    if (!visible || document.hidden || phase !== 'idle') {
-      schedule(1200);
-      return;
+  /* ---------- Drawers: open on hover ---------- */
+  let hovered: Drawer | null = null;
+  // How it works, Open step: the story drawer is unlocked and waiting (gaps glow, strip blue) until the mouse opens it.
+  const isWaiting = (d: Drawer) => !!story && storyStep === 2 && d.n === storyDrawer;
+  const stripFor = (d: Drawer) => (d.target === 1 || isWaiting(d) ? activeMat : stripMat);
+  function setHover(d: Drawer | null) {
+    if (d === hovered) return;
+    const prev = hovered;
+    hovered = d;
+    if (prev) {
+      prev.target = 0;
+      prev.strip.material = stripFor(prev);
     }
-    let d: Drawer;
-    do d = candidates[Math.floor(Math.random() * candidates.length)];
-    while (d.n === lastN && candidates.length > 1);
-    lastN = d.n;
-    ensureTray(d);
-    current = d;
-    phase = 'opening';
-    pt = 0;
-    d.handle.material = activeMat;
-    drawScreen(d.n);
+    if (d) {
+      ensureTray(d);
+      d.target = 1;
+      d.strip.material = stripFor(d);
+    }
+    if (!story) drawScreen(d ? d.n : null);
     kick();
   }
-  function glow(d: Drawer, v: number) {
-    d.light.visible = v > 0.001;
-    (d.light.material as MeshBasicMaterial).opacity = 0.85 * v;
-  }
-  function stepDrawer(dt: number) {
-    if (!current || phase === 'idle' || phase === 'open') return false;
-    pt += dt;
-    if (phase === 'opening') {
-      const k = Math.min(1, pt / OPEN_T);
-      current.g.position.z = easeOutBack(k) * current.max;
-      glow(current, Math.min(1, k * 3));
-      if (k >= 1) {
-        phase = 'open';
-        window.setTimeout(() => {
-          phase = 'closing';
-          pt = 0;
-          kick();
-        }, HOLD_T);
+  function stepDrawers(dt: number) {
+    let busy = false;
+    for (const d of drawers) {
+      if (d.p === d.target && d.v === 0) continue;
+      if (reduce) {
+        d.p = d.target;
+        d.v = 0;
+      } else {
+        // Push latch: a quick pop that runs a touch past its stop, then settles.
+        const k = 210;
+        const c = 19;
+        d.v += ((d.target - d.p) * k - d.v * c) * dt;
+        d.p += d.v * dt;
+        if (Math.abs(d.target - d.p) < 1e-4 && Math.abs(d.v) < 1e-3) {
+          d.p = d.target;
+          d.v = 0;
+        } else busy = true;
       }
-      return true;
+      d.g.position.z = Math.max(0, d.p) * d.max;
+      applyGlow(d);
     }
-    const k = Math.min(1, pt / CLOSE_T);
-    current.g.position.z = (1 - easeInOutCubic(k)) * current.max;
-    glow(current, 1 - easeInOutCubic(k));
-    if (k >= 1) {
-      glow(current, 0);
-      current.handle.material = slotMat;
-      current = null;
-      phase = 'idle';
-      drawScreen(null);
-      schedule(2400 + Math.random() * 2200);
-    }
-    return true;
+    return busy;
+  }
+  function applyGlow(d: Drawer) {
+    const glow = Math.max(Math.min(1, Math.max(0, d.p) * 3), isWaiting(d) ? 1 : 0);
+    d.light.visible = glow > 0.001;
+    (d.light.material as MeshBasicMaterial).opacity = 0.85 * glow;
+  }
+
+  // Pointer picking: which drawer front is under the mouse (re-checked while the locker turns).
+  const raycaster = new Raycaster();
+  const ndc = new Vector2();
+  let pointerIn = false;
+  let pickDirty = false;
+  function pointerToNdc(e: PointerEvent) {
+    const r = canvas.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -(((e.clientY - r.top) / r.height) * 2 - 1));
+  }
+  function pick(): Drawer | null {
+    raycaster.setFromCamera(ndc, camera);
+    const hit = raycaster.intersectObjects(fronts, false)[0];
+    return hit ? (hit.object.userData.drawer as Drawer) : null;
   }
 
   function frame(now: number) {
@@ -732,8 +853,13 @@ export function initHeroLocker(stage: HTMLElement) {
     last = now;
     if (sway) target.y = Math.sin((now / 1000) * ((Math.PI * 2) / 11)) * 0.11;
     const turning = spring(dt);
-    const sliding = stepDrawer(dt);
     rig.rotation.set(rot.x, rot.y, 0);
+    if (pointerIn && (pickDirty || turning)) {
+      rig.updateMatrixWorld();
+      setHover(pick());
+      pickDirty = false;
+    }
+    const sliding = stepDrawers(dt);
     renderer.render(scene, camera);
     if (!stage.classList.contains('is-3d')) stage.classList.add('is-3d');
     forceOnce = false;
@@ -745,27 +871,55 @@ export function initHeroLocker(stage: HTMLElement) {
     if (!raf && (visible || forceOnce)) raf = requestAnimationFrame(frame);
   }
 
-  if (finePointer && !reduce) {
-    stage.addEventListener('pointermove', (e) => {
-      if (e.pointerType !== 'mouse') return;
-      const r = stage.getBoundingClientRect();
-      const nx = clamp1(((e.clientX - r.left) / r.width) * 2 - 1);
-      const ny = clamp1(((e.clientY - r.top) / r.height) * 2 - 1);
+  stage.addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    pointerToNdc(e);
+    pointerIn = true;
+    pickDirty = true;
+    if (finePointer && !reduce) {
       // The locker turns its front toward the pointer.
-      target.y = nx * MAX_Y;
-      target.x = ny * MAX_X;
-      kick();
-    }, { passive: true });
-    stage.addEventListener('pointerleave', () => {
-      target.x = 0;
-      target.y = 0;
-      kick();
-    });
+      const r = stage.getBoundingClientRect();
+      target.y = clamp1(((e.clientX - r.left) / r.width) * 2 - 1) * MAX_Y;
+      target.x = clamp1(((e.clientY - r.top) / r.height) * 2 - 1) * MAX_X;
+    }
+    kick();
+  }, { passive: true });
+  stage.addEventListener('pointerleave', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    pointerIn = false;
+    target.x = 0;
+    target.y = 0;
+    setHover(null);
+    kick();
+  });
+  // Touch: tap a drawer to open it, tap it again (or anywhere else on the locker) to close it.
+  stage.addEventListener('pointerup', (e) => {
+    if (e.pointerType === 'mouse') return;
+    pointerToNdc(e);
+    rig.updateMatrixWorld();
+    const d = pick();
+    setHover(d && d !== hovered ? d : null);
+  });
+
+  // Story mode: the How it works tabs set data-state on the stage.
+  if (story) {
+    new MutationObserver(() => {
+      const s = Number(stage.dataset.state || 0);
+      if (s === storyStep) return;
+      storyStep = s;
+      drawers.forEach((d) => {
+        d.strip.material = stripFor(d);
+        applyGlow(d);
+      });
+      drawStory(storyStep);
+      kick(true);
+    }).observe(stage, { attributes: true, attributeFilter: ['data-state'] });
   }
 
   new IntersectionObserver((entries) => {
     visible = entries.some((e) => e.isIntersecting);
     if (visible) kick();
+    else setHover(null);
   }).observe(stage);
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) kick();
@@ -773,32 +927,25 @@ export function initHeroLocker(stage: HTMLElement) {
   new ResizeObserver(resize).observe(stage);
 
   const start = () => {
-    drawScreen(null);
+    refreshScreen();
     resize();
-    if (!reduce) schedule(1800);
   };
   if (document.fonts?.status === 'loaded') start();
   else document.fonts.ready.then(start);
 
   if (import.meta.env.DEV) {
-    (window as unknown as Record<string, unknown>).__heroLocker = {
-      open: (n: number) => {
-        const d = drawers.find((x) => x.n === n);
-        if (!d || phase !== 'idle') return;
-        window.clearTimeout(timer);
-        ensureTray(d);
-        current = d;
-        phase = 'opening';
-        pt = 0;
-        d.handle.material = activeMat;
-        drawScreen(d.n);
+    const w = window as unknown as Record<string, Record<string, unknown> | undefined>;
+    const hooks = {
+      open: (n: number) => setHover(drawers.find((x) => x.n === n) ?? null),
+      tilt: (x: number, y: number) => {
+        target.x = x;
+        target.y = y;
         kick();
       },
-      tilt: (x: number, y: number) => { target.x = x; target.y = y; kick(); },
     };
-    // Where the dark band should end (3/4 down the front) and the front top edge, as fractions of the stage height.
-    camera.updateMatrixWorld();
-    const frac = (p: Vector3) => (1 - p.clone().project(camera).y) / 2;
-    console.info('[hero-locker] front top', frac(new Vector3(0, TOP, FZ)).toFixed(4), 'band', frac(new Vector3(0, TOP * 0.25, FZ)).toFixed(4), 'fov', camera.fov.toFixed(2));
+    // One handle per locker on the page, by data-modules order: __heroLocker (first), __lockers[i].
+    w.__lockers = w.__lockers || {};
+    (w.__lockers as Record<string, unknown>)[stage.closest('section')?.id || String(Object.keys(w.__lockers).length)] = hooks;
+    if (!w.__heroLocker) w.__heroLocker = hooks;
   }
 }

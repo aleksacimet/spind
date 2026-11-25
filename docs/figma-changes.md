@@ -13,6 +13,12 @@ When a batch is built, move it from To build to Built and note the date.
 
 _Nothing waiting. Add new Figma changes here._
 
+## Built in code only, Figma still to update (2026-11-25, round 5)
+
+- 3D lockers (home hero, template heroes, How it works) restyled as a modern clay render: one matte light material (Ice-tinted white, fronts a touch lighter), softer light and shadows, bigger rounded edges. No dark outlines: drawer gaps are 2.5 mm soft grey grooves with soft shading toward each gap, fronts stand 4 mm proud (was 8). Pulls replaced by fine light strips (grey, blue when the drawer is open). Vents and the return slot are shallow grooves, the plinth is a soft grey. Techno accents: blue ring around the badge reader, blue compartment light, the screen.
+- Drawers open only while the mouse is over them (no more drawers opening by themselves). On touch screens a tap opens a drawer, a second tap closes it. They pop out 20 cm (small) / 22 cm (wide), was 13 / 15, with a small spring overshoot. The screen names the open drawer.
+- How it works ("From request to device in 4 steps"): the text column is gone. Four step tabs on top, the same 3D locker as the home hero (Otto, Lotte, Bruno) full width below on the grey surface (520 px tall from 1280, 420 from 960, 2.45:1 / 2.5:1 below). It turns toward the mouse like the hero. The screen follows the step: New request, QR code + PIN dots, Drawer 08 open, Logged with a green check. In the Open step the gaps around drawer 08 glow blue and its strip is blue; it slides out when the mouse is over it. The step text stays for screen readers only.
+
 ## Built in code only, Figma still to update (2026-11-25, round 4)
 
 - Home hero locker is real 3D (three.js, `src/scripts/hero-locker.ts`), white powder-coated steel lit like a product shot: bevelled edges, drawer fronts 8 mm proud with dark gaps and soft edge shading, recessed dark plinth, soft floor and contact shadows, black glass touch screen with a reflection, badge reader and camera, return slot, service panel with vents and a key lock. Same three modules and drawer counts as before (Otto, Lotte 3 x 8, Bruno 8 wide), 600 x 910 x 500 mm each, 60 mm apart.
