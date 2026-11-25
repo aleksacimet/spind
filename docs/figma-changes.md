@@ -487,3 +487,7 @@ Everything below was built. Website-only details:
 - 2026-11-25 · Workflows page: "Today vs Spind" is its own section (label strip "Today vs Spind", title "What changes with Spind") instead of running straight on from "Built to save time and increase efficiency".
 - 2026-11-25 · Mega menu items show only the name; the subtitle opens under it on hover/focus (always shown on touch screens).
 - 2026-11-25 · All hover animations are faster: --dur-fast 300→120ms, --dur 500→180ms, icon redraw 700→300ms, CTA arrow 600→300ms, CTA sweep 700→350ms, LISSA mark wipe 520→260ms, drawer fill 400→150ms, comparison strike 450→200ms. Scroll reveals unchanged.
+- 2026-11-25 · How it works: no auto-advance. Hovering a tab only fills it; clicking opens it, and only the clicked tab changes the text and the locker screen. The locker visual sits on a grey surface (Surface/Neutral/Page shade, Ice/75) instead of the dark space surface.
+- 2026-11-25 · Locker drawing (every locker, incl. Modules): Otto, the first module, carries the real Spind logo (same as the header) on its service panel instead of the "SPIND" text.
+- 2026-11-25 · Integrations: "Available" pills made clearer: 13px Geist Mono caps (exact overline size), green fill #DDF3E8 with a hairline #9FD8BC, text #17663F, 8px dot blinking on/off every second.
+- 2026-11-25 · Page background trial: white with 5% less lightness, #EEF2F6 (hsl 213 30% 95%, token --surface-neutral-canvas), under the grain. Cards and tiles stay white; header uses the same grey, the language box is white.

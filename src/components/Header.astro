@@ -160,7 +160,7 @@ const flags: Record<string, string> = {
     z-index: 50;
     height: var(--header-h);
     color: var(--text-neutral-headings);
-    background: var(--surface-neutral-page); /* opaque, so the page rails under it never show next to the header's own rail lines */
+    background: var(--surface-neutral-canvas); /* opaque, so the page rails under it never show next to the header's own rail lines */
     border-bottom: var(--hair) solid var(--line);
     backdrop-filter: saturate(1.2) blur(8px); /* bottom line: full screen width, grid line colour */
     -webkit-backdrop-filter: saturate(1.2) blur(8px);
@@ -320,7 +320,7 @@ const flags: Record<string, string> = {
   /* Language selector (Figma component "Language selector"): flag, code, chevron. */
   .lang { position: relative; height: 100%; display: flex; align-items: center; }
   /* Language selector: a light filled box (flag, code, chevron); the dropdown opens under it. */
-  .lang-trigger { gap: var(--spacing-gap-text-md); list-style: none; cursor: pointer; height: 44px; padding: 0 12px; background: var(--surface-neutral-page); /* same height as the Small button (Book a call) */ transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .lang-trigger { gap: var(--spacing-gap-text-md); list-style: none; cursor: pointer; height: 44px; padding: 0 12px; background: var(--surface-neutral-default); /* same height as the Small button (Book a call) */ transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
   .lang-trigger::after { display: none; }
   .header-cta { height: 44px; padding-block: 0; } /* exactly the language box height */
   .is-overlay:not(.is-scrolled) .lang-trigger { background: color-mix(in srgb, var(--neutral-white) 10%, transparent); }

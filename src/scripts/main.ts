@@ -4,7 +4,7 @@
  * - header state, mobile menu, active nav
  * - reveals (fade, drawer clip, title lines)
  * - hero: random drawers open and close
- * - how it works: timed tabs drive the locker screen
+ * - how it works: tabs (click) drive the locker screen
  * - modules highlight, counters, LISSA mock tabs
  */
 import { initContactForm } from './form';
@@ -129,33 +129,19 @@ document.addEventListener('keydown', (e) => {
 });
 document.addEventListener('click', (e) => { if (openDD() && !(e.target as Element).closest('[data-dd]')) setDD(null); });
 
-/* ---------- How it works: timed tabs, a new step every 5s (not tied to scrolling); click or arrow keys pick a step ---------- */
+/* ---------- How it works: tabs change only on click (or arrow keys); nothing advances on its own ---------- */
 const story = document.querySelector<HTMLElement>('[data-story]');
 const storyLocker = story?.querySelector<SVGSVGElement>('[data-locker]');
 const storyTabs = story ? [...story.querySelectorAll<HTMLButtonElement>('[role="tab"]')] : [];
 const storyCopy = story ? [...story.querySelectorAll<HTMLElement>('[data-copy]')] : [];
-const STEP_MS = 5000;
-let storyState = -1;
-let storyTimer = 0;
 function setStory(i: number) {
   if (!story) return;
-  storyState = i;
   if (storyLocker) storyLocker.dataset.state = String(i);
-  storyTabs.forEach((t, k) => {
-    const on = k === i;
-    t.setAttribute('aria-selected', String(on));
-    t.tabIndex = on ? 0 : -1;
-    // Restart the progress line animation on the newly active tab.
-    const bar = t.querySelector<HTMLElement>('.tab-progress');
-    if (on && bar) { bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; }
-  });
+  storyTabs.forEach((t, k) => { const on = k === i; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
   storyCopy.forEach((c, k) => { c.hidden = k !== i; });
   story.querySelector('[role="tabpanel"]')?.setAttribute('aria-labelledby', storyTabs[i]?.id ?? '');
-  window.clearTimeout(storyTimer);
-  if (motionOK()) storyTimer = window.setTimeout(() => setStory((i + 1) % storyTabs.length), STEP_MS);
 }
 if (story && storyTabs.length) {
-  story.classList.toggle('is-playing', motionOK());
   setStory(0);
   storyTabs.forEach((t, k) => {
     t.addEventListener('click', () => setStory(k));

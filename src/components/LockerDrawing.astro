@@ -1,4 +1,5 @@
 ---
+import { LOGO_PATHS, LOGO_VIEWBOX } from './logo-path';
 /**
  * Front view of the Spind locker, drawn as SVG so it can animate.
  * Geometry is locked to the page grid: every module is 2 cells wide, the locker is 3 cells tall.
@@ -165,7 +166,10 @@ const accentDrawer = all.find((d) => d.accent);
           </g>
           <rect class="slot" x={m.ox + 70} y={sy + sh + 14} width="60" height="3" rx="1.5" />
           <rect class="service" x={m.ox + PAD} y="150" width={MW - PAD * 2} height={BH - 150 - PAD} />
-          <text class="brand" x={m.ox + 22} y="176">SPIND</text>
+          {/* Spind logo (same as the header) on Otto's service panel. */}
+          <svg class="brand-logo" x={m.ox + 18} y="160" width="72" height="32" viewBox={LOGO_VIEWBOX} aria-hidden="true">
+            {LOGO_PATHS.map((p) => <path d={p.d} fill-rule={p.evenodd ? 'evenodd' : undefined} clip-rule={p.evenodd ? 'evenodd' : undefined} />)}
+          </svg>
           {[0, 1, 2, 3, 4, 5].map((k) => (
             <line class="vent" x1={m.ox + 110} y1={178 + k * 12} x2={m.ox + 182} y2={178 + k * 12} />
           ))}
@@ -207,6 +211,7 @@ const accentDrawer = all.find((d) => d.accent);
   .locker :global(.reader-i) { fill: none; stroke: var(--illustration-light); stroke-width: var(--stroke); vector-effect: non-scaling-stroke; stroke-linecap: round; }
   .locker :global(.reader-lens) { fill: #2A4A6E; stroke: var(--illustration-light); stroke-width: var(--stroke); vector-effect: non-scaling-stroke; }
   .locker :global(.slot) { fill: #1E2530; opacity: 0.8; }
+  .locker :global(.brand-logo) { fill: var(--text-neutral-headings); }
   .locker :global(.brand) { fill: var(--icon-neutral-default); font-family: var(--font-display); font-weight: 700; font-size: 10px; letter-spacing: 0.2em; }
   .locker :global(.dr-base) { fill: var(--icon-neutral-onsurface); stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
   .locker :global(.dr-fill) { opacity: 0; transition: opacity 150ms var(--ease); }

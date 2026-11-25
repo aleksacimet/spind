@@ -74,7 +74,7 @@ const n = t.integrations;
   .orbit { fill: var(--surface-cta-default); transform-origin: 60px 60px; transform: rotate(calc(var(--k) * 90deg)); }
 
   .intg-list { display: grid; grid-template-columns: 1fr; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
-  .intg-item { grid-row: auto; min-height: 0; display: flex; gap: 16px; align-items: flex-start; padding: 20px var(--inset) 20px 20px; padding-right: 120px; transition: background-color var(--dur) var(--ease), clip-path 750ms var(--ease-out) var(--d, 0ms); }
+  .intg-item { grid-row: auto; min-height: 0; display: flex; gap: 16px; align-items: flex-start; padding: 20px var(--inset) 20px 20px; padding-right: 140px; transition: background-color var(--dur) var(--ease), clip-path 750ms var(--ease-out) var(--d, 0ms); }
   .intg-item h3 { margin: 0; font-size: 18px; line-height: 24px; transition: color var(--dur-fast) var(--ease); }
   /* Title and subtitle read as one text block: subtitle 16px at 1.6 line height, 4px under the title. */
   .intg-item p, .hub .title-body p { font-size: 16px; line-height: 1.6; }
@@ -85,12 +85,12 @@ const n = t.integrations;
   .avail {
     position: absolute; top: 16px; right: 16px;
     display: inline-flex; align-items: center; gap: 6px;
-    height: 24px; padding: 0 10px; border-radius: 999px;
-    background: color-mix(in srgb, #2F9E6B 12%, transparent);
-    font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: #1F7A50;
+    height: 28px; padding: 0 12px; border-radius: 999px;
+    background: #DDF3E8; box-shadow: inset 0 0 0 var(--hair) #9FD8BC;
+    font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #17663F;
   }
-  .avail-dot { width: 6px; height: 6px; border-radius: 50%; background: #2F9E6B; }
+  .avail-dot { width: 8px; height: 8px; border-radius: 50%; background: #2F9E6B; }
   .intg-item:hover { background: var(--surface-action-washed); }
   .intg-item:hover h3 { color: var(--text-action-default); }
   .intg-item:hover .intg-icon { background: var(--surface-action-default); }
@@ -103,10 +103,12 @@ const n = t.integrations;
     .ring--3 { animation: ring 3s var(--ease) 800ms infinite; }
     .orbit { animation: orbit 12s linear infinite; }
     .avail { animation: blink 2s var(--ease) infinite; animation-delay: var(--d, 0ms); }
+    .avail-dot { animation: blink-dot 1s steps(1) infinite; animation-delay: var(--d, 0ms); }
   }
   @keyframes ring { 0%, 100% { stroke: color-mix(in srgb, var(--neutral-white) 12%, transparent); } 50% { stroke: color-mix(in srgb, var(--neutral-white) 34%, transparent); } }
   @keyframes orbit { from { transform: rotate(calc(var(--k) * 90deg)); } to { transform: rotate(calc(var(--k) * 90deg + 360deg)); } }
-  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }
+  @keyframes blink-dot { 0% { opacity: 1; } 50% { opacity: 0.15; } }
 
   /* LISSA card is a link: whole card clickable, "Read full" (underlined) fades in on hover; its space is kept so nothing moves. */
   .intg-cell { display: grid; }
@@ -130,6 +132,6 @@ const n = t.integrations;
     .intg-item { flex-direction: column; padding-right: 20px; padding-top: 56px; } /* narrow desktop: icon above the text, pill above */
   }
   @media (min-width: 1280px) {
-    .intg-item { flex-direction: row; padding-top: 20px; padding-right: 116px; } /* compact cards: icon beside the text, height follows the content */
+    .intg-item { flex-direction: row; padding-top: 20px; padding-right: 140px; } /* compact cards: icon beside the text, height follows the content */
   }
 </style>

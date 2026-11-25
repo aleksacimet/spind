@@ -5,11 +5,10 @@ import { getContent } from '../../content/site';
 const t = getContent(Astro.props.locale);
 const h = t.how;
 ---
-<!-- Timed tabs: four tabs across the top, each with a progress line that fills over 5s, then the next tab opens.
-     Below: the active step's text on the left, the locker on the dark surface on the right. Not tied to scrolling;
-     clicking a tab opens it and restarts its 5s. -->
+<!-- Tabs: four steps across the top. Nothing changes on its own: hover only fills a tab, a click opens it.
+     Below: the opened step's text on the left, the locker on a grey surface on the right. -->
 <Section id="how-it-works" title={h.title} intro={h.intro}>
-  <div class="story" data-story style="--step-dur: 5000ms">
+  <div class="story" data-story>
     <div class="story-tabs" role="tablist" aria-label={h.title}>
       {h.steps.map((s, i) => (
         <button
@@ -38,8 +37,7 @@ const h = t.how;
           </div>
         ))}
       </div>
-      <div class="story-stage space" data-hero>
-        <div class="space-glow" aria-hidden="true"></div>
+      <div class="story-stage">
         <div class="stage-inner">
           <LockerDrawing
             id="story"
@@ -81,13 +79,9 @@ const h = t.how;
   .story-tab[aria-selected='true'] .tab-num,
   .story-tab[aria-selected='true'] .tab-title { color: var(--text-action-default); }
 
-  /* Progress line along the bottom of the active tab: fills left to right over --step-dur. */
-  .tab-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--surface-action-default); transform: scaleX(0); transform-origin: left center; }
-  .story-tab[aria-selected='true'] .tab-progress { transform: scaleX(1); }
-  @media (prefers-reduced-motion: no-preference) {
-    .story.is-playing .story-tab[aria-selected='true'] .tab-progress { animation: tab-fill var(--step-dur) linear forwards; }
-  }
-  @keyframes tab-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  /* Opened tab: blue line along its bottom. */
+  .tab-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--surface-action-default); opacity: 0; }
+  .story-tab[aria-selected='true'] .tab-progress { opacity: 1; }
 
   /* Panel: text on the left, locker on the dark surface on the right. */
   .story-panel { display: grid; border-top: var(--hair) solid var(--border-neutral-default); }
@@ -102,7 +96,7 @@ const h = t.how;
   }
   @keyframes copy-in { from { opacity: 0; } to { opacity: 1; } }
 
-  .story-stage { display: flex; align-items: center; justify-content: center; min-height: 360px; padding: var(--pad-block) var(--inset); }
+  .story-stage { background: var(--surface-neutral-page-shade); border-left: var(--hair) solid var(--border-neutral-default); display: flex; align-items: center; justify-content: center; min-height: 360px; padding: var(--pad-block) var(--inset); }
   .stage-inner { width: 80%; max-width: 400px; }
 
   @media (min-width: 960px) {

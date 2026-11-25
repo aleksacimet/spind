@@ -60,6 +60,8 @@
   /* Surface */
   --surface-neutral-page: var(--neutral-25);
   --surface-neutral-page-shade: var(--neutral-75);
+  /* Page background: white with 5% less lightness, in the Ice hue (hsl 213 30% 95%). */
+  --surface-neutral-canvas: #EEF2F6;
   --surface-neutral-default: var(--neutral-white);
   --surface-neutral-track: var(--neutral-100);
   --surface-neutral-dark: var(--neutral-900);
