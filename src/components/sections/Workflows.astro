@@ -26,7 +26,7 @@ const w = t.workflows;
             <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 1.5C6.15 1.5 1.5 6.15 1.5 12S6.15 22.5 12 22.5 22.5 17.85 22.5 12 17.85 1.5 12 1.5Zm4.05 15.75L12 13.2l-4.05 4.05-1.2-1.2L10.8 12 6.75 7.95l1.2-1.2L12 10.8l4.05-4.05 1.2 1.2L13.2 12l4.05 4.05-1.2 1.2Z" fill="currentColor" /></svg>
             <span class="txt"><span class="sr-only">{w.today}: </span><span class="strike">{today}</span></span>
           </span>
-          <span class="c-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M5 12h13m-5-6 6 6-6 6" fill="none" stroke="currentColor" style="stroke-width: var(--stroke)" vector-effect="non-scaling-stroke" /></svg></span>
+          <span class="c-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M5 12h13m-5-6 6 6-6 6" fill="none" stroke="currentColor" style="stroke-width: var(--icon-stroke)" vector-effect="non-scaling-stroke" /></svg></span>
           <span class="c c--spind">
             <svg class="ic" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M11.49 21.75c.29.16.66.16.96 0 8.01-4.3 8.58-12.71 8.57-15.1a1 1 0 0 0-.6-.9l-8.05-3.57a1 1 0 0 0-.81 0L3.57 5.75a1 1 0 0 0-.6.89c-.03 2.38.45 10.8 8.52 15.11ZM8.67 10.29l2.3 2.3 4.29-4.3 1.41 1.42-5.7 5.7-3.71-3.7 1.41-1.42Z" fill="currentColor" /></svg>
             <span class="txt"><span class="sr-only">{w.withLead} {w.withBrand}: </span>{spind}</span>
@@ -55,6 +55,11 @@ const w = t.workflows;
   /* The strike draws from left to right on hover. */
   .strike { background: linear-gradient(currentColor, currentColor) 0 55% / 0% var(--hair) no-repeat; transition: background-size 450ms var(--ease-out); }
   .c--spind { position: relative; background: var(--surface-neutral-darkest); color: var(--text-neutral-onsurface); padding-left: calc(var(--inset) + var(--spacing-padding-container-sm)); box-shadow: inset 0 calc(var(--hair) * -1) 0 color-mix(in srgb, var(--border-neutral-white, #fff) 14%, transparent); }
+  /* The last row stands on the section's bottom grid line, so it drops its own bottom line. */
+  @media (min-width: 768px) {
+    .cmp-row:last-child .c--today { box-shadow: inset var(--hair) 0 0 var(--border-neutral-default); }
+    .cmp-row:last-child .c--spind { box-shadow: none; }
+  }
   .c--spind .txt { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); }
   .c--spind::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--surface-cta-default); opacity: 0; transition: opacity var(--dur) var(--ease); }
   .c-arrow {

@@ -18,6 +18,8 @@ const { title, backLabel, backHref = '/' } = Astro.props;
 <style>
   /* Spacer above the panel, closed by a full-width line like every drawer edge. */
   .legal { padding-top: calc(var(--header-h) + var(--spacer)); }
+  /* The full-width ::before/::after lines are the panel edges; the generic block borders would double them. */
+  .legal > .container { border-top: 0; border-bottom: 0; }
   .legal > .container::before { content: ''; position: absolute; left: 50%; top: 0; width: 100vw; height: var(--hair); margin-left: -50vw; background: var(--line); }
   .legal h1 { margin-top: var(--spacing-padding-container-2xl); }
   .legal h1 { font-size: var(--fs-title); line-height: var(--lh-title); margin-bottom: var(--spacing-gap-general-section-sm); }

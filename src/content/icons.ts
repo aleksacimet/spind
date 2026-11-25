@@ -22,6 +22,14 @@ export const productIcons: Record<string, string> = {
   lifecycle: 'M18 11a7 7 0 0 1-12.5 4.3M4 11A7 7 0 0 1 16.5 6.7M16.5 3v3.7h-3.7M5.5 19v-3.7h3.7',
 };
 /** Integration icons (same 22px line style). */
+/** Problem section (Touchpoints for one faulty device). */
+export const problemIcons: Record<string, string> = {
+  waste: 'M6 3h10M6 19h10M7 3v3l4 5-4 5v3M15 3v3l-4 5 4 5v3',
+  hybrid: 'M3 10l8-6 8 6v9H3zM9 19v-5h4v5',
+  sites: 'M8 19s-5-4.5-5-8.5a5 5 0 0 1 10 0c0 4-5 8.5-5 8.5zM8 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM14.5 5.6A5 5 0 0 1 19 10.5c0 3-3 6-4.5 7.5',
+  offhours: 'M17.5 13.5A7 7 0 0 1 8.5 4.5a7 7 0 1 0 9 9z',
+};
+
 export const integrationIcons: Record<string, string> = {
   lissa: 'M3 4h16v11H3zM8 19h6M11 15v4M7 8h8M7 11h5',
   signin: 'M3 6h16v11H3zM8.5 12.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM5.5 15c.5-1.5 1.6-2 3-2s2.5.5 3 2M13 9h3.5M13 12h3.5',

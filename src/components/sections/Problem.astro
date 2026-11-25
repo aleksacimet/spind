@@ -1,13 +1,16 @@
 ---
 import Section from '../Section.astro';
 import { getContent } from '../../content/site';
+import { problemIcons } from '../../content/icons';
 const t = getContent(Astro.props.locale);
 const p = t.problem;
 ---
+<!-- Information cards, not links: an icon, title and text; no hover state. -->
 <Section id="problem" title={p.title} intro={p.intro} class="section--problem">
   <ul class="tiles pains" role="list" data-fit>
     {p.cards.map((c, i) => (
-      <li class="tile tile--hover" data-reveal="drawer" style={`--d:${i * 80}ms`}>
+      <li class="tile" data-reveal="drawer" style={`--d:${i * 80}ms`}>
+        <span class="pain-icon" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={problemIcons[c.icon]} /></svg></span>
         <h3>{c.title}</h3>
         <p>{c.text}</p>
       </li>
@@ -16,8 +19,10 @@ const p = t.problem;
 </Section>
 
 <style>
-  .pains .tile { grid-column: span 2; --rows: 2; }
-  .pains .label { display: block; margin-bottom: var(--spacing-gap-text-lg); }
+  .pains { grid-auto-rows: auto; }
+  .pains .tile { grid-column: span 2; grid-row: auto; min-height: 0; display: flex; flex-direction: column; }
+  .pain-icon { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: var(--spacing-gap-general-object-lg); background: var(--surface-action-washed); }
+  .pain-icon svg { stroke: var(--icon-action-default); }
   @media (min-width: 640px) { .pains .tile { grid-column: span 4; } }
   @media (min-width: 960px) { .pains .tile { grid-column: span 3; } }
 </style>

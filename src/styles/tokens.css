@@ -161,7 +161,8 @@
   /* LISSA app mockup keeps its own colours (it shows another product) */
   --lissa-border: #CDCDD9;
   --hair: var(--border-width-hair); /* every stroke: grid lines, borders, dividers */
-  --stroke: var(--hair); /* the same width for icon and illustration strokes (used with vector-effect: non-scaling-stroke) */
+  --stroke: var(--hair);
+  --icon-stroke: 2px; /* every line icon (menus, cards, arrows), non-scaling, so it is 2px at any icon size */ /* the same width for icon and illustration strokes (used with vector-effect: non-scaling-stroke) */
 
   /* Type */
   /* Drawer frame lines (rails, label strips, menu columns): Ice/1000 or white at 15%. */

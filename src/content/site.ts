@@ -136,10 +136,10 @@ const en = {
     title: 'Touchpoints for one faulty device',
     intro: '',
     cards: [
-      { title: 'Talent waste', text: 'Senior people spend hours on handovers instead of working' },
-      { title: 'Hybrid work', text: 'Employees are rarely on site when IT staff is' },
-      { title: 'Many sites', text: 'Every branch expects the same service, but few have IT staff' },
-      { title: 'Off-hours', text: 'Devices break at 6 am and on weekends, not 9 to 5' },
+      { icon: 'waste', title: 'Talent waste', text: 'Senior people spend hours on handovers instead of working' },
+      { icon: 'hybrid', title: 'Hybrid work', text: 'Employees are rarely on site when IT staff is' },
+      { icon: 'sites', title: 'Many sites', text: 'Every branch expects the same service, but few have IT staff' },
+      { icon: 'offhours', title: 'Off-hours', text: 'Devices break at 6 am and on weekends, not 9 to 5' },
     ],
   },
 
@@ -546,6 +546,12 @@ const en = {
     quotesCta: 'All customer stories',
     facts: { industry: 'Industry', sites: 'Sites', lockers: 'Lockers', solutions: 'Solutions' },
     sections: { challenge: 'The challenge', solution: 'What they did', results: 'The results' },
+    /** Placeholder copy: shows how a story reads with a lot of text. Shown under every story section while flags.exampleProof is on. */
+    filler: [
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Donec ullamcorper nulla non metus auctor fringilla, sed posuere consectetur est at lobortis.',
+      'Maecenas faucibus mollis interdum. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur. Nullam quis risus eget urna mollis ornare vel eu leo. Curabitur blandit tempus porttitor, etiam porta sem malesuada magna mollis euismod.',
+      'Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.',
+    ],
     more: 'More stories',
     ctaTitle: 'Write the next story with us',
     ctaText: 'Start with one Spind at one site and see the results within weeks.',

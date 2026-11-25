@@ -160,7 +160,7 @@ const flags: Record<string, string> = {
     z-index: 50;
     height: var(--header-h);
     color: var(--text-neutral-headings);
-    background: color-mix(in srgb, var(--surface-neutral-page) 92%, transparent);
+    background: var(--surface-neutral-page); /* opaque, so the page rails under it never show next to the header's own rail lines */
     border-bottom: var(--hair) solid var(--line);
     backdrop-filter: saturate(1.2) blur(8px); /* bottom line: full screen width, grid line colour */
     -webkit-backdrop-filter: saturate(1.2) blur(8px);
@@ -176,7 +176,8 @@ const flags: Record<string, string> = {
   }
 
   .header-inner { height: 100%; display: flex; align-items: center; gap: 8px; /* 8px between the language box and Book a call */ padding-inline: var(--inset); box-shadow: inset var(--hair) 0 0 var(--line), inset calc(var(--hair) * -1) 0 0 var(--line); }
-  .is-overlay:not(.is-scrolled):not(.dd-open) .header-inner { box-shadow: inset var(--hair) 0 0 var(--line-ondark), inset calc(var(--hair) * -1) 0 0 var(--line-ondark); }
+  /* Transparent over the hero: the page rails already show through, so the header draws no rail lines of its own (no double line). */
+  .is-overlay:not(.is-scrolled):not(.dd-open) .header-inner { box-shadow: none; }
   .brand { display: inline-flex; color: inherit; flex: none; }
   .brand :global(.logo) { height: calc(var(--u) * 1.5); width: auto; }
 
@@ -277,11 +278,10 @@ const flags: Record<string, string> = {
   /* Same icon tile as the use case cards: 48px washed square, blue line icon; on hover the square turns blue and the icon redraws in white. */
   .dd-icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; background: var(--surface-action-washed); transition: background-color var(--dur-fast) var(--ease); }
   .dd-icon svg :is(path, circle, line, rect) { vector-effect: non-scaling-stroke; }
-  .dd-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--icon-action-strong); stroke-width: var(--stroke); stroke-linecap: round; stroke-linejoin: round; transition: stroke var(--dur-fast) var(--ease); }
+  .dd-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--icon-action-default); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; transition: stroke var(--dur-fast) var(--ease); }
   .dd-link:hover, .dd-link:focus-visible { background: var(--surface-action-washed); }
   .dd-link:hover .dd-icon, .dd-link:focus-visible .dd-icon { background: var(--surface-action-default); }
-  .dd-link:hover .dd-icon svg, .dd-link:focus-visible .dd-icon svg :is(path, circle, line, rect) { vector-effect: non-scaling-stroke; }
-  .dd-icon svg { stroke: var(--icon-neutral-onsurface); }
+  .dd-link:hover .dd-icon svg, .dd-link:focus-visible .dd-icon svg { stroke: var(--icon-neutral-onsurface); }
   @media (prefers-reduced-motion: no-preference) {
     .dd-link:hover .dd-icon path { animation: icon-draw 700ms var(--ease-out); }
   }

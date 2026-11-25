@@ -64,7 +64,7 @@ const industries = [...new Set(stories.map((s) => s.industry))];
   .note { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-gap-text-md) var(--spacing-gap-text-lg); color: var(--text-neutral-placeholder-ondark); }
 
   .cs-list.container { padding-bottom: var(--spacer) !important; }
-  .filters { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-text-md); margin-bottom: var(--spacing-gap-general-group-lg); }
+  .filters { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-text-md); padding-top: var(--pad-block); margin-bottom: var(--spacing-gap-general-group-lg); }
   .chip { height: 40px; padding: 0 var(--spacing-padding-container-sm); border: var(--hair) solid var(--border-neutral-default); background: var(--surface-neutral-default); color: var(--text-neutral-headings); font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px; cursor: pointer; transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
   .chip:hover { border-color: var(--border-neutral-strong); }
   .chip[aria-pressed='true'] { background: var(--surface-neutral-darkest); border-color: var(--border-neutral-dark); color: var(--text-neutral-onsurface); }

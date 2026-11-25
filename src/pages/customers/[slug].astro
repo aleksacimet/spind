@@ -3,7 +3,7 @@ import DrawerHead from '../../components/DrawerHead.astro';
 import Base from '../../layouts/Base.astro';
 import MockLogo from '../../components/MockLogo.astro';
 import Quotes from '../../components/sections/Quotes.astro';
-import { getContent, showStories } from '../../content/site';
+import { getContent, showStories, flags } from '../../content/site';
 import { solutionIcons } from '../../content/icons';
 
 export function getStaticPaths() {
@@ -56,8 +56,8 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
         </dl>
       </aside>
       <div class="text">
-        <section data-reveal><h2>{c.sections.challenge}</h2><p>{s.challenge}</p></section>
-        <section data-reveal><h2>{c.sections.solution}</h2><p>{s.solution}</p></section>
+        <section data-reveal><h2>{c.sections.challenge}</h2><p>{s.challenge}</p>{flags.exampleProof && c.filler.map((f) => <p>{f}</p>)}</section>
+        <section data-reveal><h2>{c.sections.solution}</h2><p>{s.solution}</p>{flags.exampleProof && c.filler.map((f) => <p>{f}</p>)}</section>
         <figure class="big-quote" data-reveal="drawer">
           <blockquote><p>“{s.quote.text}”</p></blockquote>
           <figcaption>
@@ -67,7 +67,7 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
             <span class="q-who"><strong>{s.quote.name}</strong><span>{s.quote.role}</span></span>
           </figcaption>
         </figure>
-        <section data-reveal><h2>{c.sections.results}</h2><p>{s.results}</p></section>
+        <section data-reveal><h2>{c.sections.results}</h2><p>{s.results}</p>{flags.exampleProof && c.filler.map((f) => <p>{f}</p>)}</section>
       </div>
     </div></div></section>
   </article>
@@ -109,10 +109,11 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
   .sol-links { display: grid; gap: var(--spacing-gap-text-md); margin-top: var(--spacing-gap-text-sm); }
   .sol-links a { display: inline-flex; align-items: center; gap: var(--spacing-gap-text-md); color: var(--text-action-default); text-decoration: none; }
   .sol-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
-  .sol-links svg { fill: none; stroke: currentColor; stroke-width: var(--stroke); vector-effect: non-scaling-stroke; flex: none; }
+  .sol-links svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); vector-effect: non-scaling-stroke; flex: none; }
   .text { display: grid; gap: var(--spacing-gap-general-section-md); max-width: 720px; }
   .text h2 { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); letter-spacing: 0; margin-bottom: var(--spacing-gap-text-md); }
   .text p { color: var(--text-neutral-body); }
+  .text section p + p { margin-top: var(--spacing-gap-general-object-md); }
   .big-quote { margin: 0; padding: var(--pad-block) var(--inset); background: var(--surface-action-default); color: var(--text-neutral-onsurface); display: grid; gap: var(--spacing-gap-general-object-lg); }
   .big-quote blockquote p { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: -0.01em; color: var(--text-neutral-onsurface); }
   .big-quote figcaption { display: flex; align-items: center; gap: var(--spacing-gap-general-object-md); }

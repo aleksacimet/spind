@@ -13,6 +13,16 @@ When a batch is built, move it from To build to Built and note the date.
 
 _Nothing waiting. Add new Figma changes here._
 
+## Built in code only, Figma still to update (2026-11-25, round 3)
+
+- Home: no line under the logo marquee either; the Problem section's top line closes it.
+- Touchpoints for one faulty device: each card has a 48px washed-indigo icon tile with a blue 2px line icon (Talent waste: hourglass, Hybrid work: house, Many sites: map pins, Off-hours: moon). The cards are information only: no hover fill, no spotlight.
+- What IT teams say: the whole card is a link to the story. Hovering anywhere on the card fills it (washed indigo; the blue first card goes a shade darker) and shows "Read full" next to the arrow. On touch screens "Read full" is always shown.
+- Icons: every line icon is 2px (token Icon stroke, non-scaling) — menus, cards, arrows, form steppers. Grid lines and borders stay 0.5px.
+- Navigation menu icons: blue (Icon/Action/Default) on the washed tile, white on the blue tile on hover. They were white at rest by mistake.
+- Customer stories: three lorem ipsum paragraphs under The challenge, What they did and The results, to show a long story (only while example content is on).
+- No double lines (checked on every page at 375, 640, 960, 1280 and 1440 px): legal pages drew their panel lines twice; the header drew its own rail lines over the page rails while transparent over the hero (and its 92% fill let the page rails show through when scrolled, now opaque); the Workflows comparison's last row drew a bottom line on the section line; the customer story filter chips sat on the label strip line (now 32px below it).
+
 ## Built in code only, Figma still to update (2026-11-25, round 2)
 
 - Home hero: the full-width line under the buttons is gone and the bottom padding is smaller (32px desktop, 32px below). The hero runs straight into the logo marquee.

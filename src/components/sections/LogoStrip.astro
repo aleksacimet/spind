@@ -46,7 +46,9 @@ const logos = t.proof.logos;
   }
 
 
-  :global(main) > .logos--bare { border-top: 0; }
+  /* Home, under the hero: no lines of its own; the next section's top line closes it. */
+  :global(main) > .logos--bare { border-top: 0; padding-bottom: 0; }
+  .logos--bare > .container::after { display: none; }
   .logos--bare .marquee { padding-top: var(--spacing-gap-general-object-lg); }
 
   .logos--wall .set { gap: var(--spacing-gap-general-section-xl); padding-right: var(--spacing-padding-section-xl); }
