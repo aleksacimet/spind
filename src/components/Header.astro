@@ -64,7 +64,7 @@ const flags: Record<string, string> = {
                 ))}
                 <div class="dd-col dd-col--feature">
                   <p class="dd-title"><span class="sq" aria-hidden="true"></span>{g.feature.label}</p>
-                  <div class="dd-feature">
+                  <div class="dd-feature" data-surface="dark">
                   <div class="title-body">
                     <p class="dd-feature-title">{g.feature.title}</p>
                     <p class="dd-feature-text">{g.feature.text}</p>
@@ -166,8 +166,13 @@ const flags: Record<string, string> = {
     -webkit-backdrop-filter: saturate(1.2) blur(8px);
     transition: background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
   }
-  /* Over the hero band: transparent and white until the page scrolls. */
+  /* Over the hero band: transparent and white until the page scrolls. It is a dark surface then, so its CTA is
+     yellow; once the header turns light (scrolled, menu or dropdown open) the CTA is Signal blue. */
   .site-header.is-overlay:not(.is-scrolled) {
+    --cta-bg: var(--surface-cta-default);
+    --cta-bg-hover: var(--surface-cta-hover);
+    --cta-bg-pressed: var(--surface-cta-pressed);
+    --cta-fg: var(--text-cta-default);
     background: transparent;
     border-bottom-color: transparent;
     color: var(--text-neutral-onsurface);

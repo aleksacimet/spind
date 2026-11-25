@@ -185,9 +185,26 @@ main > .section.glow-band, main > article > .section.glow-band {
 .btn--sm { padding: calc(var(--spacing-padding-container-xs) - var(--hair)) calc(var(--spacing-padding-container-sm) - var(--hair)); }
 .btn:focus-visible { outline: var(--border-width-focus) solid var(--border-focus); outline-offset: 0; }
 
-.btn--cta { color: var(--text-cta-default); background-color: var(--surface-cta-default); }
-.btn--cta:hover { background-color: var(--surface-cta-hover); box-shadow: 0 0 16px color-mix(in srgb, var(--surface-cta-default) 35%, transparent); }
-.btn--cta:active { background-color: var(--surface-cta-pressed); }
+/* CTA colour follows the surface it sits on: Signal blue on light surfaces (the default),
+   yellow on dark ones. Dark surfaces switch it by setting the --cta-* values below, and every
+   CTA inside inherits them, so a button never needs its own surface class. */
+:root {
+  --cta-bg: var(--surface-cta-onlight-default);
+  --cta-bg-hover: var(--surface-cta-onlight-hover);
+  --cta-bg-pressed: var(--surface-cta-onlight-pressed);
+  --cta-fg: var(--text-cta-onlight-default);
+}
+.space, .glow-band, .on-accent, .site-footer, [data-surface='dark'] {
+  --cta-bg: var(--surface-cta-default);
+  --cta-bg-hover: var(--surface-cta-hover);
+  --cta-bg-pressed: var(--surface-cta-pressed);
+  --cta-fg: var(--text-cta-default);
+}
+.btn--cta { color: var(--cta-fg); background-color: var(--cta-bg); }
+.btn--cta:hover { background-color: var(--cta-bg-hover); box-shadow: 0 0 16px color-mix(in srgb, var(--cta-bg) 35%, transparent); }
+.btn--cta:active { background-color: var(--cta-bg-pressed); }
+/* The blue focus ring stands 2px off the button, so it also shows around the blue CTA. */
+.btn--cta:focus-visible { outline-offset: 2px; }
 
 .btn--primary { color: var(--text-button-primary-default); background-color: var(--surface-button-primary-default); }
 .btn--primary:hover { background-color: var(--surface-button-primary-hover); box-shadow: 0 0 16px color-mix(in srgb, var(--surface-button-primary-default) 30%, transparent); }

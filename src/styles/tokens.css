@@ -105,12 +105,18 @@
   --border-width-focus: var(--scale-xs);
   --border-status-error: var(--error-500);
   --text-status-error: var(--error-700);
-  /* Buttons (Figma component "Button") */
+  /* Buttons (Figma component "Button"). The CTA follows its surface: yellow on dark surfaces (cta), Signal blue on
+     light ones (cta-onlight). Yellow on the light page is only 1.2:1 against it; blue is 4.8:1, white label 5.4:1. */
   --surface-cta-default: var(--highlight-500);
   --surface-cta-hover: var(--highlight-600);
   --surface-cta-pressed: var(--highlight-700);
   --text-cta-default: var(--neutral-black);
   --icon-cta-default: var(--neutral-black);
+  --surface-cta-onlight-default: var(--primary-600);
+  --surface-cta-onlight-hover: var(--primary-700);
+  --surface-cta-onlight-pressed: var(--primary-800);
+  --text-cta-onlight-default: var(--neutral-white);
+  --icon-cta-onlight-default: var(--neutral-white);
   --surface-button-primary-default: var(--accent-500);
   --surface-button-primary-hover: var(--accent-600);
   --surface-button-primary-pressed: var(--accent-700);
