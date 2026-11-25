@@ -21,7 +21,7 @@ _Nothing waiting. Add new Figma changes here._
 - Shared section components: use case pages and the Integrations page now use the same hero component as Platform and Workflows (TemplateHero; Integrations has no visual). New components: SecurityBand, CtaBand (closing CTA) and Features (platform features). Change a section once and every page that shows it follows.
 - Integrations, LISSA Asset card: logomark only (no wordmark), inverted: white mark on an indigo 48px tile. The whole card is a link (to /integrations). Hover: tile turns washed indigo, mark indigo and its three parts redraw in place one after another; title turns blue; "Read full" (underlined, blue) fades in under the text, its space reserved so nothing moves. On touch screens "Read full" is always shown.
 - Interface sounds (Web Audio, very quiet, no files): tap on buttons/links/cards, select on steps/modules/filters, open/close on FAQ, menus and dropdowns, a soft tick on sliders, a three-note chime when the contact form is sent. Footer has a "Sound: On/Off" switch, remembered per browser.
-- One stroke width everywhere: 1px (token Border width/Hair, was 0.5px). Grid lines, borders, dividers, icon strokes (non-scaling), illustration lines, timeline track, slider thumb, tab underline all use it. Only the 2px keyboard focus ring stays thicker (accessibility).
+- One stroke width everywhere: 0.5px (token Border width/Hair). Grid lines, borders, dividers, icon strokes (non-scaling), illustration lines, timeline track, slider thumb, tab underline all use it. Only the 2px keyboard focus ring stays thicker (accessibility).
 - Video: the cursor is a pointer over the whole player, even while the video is a placeholder.
 
 ## Built in code only, Figma still to update (2026-11-25)

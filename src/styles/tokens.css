@@ -52,7 +52,7 @@
   --neutral-overlay: var(--ice-1000-60);
 
   --border-width-none: var(--scale-none);
-  --border-width-hair: var(--scale-2xs); /* 1px: the one stroke width on the site */
+  --border-width-hair: var(--scale-3xs); /* 0.5px: the one stroke width on the site */
   --border-width-default: var(--scale-2xs);
   --border-radius-none: var(--scale-none);
 
