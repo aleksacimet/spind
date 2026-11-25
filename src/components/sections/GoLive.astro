@@ -5,7 +5,7 @@ const t = getContent(Astro.props.locale);
 const g = t.goLive;
 const weeks = Math.max(...g.phases.map((p) => p.to));
 ---
-<!-- Go live as a 12-week timeline: week numbers, one thin track with a point where each phase starts and a yellow
+<!-- Go live as a 12-week timeline: week numbers, one thin track with a point where each phase starts and a Signal blue
      point where Spind goes live. When it comes into view a blue line runs from week 1 to week 12 and lights each
      point as it passes. Hover or focus a phase to light its stretch of the track and read what happens. -->
 <Section id="go-live" title={g.title} intro={g.intro}>
@@ -36,10 +36,11 @@ const weeks = Math.max(...g.phases.map((p) => p.to));
   .tl-body { position: relative; }
   .tl-ruler { display: none; }
 
-  /* Track: a thin grey line, the blue run on top of it, a yellow point at the end (go live). */
+  /* Track: a thin grey line, the blue run on top of it, a point in the signal colour at the end (go live):
+     Signal blue here on the white panel, yellow if the timeline ever sits on a dark surface. */
   .tl-track { position: absolute; background: var(--surface-neutral-track); }
   .tl-run { position: absolute; background: var(--primary-200); }
-  .tl-end { position: absolute; width: var(--pt); height: var(--pt); background: var(--surface-cta-default); }
+  .tl-end { position: absolute; width: var(--pt); height: var(--pt); background: var(--signal); }
 
   .tl-phases { position: relative; display: grid; gap: var(--spacing-gap-general-group-md); }
   .tl-phase { position: relative; display: grid; row-gap: var(--spacing-gap-text-sm); align-content: start; outline: none; cursor: default; }
