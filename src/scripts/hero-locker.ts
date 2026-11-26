@@ -476,15 +476,6 @@ export function initHeroLocker(stage: HTMLElement) {
     ctx.font = `400 26px ${fontBody}`;
     ctx.fillText(copy.footer || '', 56, h - 46);
   }
-  /** Text-free title: a bold bar and a thinner subtitle bar (How it works screens). */
-  function titleBars(w1 = 380, w2 = 260) {
-    roundRect(scr, 56, 214, w1, 44, 12);
-    scr.fillStyle = 'rgba(255, 255, 255, 0.92)';
-    scr.fill();
-    roundRect(scr, 56, 284, w2, 18, 9);
-    scr.fillStyle = 'rgba(255, 255, 255, 0.4)';
-    scr.fill();
-  }
   function title(text: string, sub?: string) {
     scr.fillStyle = '#ffffff';
     scr.font = `700 64px ${fontDisplay}`;
@@ -537,34 +528,79 @@ export function initHeroLocker(stage: HTMLElement) {
     scrTex.needsUpdate = true;
   }
 
-  /** How it works steps: request, code, open, logged. */
+  /* ---------- How it works screens: text-free, built from the items the employee deals with ----------
+     Line icons on a 24-unit grid (same style as the site icons), drawn with Path2D. */
+  const ICON: Record<string, Path2D> = {
+    laptop: new Path2D('M5 6h14v9H5zM3 18h18'),
+    phone: new Path2D('M8 3h8v18H8zM11 18h2'),
+    headset: new Path2D('M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v5H4zM17 14h3v5h-3z'),
+    mouse: new Path2D('M12 3a5 5 0 0 1 5 5v8a5 5 0 0 1-10 0V8a5 5 0 0 1 5-5zM12 7v3'),
+    badge: new Path2D('M3 6h18v12H3zM8.5 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM5.5 16.2c.5-1.4 1.6-2 3-2s2.5.6 3 2M14 10h4.5M14 13h3.5'),
+    waves: new Path2D('M15.5 8a5.5 5.5 0 0 1 0 8M18.5 5.5a9.5 9.5 0 0 1 0 13'),
+    check: new Path2D('M6 12.5l4 4 8-9'),
+    arrow: new Path2D('M5 12h14M13 6l6 6-6 6'),
+    drawer: new Path2D('M3 6h18v12H3zM9 15h6'),
+  };
+  function icon(name: string, x: number, y: number, size: number, color: string, lw = 1.6) {
+    scr.save();
+    scr.translate(x, y);
+    scr.scale(size / 24, size / 24);
+    scr.strokeStyle = color;
+    scr.lineWidth = lw;
+    scr.lineCap = 'round';
+    scr.lineJoin = 'round';
+    scr.stroke(ICON[name]);
+    scr.restore();
+  }
+  function bar(x: number, y: number, w: number, h: number, a: number) {
+    roundRect(scr, x, y, w, h, h / 2);
+    scr.fillStyle = `rgba(255, 255, 255, ${a})`;
+    scr.fill();
+  }
+  /** Device tile: rounded card with a line icon; the chosen one is yellow. */
+  function tile(x: number, y: number, w: number, h: number, name: string, on: boolean) {
+    roundRect(scr, x, y, w, h, 18);
+    scr.fillStyle = on ? HL : 'rgba(255, 255, 255, 0.08)';
+    scr.fill();
+    if (!on) { scr.strokeStyle = 'rgba(255, 255, 255, 0.12)'; scr.lineWidth = 2; scr.stroke(); }
+    const s = Math.min(w, h) * 0.46;
+    icon(name, x + (w - s) / 2, y + (h - s) / 2 - h * 0.08, s, on ? '#16191E' : 'rgba(255, 255, 255, 0.85)', 1.5);
+    bar(x + w * 0.28, y + h * 0.78, w * 0.44, 10, on ? 0 : 0.25);
+    if (on) { roundRect(scr, x + w * 0.28, y + h * 0.78, w * 0.44, 10, 5); scr.fillStyle = 'rgba(22, 25, 30, 0.35)'; scr.fill(); }
+  }
+  /** Header of every step: a title bar and a subtitle bar. */
+  function head(w1: number, w2: number) {
+    bar(56, 132, w1, 34, 0.92);
+    bar(56, 182, w2, 14, 0.4);
+  }
+
+  /** How it works steps: request (pick the device), identify (badge, QR or PIN), open (the drawer), tracked (the log). */
   function drawStory(step: number) {
     if (!story) return;
     screenBase(step === 2 ? 0.45 : 0.22);
+    const W = scrCanvas.width;
     if (step === 0) {
-      titleBars(360, 240);
-      roundRect(scr, 56, 330, 250, 14, 7);
-      scr.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      scr.fill();
-      roundRect(scr, 56, 390, 200, 64, 32);
+      // Request: the devices to choose from, the faulty one's replacement picked, a yellow go button.
+      head(300, 200);
+      const names = ['laptop', 'phone', 'headset', 'mouse'];
+      const tw = (W - 112 - 3 * 20) / 4;
+      names.forEach((n, k) => tile(56 + k * (tw + 20), 228, tw, 196, n, k === 1));
+      roundRect(scr, W - 56 - 180, 450, 180, 64, 32);
       scr.fillStyle = HL;
       scr.fill();
-      // Arrow drawn as lines (no text).
-      scr.strokeStyle = '#16191E';
-      scr.lineWidth = 6;
-      scr.lineCap = 'round';
-      scr.lineJoin = 'round';
-      scr.beginPath();
-      scr.moveTo(134, 422); scr.lineTo(176, 422);
-      scr.moveTo(162, 408); scr.lineTo(176, 422); scr.lineTo(162, 436);
-      scr.stroke();
-      miniMap(null);
+      icon('arrow', W - 56 - 180 + 66, 458, 48, '#16191E', 2);
     } else if (step === 1) {
-      titleBars(300, 200);
+      // Identify: the RFID badge being tapped, or the QR code, or the PIN.
+      head(260, 180);
+      roundRect(scr, 56, 228, 330, 286, 22);
+      scr.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      scr.fill();
+      icon('badge', 92, 262, 190, HL, 1.2);
+      icon('waves', 250, 262, 120, 'rgba(255, 255, 255, 0.7)', 1.4);
       const s = 9;
-      const ox = 56;
-      const oy = 330;
-      roundRect(scr, ox - 12, oy - 12, qr.N * s + 24, qr.N * s + 24, 10);
+      const ox = 430;
+      const oy = 240;
+      roundRect(scr, ox - 14, oy - 14, qr.N * s + 28, qr.N * s + 28, 14);
       scr.fillStyle = '#ffffff';
       scr.fill();
       scr.fillStyle = '#0E1B2C';
@@ -584,36 +620,64 @@ export function initHeroLocker(stage: HTMLElement) {
       finder(0, 0);
       finder(14, 0);
       finder(0, 14);
-      for (let k = 0; k < 5; k++) {
-        roundRect(scr, 300 + k * 62, 430, 44, 44, 10);
-        scr.fillStyle = k < 3 ? HL : 'rgba(255, 255, 255, 0.14)';
+      for (let k = 0; k < 4; k++) {
+        roundRect(scr, 700 + k * 70, 270, 52, 64, 12);
+        scr.fillStyle = k < 2 ? HL : 'rgba(255, 255, 255, 0.12)';
+        scr.fill();
+      }
+      for (let k = 0; k < 9; k++) {
+        roundRect(scr, 700 + (k % 3) * 94, 360 + Math.floor(k / 3) * 54, 82, 42, 10);
+        scr.fillStyle = 'rgba(255, 255, 255, 0.08)';
         scr.fill();
       }
     } else if (step === 2) {
-      titleBars(400, 280);
-      progress(0.7, HL);
-      miniMap(storyDrawer, HL);
+      // Open: the picked device goes to its drawer, which glows yellow on the locker map.
+      head(340, 240);
+      tile(56, 228, 250, 250, 'phone', true);
+      icon('arrow', 330, 318, 72, 'rgba(255, 255, 255, 0.6)', 1.6);
+      const cols = 4;
+      const cw = 104;
+      const ch = 52;
+      const gx = 12;
+      const ox = W - 56 - cols * cw - (cols - 1) * gx;
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < cols; c++) {
+          const on = r === 1 && c === 2;
+          roundRect(scr, ox + c * (cw + gx), 228 + r * (ch + gx), cw, ch, 10);
+          scr.fillStyle = on ? HL : 'rgba(255, 255, 255, 0.08)';
+          scr.fill();
+          if (on) icon('drawer', ox + c * (cw + gx) + cw / 2 - 16, 228 + r * (ch + gx) + ch / 2 - 16, 32, '#16191E', 1.8);
+        }
+      }
+      roundRect(scr, ox, 492, cols * cw + (cols - 1) * gx, 12, 6);
+      scr.fillStyle = 'rgba(255, 255, 255, 0.14)';
+      scr.fill();
+      roundRect(scr, ox, 492, (cols * cw + (cols - 1) * gx) * 0.7, 12, 6);
+      scr.fillStyle = HL;
+      scr.fill();
     } else {
+      // Tracked: done, and the handover lands in the log (device, person, time).
       scr.fillStyle = '#2F9E6B';
       scr.beginPath();
-      scr.arc(120, 300, 64, 0, Math.PI * 2);
+      scr.arc(100, 160, 44, 0, Math.PI * 2);
       scr.fill();
-      scr.strokeStyle = '#ffffff';
-      scr.lineWidth = 12;
-      scr.lineCap = 'round';
-      scr.lineJoin = 'round';
-      scr.beginPath();
-      scr.moveTo(90, 302);
-      scr.lineTo(112, 324);
-      scr.lineTo(152, 280);
-      scr.stroke();
-      roundRect(scr, 220, 262, 300, 44, 12);
-      scr.fillStyle = 'rgba(255, 255, 255, 0.92)';
-      scr.fill();
-      roundRect(scr, 220, 322, 200, 18, 9);
-      scr.fillStyle = 'rgba(255, 255, 255, 0.4)';
-      scr.fill();
-      miniMap(null);
+      icon('check', 70, 130, 60, '#ffffff', 2.4);
+      bar(170, 136, 280, 30, 0.92);
+      bar(170, 180, 190, 14, 0.4);
+      const rows: [string, boolean][] = [['phone', true], ['laptop', false], ['headset', false]];
+      rows.forEach(([n, first], k) => {
+        const y = 240 + k * 92;
+        roundRect(scr, 56, y, W - 112, 76, 16);
+        scr.fillStyle = first ? 'rgba(255, 211, 105, 0.14)' : 'rgba(255, 255, 255, 0.06)';
+        scr.fill();
+        roundRect(scr, 76, y + 14, 48, 48, 12);
+        scr.fillStyle = first ? HL : 'rgba(255, 255, 255, 0.1)';
+        scr.fill();
+        icon(n, 84, y + 22, 32, first ? '#16191E' : 'rgba(255, 255, 255, 0.8)', 1.6);
+        bar(146, y + 22, 220, 14, first ? 0.85 : 0.5);
+        bar(146, y + 44, 140, 10, 0.25);
+        bar(W - 56 - 20 - 110, y + 32, 110, 12, 0.3);
+      });
     }
     scrTex.needsUpdate = true;
   }
