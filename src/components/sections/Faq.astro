@@ -3,13 +3,13 @@ import DrawerHead from '../DrawerHead.astro';
 import { getContent } from '../../content/site';
 interface Props { locale?: string; title?: string; only?: number[]; id?: string; items?: { q: string; a: string }[] }
 const { locale, title, only, id = 'faq', items } = Astro.props;
-const t = getContent(locale);
+const t = getContent(locale ?? Astro.currentLocale);
 const f = { title: title ?? t.faq.title, items: items ?? (only ? only.map((i) => t.faq.items[i]) : t.faq.items) };
 ---
 <!-- Figma: heading on the left (400px), one column of questions on the right (gap one column). -->
 <section id={id} class="section faq-section" aria-labelledby={`${id}-title`} data-section={id}>
   <div class="container">
-  <DrawerHead label={getContent('en').sectionLabels[id] ?? 'FAQ'} />
+  <DrawerHead label={getContent(Astro.currentLocale).sectionLabels[id] ?? 'FAQ'} />
   <div class="faq-grid">
     <h2 id={`${id}-title`} data-split>{f.title}</h2>
     <div class="faq-list">

@@ -3,9 +3,9 @@
 import Section from '../Section.astro';
 import { getContent } from '../../content/site';
 import { featureIcons } from '../../content/icons';
-const t = getContent(Astro.props.locale);
+const t = getContent(Astro.currentLocale);
 ---
-<Section id="features" title={t.platformPage.featuresTitle} label="Features">
+<Section id="features" title={t.platformPage.featuresTitle} label={t.sectionLabels.features}>
   <ul class="tiles feats" role="list">
     {t.platform.features.map((f, i) => (
       <li class="tile tile--hover" data-reveal="drawer" data-spot style={`--d:${(i % 3) * 80}ms`}>

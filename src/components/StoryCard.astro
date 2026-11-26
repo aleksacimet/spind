@@ -1,18 +1,19 @@
 ---
-import MockLogo from './MockLogo.astro';
+import IndustryMark from './IndustryMark.astro';
 import { getContent } from '../content/site';
+import { lp } from '../i18n';
 interface Props { slug: string; featured?: boolean; i?: number }
 const { slug, featured = false, i = 0 } = Astro.props;
-const t = getContent('en');
+const t = getContent(Astro.currentLocale);
 const s = t.proof.stories.find((x) => x.slug === slug)!;
-const logoName = t.proof.logos.find((l) => l.key === s.logo)?.name ?? s.company;
 ---
+<!-- Anonymized story card: industry mark and description instead of a company logo. -->
 <article class:list={['story', { 'story--featured': featured }]} data-industry={s.industry} data-reveal="drawer" style={`--d:${i * 80}ms`}>
   <div class="story-top">
-    <MockLogo key={s.logo} name={logoName} />
+    <IndustryMark industryKey={s.industryKey} label={s.company} />
   </div>
   <p class="label">{featured ? `${t.customers.featured} · ${s.industry}` : s.industry}</p>
-  <h3><a href={`/customers/${s.slug}`}>{s.headline}</a></h3>
+  <h3><a href={lp(Astro.currentLocale, `/customers/${s.slug}`)}>{s.headline}</a></h3>
   <p class="sum">{s.summary}</p>
   {featured && (
     <dl class="metrics">
@@ -25,6 +26,8 @@ const logoName = t.proof.logos.find((l) => l.key === s.logo)?.name ?? s.company;
 <style>
   .story { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-md); padding: var(--pad-block) var(--inset); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); transition: background-color var(--dur) var(--ease); }
   .story:hover { background: var(--surface-action-washed); }
+  .story--featured :global(.ind-box) { background: color-mix(in srgb, var(--neutral-white) 10%, transparent); }
+  .story--featured :global(.ind-box svg) { stroke: var(--surface-cta-default); }
   .story-top { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-general-object-md); margin-bottom: var(--spacing-gap-general-object-md); }
   .story h3 a { text-decoration: none; }
   .story h3 a::after { content: ''; position: absolute; inset: 0; z-index: 1; }
@@ -37,7 +40,7 @@ const logoName = t.proof.logos.find((l) => l.key === s.logo)?.name ?? s.company;
   .metrics dd { font-family: var(--font-display); font-weight: 600; font-size: 32px; line-height: 40px; letter-spacing: -0.03em; color: var(--text-neutral-headings); }
   .metrics dt { font-size: 16px; line-height: 24px; color: var(--text-neutral-body); }
   .story--featured { background: var(--surface-neutral-dark); }
-  .story--featured :global(.mock-logo), .story--featured h3, .story--featured .metrics dd, .story--featured .more { color: var(--text-neutral-onsurface); }
+  .story--featured :global(.ind-mark), .story--featured h3, .story--featured .metrics dd, .story--featured .more { color: var(--text-neutral-onsurface); }
   .story--featured .label, .story--featured .sum, .story--featured .metrics dt { color: var(--text-neutral-decorative); }
   .story--featured:hover h3 { color: var(--text-neutral-onsurface); }
   .story[hidden] { display: none; }

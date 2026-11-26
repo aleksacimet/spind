@@ -1,27 +1,26 @@
 ---
 import Section from '../Section.astro';
-import MockLogo from '../MockLogo.astro';
+import IndustryMark from '../IndustryMark.astro';
 import { getContent, flags } from '../../content/site';
+import { lp } from '../../i18n';
 interface Props { locale?: string; exclude?: string; title?: string; allLink?: boolean }
-const { locale, exclude, title, allLink = false } = Astro.props;
+const { exclude, title, allLink = false } = Astro.props;
+const locale = Astro.props.locale ?? Astro.currentLocale;
 const t = getContent(locale);
 const stories = t.proof.stories.filter((s) => s.slug !== exclude).slice(0, 3);
-const logoName = (key: string) => t.proof.logos.find((l) => l.key === key)?.name ?? '';
-// Profile circle: photo when one is set in site.ts, otherwise initials.
-const initials = (name: string) => name.replace(/^Dr\.\s*/, '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2);
 ---
+<!-- Quote cards, anonymized: the industry mark replaces the logo, and the quote is signed with a role only (no names). -->
 {flags.exampleProof && (
-  <Section id="stories" title={title ?? t.customers.quotesTitle} link={allLink ? { label: t.customers.quotesCta, href: '/customers' } : undefined}>
+  <Section id="stories" title={title ?? t.customers.quotesTitle} link={allLink ? { label: t.customers.quotesCta, href: lp(locale, '/customers') } : undefined}>
     <ul class="quotes" role="list">
       {stories.map((s, i) => (
         <li class="q-cell" data-reveal="drawer" style={`--d:${i * 100}ms`}>
-          <a class:list={['q-card', { 'q-card--accent': i === 0 }]} href={`/customers/${s.slug}`}>
+          <a class:list={['q-card', { 'q-card--accent': i === 0 }]} href={lp(locale, `/customers/${s.slug}`)}>
           <div class="q-body">
             <div class="q-top">
-              <MockLogo key={s.logo} name={logoName(s.logo)} />
-              {/* Figma 122:1061: arrow top right; "Read full" appears next to it when the card is hovered. The whole card is the link. */}
+              <IndustryMark industryKey={s.industryKey} label={s.company} />
               <span class="q-link">
-                <span class="q-more">{t.customers.readFull}</span><span class="sr-only">: {s.company}</span>
+                <span class="q-more">{t.customers.readFull}</span><span class="sr-only">: {s.headline}</span>
                 <svg class="q-arrow" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M7 17 17 7M8.5 7H17v8.5" /></svg>
               </span>
             </div>
@@ -30,10 +29,8 @@ const initials = (name: string) => name.replace(/^Dr\.\s*/, '').split(/\s+/).map
             </blockquote>
           </div>
           <div class="person">
-            {s.quote.photo
-              ? <img class="avatar" src={s.quote.photo} alt="" width="48" height="48" loading="lazy" />
-              : <span class="avatar" aria-hidden="true">{initials(s.quote.name)}</span>}
-            <p class="who"><strong>{s.quote.name}</strong><span>{s.quote.role}</span></p>
+            <span class="avatar" aria-hidden="true"><svg viewBox="0 0 22 22" width="22" height="22"><path d="M11 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5 19c0-3.5 2.6-6 6-6s6 2.5 6 6" /></svg></span>
+            <p class="who"><strong>{s.quote.role}</strong><span>{s.industry} · {s.size}</span></p>
           </div>
           </a>
         </li>
@@ -75,12 +72,16 @@ const initials = (name: string) => name.replace(/^Dr\.\s*/, '').split(/\s+/).map
     background: var(--surface-action-washed); color: var(--text-action-default);
     font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 16px;
   }
+  .avatar svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; }
+  .avatar svg path { vector-effect: non-scaling-stroke; }
+  .q-card--accent :global(.ind-box) { background: var(--surface-action-hover); }
+  .q-card--accent :global(.ind-box svg) { stroke: var(--icon-neutral-onsurface); }
   .who { display: grid; gap: var(--spacing-gap-text-sm); font-size: 16px; line-height: 28px; }
   .who strong { font-weight: 600; color: var(--text-neutral-headings); }
   .who span { color: var(--text-neutral-body); }
 
   .q-card--accent { background: var(--surface-action-default); border-color: transparent; }
-  .q-card--accent :is(blockquote p, .who strong, .who span, .q-link), .q-card--accent :global(.mock-logo) { color: var(--text-neutral-onsurface); }
+  .q-card--accent :is(blockquote p, .who strong, .who span, .q-link), .q-card--accent :global(.ind-mark) { color: var(--text-neutral-onsurface); }
   .q-card--accent .avatar { background: var(--surface-action-hover); color: var(--text-neutral-onsurface); }
   @media (min-width: 960px) {
     .quotes { grid-template-columns: repeat(3, 1fr); }

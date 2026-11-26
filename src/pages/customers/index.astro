@@ -1,14 +1,13 @@
 ---
 /**
- * Customer stories, like cora.tech/customer-stories: logo wall, industry filter, featured story, cards.
+ * Customer stories: industry filter, featured story, cards. Anonymized: no logos, company names or names of people.
  * Built when showStories is true. While flags.exampleProof is on, everything here is fictional and labelled "Example".
  */
 import DrawerHead from '../../components/DrawerHead.astro';
 import Base from '../../layouts/Base.astro';
 import StoryCard from '../../components/StoryCard.astro';
-import LogoStrip from '../../components/sections/LogoStrip.astro';
 import { getContent } from '../../content/site';
-const t = getContent('en');
+const t = getContent(Astro.currentLocale);
 const c = t.customers;
 const stories = t.proof.stories;
 const industries = [...new Set(stories.map((s) => s.industry))];
@@ -27,7 +26,7 @@ const industries = [...new Set(stories.map((s) => s.industry))];
   <div class="container cs-list">
     <DrawerHead label={c.title} />
     <h2 id="cs-list-title" class="sr-only">{c.title}</h2>
-    <div class="filters" role="group" aria-label={c.filterLabel} data-filters>
+    <div class="filters" role="group" aria-label={c.filterLabel} data-filters data-one={c.countOne} data-many={c.countMany}>
       <button type="button" class="chip" aria-pressed="true" data-filter="">{c.all}</button>
       {industries.map((ind) => <button type="button" class="chip" aria-pressed="false" data-filter={ind}>{ind}</button>)}
     </div>
@@ -39,7 +38,6 @@ const industries = [...new Set(stories.map((s) => s.industry))];
   </div>
   </section>
 
-  <LogoStrip wall />
 </Base>
 
 <script>
@@ -52,7 +50,7 @@ const industries = [...new Set(stories.map((s) => s.industry))];
       wrap.querySelectorAll('[data-filter]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
       let n = 0;
       cards.forEach((c) => { const show = !f || c.dataset.industry === f; c.hidden = !show; if (show) { n++; c.classList.add('is-visible'); } });
-      if (status) status.textContent = `${n} ${n === 1 ? 'story' : 'stories'}`;
+      if (status) status.textContent = `${n} ${n === 1 ? wrap.dataset.one : wrap.dataset.many}`;
     })
   );
 </script>

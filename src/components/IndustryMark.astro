@@ -1,0 +1,21 @@
+---
+/**
+ * Anonymized customer mark (replaces company logos): an industry line icon in a small square plus a neutral
+ * description such as "Logistics network". Never a company name or logo.
+ */
+import { productIcons } from '../content/icons';
+interface Props { industryKey: string; label: string; class?: string }
+const { industryKey, label, class: className = '' } = Astro.props;
+---
+<span class:list={['ind-mark', className]}>
+  <span class="ind-box" aria-hidden="true"><svg viewBox="0 0 22 22" width="20" height="20"><path d={productIcons[`ind-${industryKey}`]} /></svg></span>
+  <span class="ind-label">{label}</span>
+</span>
+
+<style>
+  .ind-mark { display: inline-flex; align-items: center; gap: var(--spacing-gap-text-lg); color: var(--text-neutral-headings); min-width: 0; }
+  .ind-box { flex: none; display: grid; place-items: center; width: 40px; height: 40px; background: var(--surface-action-washed); }
+  .ind-box svg { fill: none; stroke: var(--icon-action-strong); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }
+  .ind-box svg path { vector-effect: non-scaling-stroke; }
+  .ind-label { font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px; color: inherit; }
+</style>

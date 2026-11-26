@@ -1,0 +1,9 @@
+---
+/** German version: the same page file as English. Language comes from the /de/ URL (Astro.currentLocale). */
+import Page from '../../use-cases/[slug].astro';
+import { getContent } from '../../../content/site';
+export function getStaticPaths() {
+  return getContent('de').solutions.items.map((s) => ({ params: { slug: s.slug } }));
+}
+---
+<Page />

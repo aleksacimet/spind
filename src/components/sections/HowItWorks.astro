@@ -2,7 +2,7 @@
 import Section from '../Section.astro';
 import Locker3D from '../Locker3D.astro';
 import { getContent } from '../../content/site';
-const t = getContent(Astro.props.locale);
+const t = getContent(Astro.currentLocale);
 const h = t.how;
 ---
 <!-- Tabs: four steps across the top. The steps play on their own: the open tab's bottom line is a progress bar that fills

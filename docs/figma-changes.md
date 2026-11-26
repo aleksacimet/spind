@@ -526,3 +526,17 @@ Everything below was built. Website-only details:
 - 2026-11-25 · Locker drawing (every locker, incl. Modules): Otto, the first module, carries the real Spind logo (same as the header) on its service panel instead of the "SPIND" text.
 - 2026-11-25 · Integrations: "Available" pills made clearer: 13px Geist Mono caps (exact overline size), green fill #DDF3E8 with a hairline #9FD8BC, text #17663F, 8px dot blinking on/off every second.
 - 2026-11-25 · Page background trial: white with 5% less lightness, #EEF2F6 (hsl 213 30% 95%, token --surface-neutral-canvas), under the grain. Cards and tiles stay white; header uses the same grey, the language box is white.
+- 2026-11-26 · Built straight in code (round with Pera's "Integration proposal and four use cases" document); Figma still needs the same changes:
+  - **German translation**: whole site in English (/) and German (/de/). Copy in `src/content/site.ts` (EN) and `site.de.ts` (DE); pages read the language from the URL. hreflang links, German share cover.
+  - **Language selector**: flags removed. Geist Mono code (EN/DE) in a 44px hairline box with chevron; menu is a white hairline panel, current language blue with the square bullet. Mobile: two-cell EN | DE switch under a "Language" label.
+  - **Anonymized customers**: logo ribbon and mock logos removed everywhere. Stories are Pera's four sample cases (logistics network 12 sites, hospital network 3 shifts, mid-sized company 600 employees, campus with 10 companies), each shown with an industry icon tile + description. Quotes signed by role only. Lorem ipsum removed. App mockup uses neutral locker names and "IT Admin".
+  - **Self-service at the locker**: How it works is Request (app, Teams or walk up) → Identify (RFID badge, QR or PIN) → Open (take the new device, leave the old one) → Tracked. Same in hero, FAQ and the swap use case.
+  - **Use cases**: New device pickup removed (redirects to Faulty device swap). New: Temporary devices (loan for a project) and Lost device (block via MDM, replacement same day).
+  - **Mega menu**: every item 72px tall with icon and text centred, at rest and on hover; subtitle 2px under the title; all menus share one height (room for 4 items), so nothing grows on hover.
+  - **Go live in 8 weeks**: Plan week 1, Connect week 2, Prepare weeks 3–6, Go live weeks 7–8.
+  - **Calculator**: "IT minutes with Spind" slider removed, fixed 10 min per handover (shown under "IT cost with Spind"); hourly cost starts at 45 €.
+  - **Integrations**: status pills from Pera's table (Available / On request / Pilot) under each card's text (shared `StatusPill` component). Integrations page: LISSA Asset removed from the "Your systems" list, equal 56px boxes, connection lines 3px dashed in full blue, new "Roll it out in three stages" section, Locker access and Filling model tiles.
+  - **Security**: ISO 27001 certified by TÜV Austria, tenant separation (Security band and FAQ).
+  - **Modular**: Locker page "Build your own Spind, one module at a time"; FAQ "start with one module, grow".
+  - **Metadata**: home title "Spind"; new 1200×630 share covers (EN/DE), Twitter tags, apple-touch icon, web manifest, structured data; canonical domain spind-8ty.pages.dev until SITE_URL is set.
+  - **Forms**: placeholder text at 50% opacity site-wide; neutral placeholders (no names).

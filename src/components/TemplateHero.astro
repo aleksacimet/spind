@@ -1,4 +1,5 @@
 ---
+import { lp } from '../i18n';
 /**
  * Template page hero (same as the use case pages): dark space band, copy on the left
  * (label, title, intro, CTA + secondary), a visual on the right (slot, defaults to the 3D locker: Otto + Lotte,
@@ -13,7 +14,9 @@ interface Props {
   visualLabel?: string;
   locale?: string;
 }
-const { id, label, title, intro, primary, primaryHref = '/contact', secondary, secondaryHref = '/business-case', visual = true, visualLabel = 'Spind locker', locale } = Astro.props;
+const { id, label, title, intro, primary, secondary, visual = true, visualLabel = 'Spind', locale = Astro.currentLocale } = Astro.props;
+const primaryHref = lp(locale, Astro.props.primaryHref ?? '/contact');
+const secondaryHref = lp(locale, Astro.props.secondaryHref ?? '/business-case');
 ---
 <section class="tpl-hero space" aria-labelledby={`${id}-title`} data-hero>
   <div class="space-glow" aria-hidden="true"></div>

@@ -1,19 +1,20 @@
 ---
+import { lp, numberLocale } from '../../i18n';
 import { getContent } from '../../content/site';
 const { locale, page = false } = Astro.props as { locale?: string; page?: boolean };
-const t = getContent(locale);
+const t = getContent(locale ?? Astro.currentLocale);
 const b = t.businessCase;
 const keys = Object.keys(b.inputs) as (keyof typeof b.inputs)[];
 const v = Object.fromEntries(keys.map((k) => [k, b.inputs[k].value])) as Record<keyof typeof b.inputs, number>;
 // IT desk time priced at the visitor's hourly cost. Same formula as src/scripts/calc.ts, so the page is complete without JS.
 const handovers = v.lockers * v.handovers;
 const hoursToday = (handovers * v.minutesToday) / 60;
-const hoursSpind = (handovers * v.minutesSpind) / 60;
+const hoursSpind = (handovers * b.minutesSpind) / 60;
 const hoursSaved = Math.max(0, hoursToday - hoursSpind);
 const today = hoursToday * v.hourlyCost;
 const withSpind = hoursSpind * v.hourlyCost;
 const saved = hoursSaved * v.hourlyCost;
-const h = (n: number) => Math.round(n).toLocaleString('de-DE');
+const h = (n: number) => Math.round(n).toLocaleString(numberLocale(Astro.currentLocale));
 ---
 <!-- Like Cora's business case calculator: visitors put in their own numbers, nothing is claimed for them. -->
 <section id="business-case" class:list={['section bc glow-band on-accent', { 'glow-band--page': page }]} data-hero aria-labelledby="bc-title" data-section="business-case">
@@ -38,13 +39,15 @@ const h = (n: number) => Math.round(n).toLocaleString('de-DE');
           </div>
         );
       })}
+      {/* IT minutes per handover with Spind: fixed (site.ts → businessCase.minutesSpind), not a slider. */}
+      <input type="hidden" name="minutesSpind" value={b.minutesSpind} />
     </fieldset>
 
     <div class="calc-result tile glow-panel" data-reveal="drawer" style="--d:120ms" aria-live="polite">
       <p class="label res-label">{b.resultTitle}</p>
       <dl class="rows">
         <div><dt>{b.today}</dt><dd class="tabular"><span data-res="today">{h(today)}</span> {b.currency}</dd></div>
-        <div><dt>{b.withSpind}</dt><dd class="tabular"><span data-res="with">{h(withSpind)}</span> {b.currency}</dd></div>
+        <div><dt>{b.withSpind}<span class="dt-hint">{b.withSpindHint}</span></dt><dd class="tabular"><span data-res="with">{h(withSpind)}</span> {b.currency}</dd></div>
         <div><dt>{b.handovers}</dt><dd class="tabular"><span data-res="handovers">{h(handovers)}</span></dd></div>
       </dl>
       <div class="big title-body">
@@ -53,7 +56,7 @@ const h = (n: number) => Math.round(n).toLocaleString('de-DE');
         <p class="big-sub"><span class="tabular" data-res="hours">{h(hoursSaved)}</span> {b.positive}</p>
       </div>
       <p class="note">{b.note}</p>
-      <a class="btn btn--cta" href="/contact">{b.cta}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--cta" href={lp(Astro.currentLocale, '/contact')}>{b.cta}<span class="arrow" aria-hidden="true">→</span></a>
     </div>
   </form>
   </div>
@@ -83,6 +86,7 @@ const h = (n: number) => Math.round(n).toLocaleString('de-DE');
   .rows { display: grid; }
   .rows div { display: flex; justify-content: space-between; gap: var(--spacing-gap-general-object-md); padding: var(--spacing-padding-container-2xs) 0; }
   .rows dt { color: var(--text-neutral-ondark); }
+  .dt-hint { display: block; font-size: 14px; line-height: 20px; color: var(--text-neutral-decorative); }
   .rows dd { font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-onsurface); white-space: nowrap; }
   .big { display: grid; gap: var(--spacing-gap-text-sm); padding-top: var(--spacing-padding-container-sm); border-top: var(--hair) solid var(--border-neutral-ondark); }
   .big-label { color: var(--text-neutral-ondark); }

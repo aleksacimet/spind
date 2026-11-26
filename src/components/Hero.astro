@@ -1,9 +1,10 @@
 ---
+import { lp } from '../i18n';
 import Locker3D from './Locker3D.astro';
 import { getContent } from '../content/site';
 
 interface Props { locale?: string }
-const t = getContent(Astro.props.locale);
+const t = getContent(Astro.currentLocale);
 ---
 <!-- Centred hero: a 3D locker (Locker3D), headline, buttons. The dark band ends 3/4 down the locker.
      The blue glow follows the mouse (scripts/main.ts); the locker turns toward the mouse while it is over the stage. -->
@@ -19,7 +20,7 @@ const t = getContent(Astro.props.locale);
     <p class="hero-intro">{t.hero.intro}</p>
 
     <div class="hero-actions">
-      <a class="btn btn--cta" href="/contact">{t.hero.primary}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--cta" href={lp(Astro.currentLocale, '/contact')}>{t.hero.primary}<span class="arrow" aria-hidden="true">→</span></a>
       <a class="btn btn--secondary" href="#video">{t.hero.secondary}</a>
     </div>
   </div>
@@ -62,7 +63,8 @@ const t = getContent(Astro.props.locale);
     margin-inline: calc(50% - 50vw);
   }
 
-  .hero-title { margin-top: var(--spacing-gap-general-object-md); max-width: calc(var(--cell) * 7); text-wrap: wrap; } /* line breaks as in Figma, not balanced */
+  .hero-title { margin-top: var(--spacing-gap-general-object-md); max-width: calc(var(--cell) * 7); text-wrap: balance; } /* phones: balanced lines, no single word on the last line */
+  @media (min-width: 960px) { .hero-title { text-wrap: wrap; } } /* desktop: line breaks as in Figma */
 
   .hero-intro { margin-top: var(--spacing-gap-general-object-md); max-width: 600px; color: var(--text-neutral-body); }
   .hero-actions { margin-top: var(--u); display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-gap-general-object-md); }

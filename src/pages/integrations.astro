@@ -9,11 +9,14 @@ import GoLive from '../components/sections/GoLive.astro';
 import Faq from '../components/sections/Faq.astro';
 import { getContent } from '../content/site';
 import { integrationIcons } from '../content/icons';
+import StatusPill from '../components/StatusPill.astro';
 
-const locale = 'en';
-const t = getContent(locale);
+const locale = Astro.currentLocale ?? 'en';
+const t = getContent(locale ?? Astro.currentLocale);
 const P = t.integrationsPage;
 const icon = (k: string) => integrationIcons[k];
+// The map's left column lists the customer's systems only: LISSA Asset is our application, shown in the middle.
+const mapSystems = P.systems.filter((s) => s.key !== 'lissa');
 ---
 <!-- Integrations page for enterprise IT (ideas from Cora's "REST APIs / Plugins / Data security" slide):
      landscape map, systems, connection methods, security, rollout, FAQ, CTA. -->
@@ -26,7 +29,7 @@ const icon = (k: string) => integrationIcons[k];
       <div class="map-col">
         <p class="label map-h">{P.mapLeft}</p>
         <ul role="list" class="chips">
-          {P.systems.map((s, i) => (
+          {mapSystems.map((s, i) => (
             <li class="chip" style={`--k:${i}`}><svg class="line-icon" viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><path d={icon(s.key)} /></svg>{s.title}</li>
           ))}
         </ul>
@@ -64,6 +67,7 @@ const icon = (k: string) => integrationIcons[k];
             <h3>{s.title}</h3>
             <p class="ex">{s.examples}</p>
             <p>{s.text}</p>
+            <StatusPill status={s.status} class="tile-pill" />
           </div>
         </li>
       ))}
@@ -75,10 +79,22 @@ const icon = (k: string) => integrationIcons[k];
       {P.methods.map((m, i) => (
         <li class="tile tile--hover" data-reveal="drawer" data-spot style={`--d:${i * 80}ms`}>
           <span class="ic-box" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={icon(m.key)} pathLength="1" /></svg></span>
-          <div class="title-body"><h3>{m.title}</h3><p>{m.text}</p></div>
+          <div class="title-body"><h3>{m.title}</h3><p>{m.text}</p><StatusPill status={m.status} class="tile-pill" /></div>
         </li>
       ))}
     </ul>
+  </Section>
+
+  <!-- Rollout order from Pera's integration proposal: stage 1 usable immediately, then identity/HR/ITSM, then Teams/MCP. -->
+  <Section id="stages" title={P.stagesTitle}>
+    <ol class="tiles three" role="list">
+      {P.stages.map((st, i) => (
+        <li class:list={['tile', { 'tile--accent': i === 0 }]} data-reveal="drawer" style={`--d:${i * 90}ms`}>
+          <p class="label stage-label">{st.label}</p>
+          <div class="title-body"><h3>{st.title}</h3><p>{st.text}</p></div>
+        </li>
+      ))}
+    </ol>
   </Section>
 
   <SecurityBand title={P.securityTitle} items={P.security} />
@@ -94,7 +110,7 @@ const icon = (k: string) => integrationIcons[k];
   .map { display: grid; gap: var(--spacing-gap-general-object-lg); align-items: center; padding: var(--pad-block) var(--inset); }
   .map-h { color: var(--text-neutral-subtle); margin-bottom: var(--spacing-gap-text-lg); }
   .chips, .sites { display: grid; gap: var(--spacing-gap-text-md); }
-  .chip, .site { display: flex; align-items: center; gap: var(--spacing-gap-text-lg); padding: var(--spacing-padding-container-xs) var(--spacing-padding-container-sm); background: var(--surface-neutral-default); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-headings); }
+  .chip, .site { display: flex; align-items: center; height: 56px; box-sizing: border-box; gap: var(--spacing-gap-text-lg); padding: var(--spacing-padding-container-xs) var(--spacing-padding-container-sm); background: var(--surface-neutral-default); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-headings); }
   .chip svg { stroke: var(--icon-action-strong); flex: none; }
   .site svg { flex: none; }
   .lk { fill: var(--surface-neutral-default); stroke: var(--border-neutral-strong); stroke-width: var(--stroke); vector-effect: non-scaling-stroke; }
@@ -107,20 +123,25 @@ const icon = (k: string) => integrationIcons[k];
   .map-link { display: none; }
   @media (min-width: 960px) {
     .map { grid-template-columns: 1fr 96px 1.1fr 96px 1fr; }
+    /* Connection lines: 3px dashes in the action blue, full strength, so the three blocks read as connected. */
     .map-link { display: grid; gap: 40px; }
-    .map-link span { height: var(--hair); background: repeating-linear-gradient(90deg, var(--border-action-default) 0 6px, transparent 6px 14px); background-size: 14px var(--hair); opacity: 0.6; }
+    .map-link span { height: 3px; background: repeating-linear-gradient(90deg, var(--border-action-default) 0 10px, transparent 10px 18px); background-size: 18px 3px; }
   }
   @media (min-width: 960px) and (prefers-reduced-motion: no-preference) {
     .map-link span { animation: flow 1.2s linear infinite; }
     .map-link span:nth-child(2) { animation-duration: 1.6s; }
     .map-link span:nth-child(3) { animation-duration: 1s; }
   }
-  @keyframes flow { to { background-position: 14px 0; } }
+  @keyframes flow { to { background-position: 18px 0; } }
 
   /* Tiles */
   .tiles { grid-auto-rows: auto; }
   .tiles .tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
   .tiles .tile h3 { margin: 0; }
+  .tiles .tile { position: relative; }
+  .tile :global(.tile-pill) { align-self: flex-start; justify-self: start; margin-top: var(--spacing-gap-text-md); }
+  .stage-label { color: var(--text-action-default); }
+  .tile--accent .stage-label { color: var(--text-neutral-onsurface); }
   .ic-box { display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-action-washed); transition: background-color var(--dur) var(--ease); }
   .ic-box svg { stroke: var(--icon-action-strong); transition: stroke var(--dur-fast) var(--ease); }
   .tile:hover .ic-box { background: var(--surface-action-default); }
@@ -131,6 +152,7 @@ const icon = (k: string) => integrationIcons[k];
   @media (min-width: 960px) {
     .sys .tile { grid-column: span 3; min-height: 240px; }
     .four .tile { grid-column: span 3; min-height: 220px; }
+    .three .tile { grid-column: span 4; min-height: 200px; }
   }
 
 </style>

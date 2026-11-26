@@ -5,8 +5,8 @@ import TemplateHero from '../components/TemplateHero.astro';
 import Modules from '../components/sections/Modules.astro';
 import CtaBand from '../components/sections/CtaBand.astro';
 import { getContent } from '../content/site';
-const locale = 'en';
-const t = getContent(locale);
+const locale = Astro.currentLocale ?? 'en';
+const t = getContent(locale ?? Astro.currentLocale);
 const L = t.lockerPage;
 ---
 <Base title={`${L.label} | Spind`} description={L.meta} locale={locale} darkHero>

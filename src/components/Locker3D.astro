@@ -22,7 +22,7 @@ interface Props {
   storyDrawer?: number;
 }
 const { id, label, modules = ['master', 's24', 'n8'], locale, surface = 'light', story, storyDrawer = 8 } = Astro.props;
-const t = getContent(locale);
+const t = getContent(locale ?? Astro.currentLocale);
 // The flat fallback drawing has no compact module: it shows the plain Otto there.
 const flat = modules.map((m) => (m === 'compact' ? 'master' : m)) as Exclude<ModuleKey, 'compact'>[];
 // The flat drawing marks the story drawer per module: find which module drawer number storyDrawer falls in.

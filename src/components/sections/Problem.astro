@@ -2,7 +2,7 @@
 import Section from '../Section.astro';
 import { getContent } from '../../content/site';
 import { problemIcons } from '../../content/icons';
-const t = getContent(Astro.props.locale);
+const t = getContent(Astro.currentLocale);
 const p = t.problem;
 ---
 <!-- Information cards, not links: an icon, title and text; no hover state. -->

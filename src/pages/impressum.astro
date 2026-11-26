@@ -2,13 +2,14 @@
 import Base from '../layouts/Base.astro';
 import LegalPage from '../components/LegalPage.astro';
 import { getContent } from '../content/site';
-const t = getContent('en');
+import { lp } from '../i18n';
+const t = getContent(Astro.currentLocale);
 const page = t.legal.impressum;
 ---
 <Base title={`${page.title} | Spind`} description={page.description}>
-  <LegalPage title={page.title} backLabel={t.legal.back}>
-    <p>This page is a placeholder. The final legal notice will be provided by Cimet before launch.</p>
-    <h2>Company details</h2>
-    <p>TODO: legal text from Cimet (company name, address, commercial register number, VAT ID, managing directors, contact details, supervisory authority if applicable).</p>
+  <LegalPage title={page.title} backLabel={t.legal.back} backHref={lp(Astro.currentLocale, '/')}>
+    {page.body.map((p) => <p>{p}</p>)}
+    <h2>{page.heading}</h2>
+    <p>{page.todo}</p>
   </LegalPage>
 </Base>

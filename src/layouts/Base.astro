@@ -19,6 +19,7 @@ import hanken400 from '@fontsource/hanken-grotesk/files/hanken-grotesk-latin-400
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { getContent } from '../content/site';
+import { switchPath, locales } from '../i18n';
 
 interface Props {
   title?: string;
@@ -31,25 +32,44 @@ interface Props {
   noindex?: boolean;
 }
 
-const { locale = 'en', home = false, darkHero = false, noindex = false } = Astro.props;
-const t = getContent(locale);
+const { locale = Astro.currentLocale ?? 'en', home = false, darkHero = false, noindex = false } = Astro.props;
+const t = getContent(locale ?? Astro.currentLocale);
 const title = Astro.props.title ?? t.meta.title;
 const description = Astro.props.description ?? t.meta.description;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL('/og.png', Astro.site);
+// Share cover: one 1200 × 630 image per language (public/og.png, public/og-de.png).
+const ogImage = new URL(locale === 'de' ? '/og-de.png' : '/og.png', Astro.site);
+const alternates = locales.map((l) => ({ lang: l, href: new URL(switchPath(Astro.url.pathname, l), Astro.site).href }));
+const orgLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: 'Spind',
+  description: t.meta.description,
+  brand: { '@type': 'Brand', name: 'Spind' },
+  manufacturer: { '@type': 'Organization', name: 'Cimet', url: 'https://cimet.rs/' },
+  url: new URL(locale === 'de' ? '/de/' : '/', Astro.site).href,
+  image: ogImage.href,
+});
 const base = home ? '' : locale === 'en' ? '/' : `/${locale}/`;
 ---
 <!doctype html>
 <html lang={locale}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#F7F9FB" />
+    <meta name="theme-color" content="#EEF2F6" />
+    <meta name="color-scheme" content="light" />
+    <meta name="format-detection" content="telephone=no" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    {alternates.map((a) => <link rel="alternate" hreflang={a.lang} href={a.href} />)}
+    <link rel="alternate" hreflang="x-default" href={alternates[0].href} />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <link rel="preload" href={plex700} as="font" type="font/woff2" crossorigin />
@@ -62,10 +82,18 @@ const base = home ? '' : locale === 'en' ? '/' : `/${locale}/`;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.meta.ogAlt} />
     <meta property="og:locale" content={locale === 'de' ? 'de_DE' : 'en_GB'} />
+    <meta property="og:locale:alternate" content={locale === 'de' ? 'en_GB' : 'de_DE'} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={t.meta.ogAlt} />
+    {home && <script type="application/ld+json" set:html={orgLd} />}
 
     <!-- Mark that JS runs, so reveal animations only hide content when they can show it again. -->
     <script is:inline>document.documentElement.classList.add('js');</script>

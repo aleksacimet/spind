@@ -15,7 +15,7 @@ interface Props {
 import DrawerHead from './DrawerHead.astro';
 import { getContent } from '../content/site';
 const { id, title, intro, shade = false, center = false, class: className = '', label, link } = Astro.props;
-const drawerLabel = label ?? (id ? getContent('en').sectionLabels[id] : undefined);
+const drawerLabel = label ?? (id ? getContent(Astro.currentLocale).sectionLabels[id] : undefined);
 const headingId = `${id ?? title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-title`;
 ---
 <section

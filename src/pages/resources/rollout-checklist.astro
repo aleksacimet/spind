@@ -1,11 +1,12 @@
 ---
+import { lp } from '../../i18n';
 /**
  * Rollout checklist, open and printable (save as PDF from the print dialog).
  * TODO: to collect emails for it (as competitors do), put it behind a short form once PUBLIC_FORM_ENDPOINT exists.
  */
 import Base from '../../layouts/Base.astro';
 import { getContent } from '../../content/site';
-const t = getContent('en');
+const t = getContent(Astro.currentLocale);
 const c = t.checklist;
 let n = 0;
 ---
@@ -38,8 +39,8 @@ let n = 0;
     </div>
 
     <div class="cl-foot no-print">
-      <a class="btn btn--cta" href="/contact">{c.cta}<span class="arrow" aria-hidden="true">→</span></a>
-      <a class="back" href="/">{c.back}</a>
+      <a class="btn btn--cta" href={lp(Astro.currentLocale, '/contact')}>{c.cta}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="back" href={lp(Astro.currentLocale, '/')}>{c.back}</a>
     </div>
   </article>
 </Base>

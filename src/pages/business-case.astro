@@ -2,8 +2,8 @@
 import Base from '../layouts/Base.astro';
 import BusinessCase from '../components/sections/BusinessCase.astro';
 import { getContent } from '../content/site';
-const t = getContent('en');
+const t = getContent(Astro.currentLocale);
 ---
-<Base title="Business case | Spind" description={t.businessCase.intro} locale="en" darkHero>
-  <BusinessCase locale="en" page />
+<Base title={`${t.sectionLabels["business-case"]} | Spind`} description={t.businessCase.intro} locale={Astro.currentLocale} darkHero>
+  <BusinessCase locale={Astro.currentLocale} page />
 </Base>

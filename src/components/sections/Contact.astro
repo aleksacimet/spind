@@ -2,7 +2,7 @@
 import ContactForm from '../ContactForm.astro';
 import { getContent, contact } from '../../content/site';
 const { locale, page = false } = Astro.props as { locale?: string; page?: boolean };
-const t = getContent(locale);
+const t = getContent(locale ?? Astro.currentLocale);
 ---
 <!-- Figma: dark band, info 500px left (title + intro at the top, person card at the bottom), dark form 700px right. -->
 <section id="contact" class:list={['section contact glow-band on-accent', { 'glow-band--page': page }]} data-hero aria-labelledby="contact-title" data-section="contact">

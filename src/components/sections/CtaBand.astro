@@ -1,10 +1,12 @@
 ---
+import { lp } from '../../i18n';
 /** Closing CTA: label strip (NEXT STEP) and a dark band with title, text and a CTA button. One component for every page that closes with a call to action. */
 import DrawerHead from '../DrawerHead.astro';
 import { getContent } from '../../content/site';
 interface Props { locale?: string; id?: string; title: string; text?: string; cta: string; href?: string }
-const { locale, id = 'cta', title, text, cta, href = '/contact' } = Astro.props;
-const t = getContent(locale);
+const { locale, id = 'cta', title, text, cta } = Astro.props;
+const href = lp(locale ?? Astro.currentLocale, Astro.props.href ?? '/contact');
+const t = getContent(locale ?? Astro.currentLocale);
 ---
 <section class="section" aria-labelledby={`${id}-title`}>
   <div class="container">

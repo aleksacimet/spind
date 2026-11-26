@@ -1,7 +1,7 @@
 /** Business case calculator: IT desk time priced at the hourly cost, same formula as BusinessCase.astro renders without JS. */
 export function initCalc() {
   document.querySelectorAll<HTMLFormElement>('[data-calc]').forEach((form) => {
-    const fmt = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
+    const fmt = new Intl.NumberFormat(document.documentElement.lang === 'de' ? 'de-DE' : 'en-GB', { maximumFractionDigits: 0 });
     const get = (k: string) => Number((form.elements.namedItem(k) as HTMLInputElement).value);
     const motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const shown = new Map<string, number>();

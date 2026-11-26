@@ -9,18 +9,18 @@ interface Props { label: string }
 const { label } = Astro.props;
 
 const lockers = [
-  { name: 'BW Britz-Süd', addr: 'Schlosserweg 3, 12351 Berlin', branch: 'Hamburg HQ (22)', sn: '2022000107', avail: 2, phones: 19, fill: 91 },
-  { name: 'Holzmarkt depot', addr: 'Holzmarktstraße 15, 10179 Berlin', branch: 'Bremen (22)', sn: '2022000106', avail: 12, phones: 10, fill: 91 },
-  { name: 'Lichtenberg yard', addr: 'Siegfriedstraße 30, 10365 Berlin', branch: 'Kiel (118)', sn: '2022000174', avail: 54, phones: 64, fill: 91 },
+  { name: 'Depot North', addr: 'Building A, ground floor', branch: 'Head office (22)', sn: '2022000107', avail: 2, phones: 19, fill: 91 },
+  { name: 'Main office', addr: 'Lobby, reception', branch: 'Branch 02 (22)', sn: '2022000106', avail: 12, phones: 10, fill: 91 },
+  { name: 'Warehouse East', addr: 'Hall 3, gate 1', branch: 'Branch 07 (118)', sn: '2022000174', avail: 54, phones: 64, fill: 91 },
 ];
 const requests = [
-  { type: 'Fill', locker: 'BW Britz-Süd', addr: 'Schlosserweg 3, 12351 Berlin', date: '28.10.2026', pin: 'qr', status: 'Pending' },
-  { type: 'Swap', locker: 'BW Britz-Süd', addr: 'Schlosserweg 3, 12351 Berlin', date: '01.07.2026', pin: '07722', status: 'Expired' },
-  { type: 'Empty', locker: 'Lichtenberg yard', addr: 'Siegfriedstraße 30, 10365 Berlin', date: '01.07.2026', pin: '26053', status: 'Expired' },
-  { type: 'Swap', locker: 'BW Britz-Süd', addr: 'Schlosserweg 3, 12351 Berlin', date: '04.05.2026', pin: '60050', status: 'Completed' },
-  { type: 'Empty', locker: 'Holzmarkt depot', addr: 'Holzmarktstraße 15, 10179 Berlin', date: '16.12.2025', pin: '49443', status: 'Cancelled' },
-  { type: 'Swap', locker: 'Holzmarkt depot', addr: 'Holzmarktstraße 15, 10179 Berlin', date: '16.12.2025', pin: '96601', status: 'Cancelled' },
-  { type: 'Fill', locker: 'Lichtenberg yard', addr: 'Siegfriedstraße 30, 10365 Berlin', date: '02.12.2025', pin: '39690', status: 'Completed' },
+  { type: 'Fill', locker: 'Depot North', addr: 'Building A, ground floor', date: '28.10.2026', pin: 'qr', status: 'Pending' },
+  { type: 'Swap', locker: 'Depot North', addr: 'Building A, ground floor', date: '01.07.2026', pin: '07722', status: 'Expired' },
+  { type: 'Empty', locker: 'Warehouse East', addr: 'Hall 3, gate 1', date: '01.07.2026', pin: '26053', status: 'Expired' },
+  { type: 'Swap', locker: 'Depot North', addr: 'Building A, ground floor', date: '04.05.2026', pin: '60050', status: 'Completed' },
+  { type: 'Empty', locker: 'Main office', addr: 'Lobby, reception', date: '16.12.2025', pin: '49443', status: 'Cancelled' },
+  { type: 'Swap', locker: 'Main office', addr: 'Lobby, reception', date: '16.12.2025', pin: '96601', status: 'Cancelled' },
+  { type: 'Fill', locker: 'Warehouse East', addr: 'Hall 3, gate 1', date: '02.12.2025', pin: '39690', status: 'Completed' },
 ];
 const nav = [
   ['Dashboard', 'M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z'],
@@ -56,8 +56,8 @@ const nav = [
         <span class="page-title">Smart Locker</span>
         <span class="user">
           <svg viewBox="0 0 24 24" class="ic bell"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4" fill="#5757F5" stroke="none" /></svg>
-          <span class="avatar">RF</span>
-          <span class="uname">Robert Fox</span>
+          <span class="avatar">IT</span>
+          <span class="uname">IT Admin</span>
           <svg viewBox="0 0 24 24" class="ic chev"><path d="m6 9 6 6 6-6" /></svg>
         </span>
       </header>

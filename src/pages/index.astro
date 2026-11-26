@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import LogoStrip from '../components/sections/LogoStrip.astro';
 import Quotes from '../components/sections/Quotes.astro';
 import Problem from '../components/sections/Problem.astro';
 import HowItWorks from '../components/sections/HowItWorks.astro';
@@ -13,11 +12,10 @@ import GoLive from '../components/sections/GoLive.astro';
 import Video from '../components/sections/Video.astro';
 import { flags } from '../content/site';
 
-const locale = 'en';
+const locale = Astro.currentLocale ?? 'en';
 ---
 <Base home locale={locale}>
   <Hero locale={locale} />
-  <LogoStrip locale={locale} bare />
   <Problem locale={locale} />
   <HowItWorks locale={locale} />
   <Integrations locale={locale} />

@@ -9,14 +9,14 @@ export function getStaticPaths() {
   return getContent('en').solutions.items.map((s) => ({ params: { slug: s.slug } }));
 }
 
-const locale = 'en';
-const t = getContent(locale);
+const locale = Astro.currentLocale ?? 'en';
+const t = getContent(locale ?? Astro.currentLocale);
 const S = t.solutions;
 const s = S.items.find((i) => i.slug === Astro.params.slug)!;
 const others = S.items.filter((i) => i.slug !== s.slug);
 ---
 <Base title={`${s.title} | Spind`} description={s.intro} locale={locale} darkHero>
-  <TemplateHero id="sol" title={s.heroTitle} intro={s.intro} primary={S.primary} secondary={S.secondary} visualLabel={`${s.title} with a Spind locker`} />
+  <TemplateHero id="sol" title={s.heroTitle} intro={s.intro} primary={S.primary} secondary={S.secondary} visualLabel={`${s.title} ${S.visualLabel}`} />
 
   <Section id="flow" title={S.flowTitle}>
     <ol class="tiles flow" role="list">

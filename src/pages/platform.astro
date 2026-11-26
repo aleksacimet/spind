@@ -7,8 +7,8 @@ import Integrations from '../components/sections/Integrations.astro';
 import GoLive from '../components/sections/GoLive.astro';
 import Faq from '../components/sections/Faq.astro';
 import { getContent } from '../content/site';
-const locale = 'en';
-const t = getContent(locale);
+const locale = Astro.currentLocale ?? 'en';
+const t = getContent(locale ?? Astro.currentLocale);
 const P = t.platformPage;
 ---
 <Base title={`${P.label} | Spind`} description={P.meta} locale={locale} darkHero>

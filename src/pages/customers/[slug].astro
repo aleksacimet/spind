@@ -1,20 +1,18 @@
 ---
 import DrawerHead from '../../components/DrawerHead.astro';
 import Base from '../../layouts/Base.astro';
-import MockLogo from '../../components/MockLogo.astro';
+import IndustryMark from '../../components/IndustryMark.astro';
 import Quotes from '../../components/sections/Quotes.astro';
-import { getContent, showStories, flags } from '../../content/site';
+import { getContent, showStories } from '../../content/site';
 import { solutionIcons } from '../../content/icons';
+import { lp } from '../../i18n';
 
 export function getStaticPaths() {
   return showStories ? getContent('en').proof.stories.map((s) => ({ params: { slug: s.slug } })) : [];
 }
-const t = getContent('en');
+const t = getContent(Astro.currentLocale);
 const c = t.customers;
 const s = t.proof.stories.find((x) => x.slug === Astro.params.slug)!;
-const logoName = t.proof.logos.find((l) => l.key === s.logo)?.name ?? s.company;
-// Profile circle: photo when one is set in site.ts, otherwise initials (same as the quote cards).
-const initials = (name: string) => name.replace(/^Dr\.\s*/, '').split(/\s+/).map((w) => w[0]).join('').slice(0, 2);
 const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
 ---
 <Base title={`${s.company} | ${c.title} | Spind`} description={s.summary} darkHero>
@@ -28,7 +26,7 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
           <h1>{s.headline}</h1>
           <p class="intro">{s.summary}</p>
         </div>
-        <div class="st-brand"><MockLogo key={s.logo} name={logoName} /></div>
+        <div class="st-brand"><IndustryMark industryKey={s.industryKey} label={s.company} /></div>
       </header>
       <section class="container st-metrics" aria-label={c.sections.results}>
         <dl>
@@ -43,31 +41,29 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
       <aside class="facts" aria-label={s.company}>
         <dl>
           <div><dt class="label">{c.facts.industry}</dt><dd>{s.industry}</dd></div>
-          <div><dt class="label">{c.facts.sites}</dt><dd>{s.sites}<span class="cities">{s.cities.join(', ')}</span></dd></div>
-          <div><dt class="label">{c.facts.lockers}</dt><dd>{s.lockers}</dd></div>
+          <div><dt class="label">{c.facts.size}</dt><dd>{s.size}</dd></div>
+          <div><dt class="label">{c.facts.sites}</dt><dd>{s.sites}</dd></div>
           <div>
             <dt class="label">{c.facts.solutions}</dt>
             <dd><ul role="list" class="sol-links">
               {s.solutions.map((k) => (
-                <li><a href={`/use-cases/${k}`}><svg viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><path d={solutionIcons[k]} /></svg>{sol(k).title}</a></li>
+                <li><a href={lp(Astro.currentLocale, `/use-cases/${k}`)}><svg viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><path d={solutionIcons[k]} /></svg>{sol(k).title}</a></li>
               ))}
             </ul></dd>
           </div>
         </dl>
       </aside>
       <div class="text">
-        <section data-reveal><h2>{c.sections.challenge}</h2><p>{s.challenge}</p>{flags.exampleProof && c.filler.map((f) => <p>{f}</p>)}</section>
-        <section data-reveal><h2>{c.sections.solution}</h2><p>{s.solution}</p>{flags.exampleProof && c.filler.map((f) => <p>{f}</p>)}</section>
+        <section data-reveal><h2>{c.sections.challenge}</h2><p>{s.challenge}</p></section>
+        <section data-reveal><h2>{c.sections.solution}</h2><p>{s.solution}</p></section>
         <figure class="big-quote" data-reveal="drawer">
           <blockquote><p>“{s.quote.text}”</p></blockquote>
           <figcaption>
-            {s.quote.photo
-              ? <img class="q-photo" src={s.quote.photo} alt="" width="48" height="48" loading="lazy" />
-              : <span class="q-photo" aria-hidden="true">{initials(s.quote.name)}</span>}
-            <span class="q-who"><strong>{s.quote.name}</strong><span>{s.quote.role}</span></span>
+            <span class="q-photo" aria-hidden="true"><svg viewBox="0 0 22 22" width="22" height="22"><path d="M11 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5 19c0-3.5 2.6-6 6-6s6 2.5 6 6" /></svg></span>
+            <span class="q-who"><strong>{s.quote.role}</strong><span>{c.exampleBadge}</span></span>
           </figcaption>
         </figure>
-        <section data-reveal><h2>{c.sections.results}</h2><p>{s.results}</p>{flags.exampleProof && c.filler.map((f) => <p>{f}</p>)}</section>
+        <section data-reveal><h2>{c.sections.results}</h2><p>{s.results}</p></section>
       </div>
     </div></div></section>
   </article>
@@ -76,7 +72,10 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
 </Base>
 
 <style>
-  .page-hero :global(.mock-logo) { color: var(--text-neutral-ondark); }
+  .page-hero :global(.ind-mark) { color: var(--text-neutral-onsurface); }
+  .page-hero :global(.ind-box) { background: color-mix(in srgb, var(--neutral-white) 10%, transparent); }
+  .page-hero :global(.ind-box svg) { stroke: var(--surface-cta-default); }
+  .q-photo svg { fill: none; stroke: currentColor; stroke-width: var(--icon-stroke); stroke-linecap: round; }
   .st-hero { padding-top: var(--hero-top); padding-bottom: var(--hero-bottom); display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
   .st-brand { display: flex; align-items: center; gap: var(--spacing-gap-general-object-md); }
   .st-copy { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
@@ -84,7 +83,6 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
   @media (min-width: 960px) {
     .st-hero { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--spacing-gap-general-section-md); }
     .st-copy { max-width: 800px; }
-    .st-brand :global(.mock-logo) { height: 40px; }
   }
   .st-hero h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; max-width: 840px; } /* Heading/H2 */
   .st-hero .intro { max-width: 600px; color: var(--text-neutral-ondark); }

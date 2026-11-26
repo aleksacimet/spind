@@ -1,4 +1,5 @@
 ---
+import { lp } from '../i18n';
 /**
  * Use case card (Figma "Use case card"): nav icon (same Icon/* set as the mega menu) in a 48px washed square,
  * title + body, arrow bottom right. Used on the home page (Workflows) and in "More use cases" on use case pages.
@@ -10,7 +11,7 @@ const { slug, title, text, delay = 0 } = Astro.props;
 <li class="tile uc" data-reveal="drawer" data-spot style={`--d:${delay}ms`}>
   <span class="uc-icon" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={solutionIcons[slug]} pathLength="1" /></svg></span>
   <div class="title-body">
-    <h3><a class="uc-link" href={`/use-cases/${slug}`}>{title}</a></h3>
+    <h3><a class="uc-link" href={lp(Astro.currentLocale, `/use-cases/${slug}`)}>{title}</a></h3>
     <p>{text}</p>
   </div>
   <span class="arrow" aria-hidden="true">→</span>

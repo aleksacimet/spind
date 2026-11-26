@@ -2,7 +2,7 @@
 import Section from '../Section.astro';
 import LissaMock from '../LissaMock.astro';
 import { getContent } from '../../content/site';
-const t = getContent(Astro.props.locale);
+const t = getContent(Astro.currentLocale);
 const p = t.platform;
 ---
 <Section id="platform" title={p.title} intro={p.intro} class="section--strong-intro">

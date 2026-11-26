@@ -5,7 +5,7 @@ import { getContent } from '../../content/site';
 import { integrationIcons } from '../../content/icons';
 interface Props { locale?: string; title: string; items: { key: string; title: string; text: string }[] }
 const { locale, title, items } = Astro.props;
-const t = getContent(locale);
+const t = getContent(locale ?? Astro.currentLocale);
 ---
 <section class="section sec-band glow-band on-accent" aria-labelledby="sec-title" data-hero>
   <div class="space-glow" aria-hidden="true"></div>

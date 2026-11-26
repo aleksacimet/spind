@@ -1,9 +1,11 @@
 ---
+import { lp } from '../../i18n';
+import StatusPill from '../StatusPill.astro';
 import Section from '../Section.astro';
 import LissaMark from '../LissaMark.astro';
 import { getContent } from '../../content/site';
 import { integrationIcons } from '../../content/icons';
-const t = getContent(Astro.props.locale);
+const t = getContent(Astro.currentLocale);
 const n = t.integrations;
 ---
 <!-- Integrations (Cora shows this as its own slide, so do we): a dark hub with live connections to four systems. -->
@@ -28,19 +30,19 @@ const n = t.integrations;
         </div>
       </div>
       <p class="hub-note">{n.note}</p>
-      <a class="btn btn--cta hub-btn" href="/integrations">{n.more}<span class="arrow" aria-hidden="true">→</span></a>
+      <a class="btn btn--cta hub-btn" href={lp(Astro.currentLocale, '/integrations')}>{n.more}<span class="arrow" aria-hidden="true">→</span></a>
     </div>
     <ul class="intg-list" role="list">
       {n.items.map((it, i) => ('logo' in it && it.logo ? (
         <li class="intg-cell">
-          <a class="tile intg-item lissa-card" href={n.lissaHref} data-reveal="drawer" data-spot style={`--d:${120 + i * 90}ms`}>
+          <a class="tile intg-item lissa-card" href={lp(Astro.currentLocale, n.lissaHref)} data-reveal="drawer" data-spot style={`--d:${120 + i * 90}ms`}>
             <LissaMark />
             <div class="title-body">
               <h3>{it.title}</h3>
               <p>{it.text}</p>
-              <span class="read-full">{n.readFull}</span>
+              <StatusPill status={it.status} class="avail" />
             </div>
-            <span class="avail"><span class="avail-dot" aria-hidden="true"></span>{n.available}</span>
+            <span class="read-full">{n.readFull}</span>
           </a>
         </li>
       ) : (
@@ -49,8 +51,8 @@ const n = t.integrations;
           <div class="title-body">
             <h3>{it.title}</h3>
             <p>{it.text}</p>
+            <StatusPill status={it.status} class="avail" />
           </div>
-          <span class="avail"><span class="avail-dot" aria-hidden="true"></span>{n.available}</span>
         </li>
       )))}
     </ul>
@@ -74,23 +76,15 @@ const n = t.integrations;
   .orbit { fill: var(--surface-cta-default); transform-origin: 60px 60px; transform: rotate(calc(var(--k) * 90deg)); }
 
   .intg-list { display: grid; grid-template-columns: 1fr; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
-  .intg-item { grid-row: auto; min-height: 0; display: flex; gap: 16px; align-items: flex-start; padding: 20px var(--inset) 20px 20px; padding-right: 140px; transition: background-color var(--dur) var(--ease), clip-path 750ms var(--ease-out) var(--d, 0ms); }
+  .intg-item { grid-row: auto; min-height: 0; display: flex; gap: 16px; align-items: flex-start; padding: 20px var(--inset) 20px 20px; transition: background-color var(--dur) var(--ease), clip-path 750ms var(--ease-out) var(--d, 0ms); }
   .intg-item h3 { margin: 0; font-size: 18px; line-height: 24px; transition: color var(--dur-fast) var(--ease); }
   /* Title and subtitle read as one text block: subtitle 16px at 1.6 line height, 4px under the title. */
   .intg-item p, .hub .title-body p { font-size: 16px; line-height: 1.6; }
   .intg-item p { font-size: 15px; line-height: 1.5; }
   .intg-icon { flex: none; display: grid; place-items: center; width: 40px; height: 40px; background: var(--surface-action-washed); transition: background-color var(--dur) var(--ease); }
   .intg-icon svg { stroke: var(--icon-action-strong); transition: stroke var(--dur-fast) var(--ease); }
-  /* "Available" pill (overline type: Geist Mono caps): the connection is up; the dot blinks. */
-  .avail {
-    position: absolute; top: 16px; right: 16px;
-    display: inline-flex; align-items: center; gap: 6px;
-    height: 28px; padding: 0 12px; border-radius: 999px;
-    background: #DDF3E8; box-shadow: inset 0 0 0 var(--hair) #9FD8BC;
-    font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: #17663F;
-  }
-  .avail-dot { width: 8px; height: 8px; border-radius: 50%; background: #2F9E6B; }
+  /* Status pill (StatusPill component) sits in the top-right corner of the card. */
+  .intg-item :global(.avail) { justify-self: start; margin-top: 8px; }
   .intg-item:hover { background: var(--surface-action-washed); }
   .intg-item:hover h3 { color: var(--text-action-default); }
   .intg-item:hover .intg-icon { background: var(--surface-action-default); }
@@ -102,13 +96,9 @@ const n = t.integrations;
     .ring--2 { animation: ring 3s var(--ease) 400ms infinite; }
     .ring--3 { animation: ring 3s var(--ease) 800ms infinite; }
     .orbit { animation: orbit 12s linear infinite; }
-    .avail { animation: blink 2s var(--ease) infinite; animation-delay: var(--d, 0ms); }
-    .avail-dot { animation: blink-dot 1s steps(1) infinite; animation-delay: var(--d, 0ms); }
   }
   @keyframes ring { 0%, 100% { stroke: color-mix(in srgb, var(--neutral-white) 12%, transparent); } 50% { stroke: color-mix(in srgb, var(--neutral-white) 34%, transparent); } }
   @keyframes orbit { from { transform: rotate(calc(var(--k) * 90deg)); } to { transform: rotate(calc(var(--k) * 90deg + 360deg)); } }
-  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }
-  @keyframes blink-dot { 0% { opacity: 1; } 50% { opacity: 0.15; } }
 
   /* LISSA card is a link: whole card clickable, "Read full" (underlined) fades in on hover; its space is kept so nothing moves. */
   .intg-cell { display: grid; }
@@ -129,9 +119,9 @@ const n = t.integrations;
   @media (min-width: 640px) { .intg-list { grid-template-columns: 1fr 1fr; } }
   @media (min-width: 960px) {
     .intg { grid-template-columns: 5fr 7fr; gap: 0; }
-    .intg-item { flex-direction: column; padding-right: 20px; padding-top: 56px; } /* narrow desktop: icon above the text, pill above */
+    .intg-item { flex-direction: column; padding-right: 20px; } /* narrow desktop: icon above the text */
   }
   @media (min-width: 1280px) {
-    .intg-item { flex-direction: row; padding-top: 20px; padding-right: 140px; } /* compact cards: icon beside the text, height follows the content */
+    .intg-item { flex-direction: row; padding-right: 20px; } /* compact cards: icon beside the text, status pill under it */
   }
 </style>

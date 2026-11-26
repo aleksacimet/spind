@@ -1,6 +1,6 @@
 ---
 import { getContent, contact } from '../content/site';
-const t = getContent(Astro.props.locale);
+const t = getContent(Astro.currentLocale);
 const f = t.contact.form;
 // TODO: form endpoint not decided (Formspree or a Cloudflare Pages Function). Set PUBLIC_FORM_ENDPOINT in .env.
 const endpoint = (import.meta.env.PUBLIC_FORM_ENDPOINT ?? '').trim();
@@ -50,8 +50,8 @@ const action = endpoint || mailto;
       <div class="counter">
         <input id="cf-sites" name="sites" type="number" inputmode="numeric" min="1" step="1" placeholder={f.placeholders.sites} aria-describedby="cf-sites-err" data-counter />
         <span class="steps">
-          <button type="button" class="step" data-step="-1" aria-label="Fewer sites" aria-controls="cf-sites"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" style="stroke-width: var(--icon-stroke)" vector-effect="non-scaling-stroke" /></svg></button>
-          <button type="button" class="step" data-step="1" aria-label="More sites" aria-controls="cf-sites"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" style="stroke-width: var(--icon-stroke)" vector-effect="non-scaling-stroke" /></svg></button>
+          <button type="button" class="step" data-step="-1" aria-label={f.fewer} aria-controls="cf-sites"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" style="stroke-width: var(--icon-stroke)" vector-effect="non-scaling-stroke" /></svg></button>
+          <button type="button" class="step" data-step="1" aria-label={f.moreSites} aria-controls="cf-sites"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" style="stroke-width: var(--icon-stroke)" vector-effect="non-scaling-stroke" /></svg></button>
         </span>
       </div>
       <p class="err" id="cf-sites-err" aria-live="polite"></p>
@@ -113,7 +113,7 @@ const action = endpoint || mailto;
   /* Dark form (Figma Input field, Theme=Dark) on the dark Contact section. */
   .form { color: var(--text-neutral-ondark); }
   input, textarea { color: var(--text-neutral-ondark); }
-  input::placeholder, textarea::placeholder { color: var(--text-neutral-placeholder-ondark); opacity: 1; }
+  input::placeholder, textarea::placeholder { color: var(--text-neutral-placeholder-ondark); opacity: var(--placeholder-opacity); }
   input:hover, textarea:hover { border-color: var(--border-neutral-strong); }
   input:focus-visible, textarea:focus-visible { outline: var(--border-width-focus) solid var(--border-focus); outline-offset: -2px; border-color: var(--border-focus); background: var(--surface-neutral-input-ondark); }
   input[aria-invalid='true'] { border-color: var(--border-status-error); }

@@ -491,3 +491,7 @@ main > .section.glow-band--page:last-child { margin-bottom: 0; border-bottom: 0;
   .btn--cta::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%); transform: translateX(-110%); }
   .btn--cta:hover::after { transform: translateX(110%); transition: transform 350ms var(--ease-out); }
 }
+
+/* Placeholder text in every form field: a light hint, clearly weaker than a typed value (one value site-wide). */
+:root { --placeholder-opacity: 0.5; }
+::placeholder { opacity: var(--placeholder-opacity); }

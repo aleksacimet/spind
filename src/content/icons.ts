@@ -2,7 +2,8 @@
 export const solutionIcons: Record<string, string> = {
   'eou-rollout': 'M4 7h10v8H4zM10 15v3M7 18h6M14 9l4-2v10',
   'faulty-device-swap': 'M5 4h8v14H5zM16 8l3 3-3 3M19 11h-6',
-  'new-device-pickup': 'M6 4h10v14H6zM9 15h4',
+  'temporary-device': 'M5 4h8v14H5zM8 15h2M17 7a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM17 9v2l1.2 1.2',
+  'lost-device': 'M5 4h9v14H5zM8 15h3M16.5 8.5a2 2 0 1 1 2.5 1.9c-.6.2-1 .7-1 1.3v.8M18 15.5v.5',
   onboarding: 'M4 19c0-4 3-6 7-6s7 2 7 6M11 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
   offboarding: 'M5 5h9v13H5zM14 11h6M17 8l3 3-3 3',
   'multi-site': 'M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM3 11h16M11 3c3 3 3 13 0 16M11 3c-3 3-3 13 0 16',
@@ -12,9 +13,9 @@ export const productIcons: Record<string, string> = {
   modules: 'M3 4h7v14H3zM12 4h7v6h-7zM12 12h7v6h-7z',
   /* Industries (Case studies menu) */
   'ind-logistics': 'M2 6h11v9H2zM13 9h4l3 3v3h-7zM5 17a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0M14 17a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0',
-  'ind-energy': 'M12 2 5 12.5h6L10 20l7-10.5h-6z',
+  'ind-office': 'M4 19V4h9v15M13 9h5v10M7 7h3M7 10.5h3M7 14h3M15.5 12h0.5M15.5 15h0.5M2 19h18',
+  'ind-campus': 'M2 19h18M3 19V9l5-3 5 3v10M13 19V5h6v14M6 11h4M6 14.5h4M15.5 8h2M15.5 11.5h2M15.5 15h2',
   'ind-healthcare': 'M8.5 3h5v5.5H19v5h-5.5V19h-5v-5.5H3v-5h5.5z',
-  'ind-insurance': 'M11 2.5l7 3v5.5c0 4.2-3 7.3-7 8.5-4-1.2-7-4.3-7-8.5V5.5zM8 11l2 2 4-4',
   service: 'M14.5 3.5a4 4 0 0 0-5 5L4 14l4 4 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-2.5-.5-.5-2.5z',
   platform: 'M3 4h16v11H3zM8 19h6M11 15v4',
   workflows: 'M4 6h5v4H4zM13 12h5v4h-5zM9 8h2a2 2 0 0 1 2 2v4',
@@ -47,6 +48,12 @@ export const integrationIcons: Record<string, string> = {
   eu: 'M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM3 11h16M11 3c3 3 3 13 0 16M11 3c-3 3-3 13 0 16',
   partners: 'M2 6h11v9H2zM13 9h4l3 3v3h-7zM5 17a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0M14 17a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0',
   logistics: 'M2 6h11v9H2zM13 9h4l3 3v3h-7zM5 17a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0M14 17a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0',
+  iso: 'M11 2.5l7 3v5.5c0 4.2-3 7.3-7 8.5-4-1.2-7-4.3-7-8.5V5.5zM11 7.5a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM9.5 13l-1 3.5 2.5-1.2 2.5 1.2-1-3.5',
+  tenant: 'M3 3h7v7H3zM12 3h7v7h-7zM3 12h7v7H3zM12 12h7v7h-7z',
+  teams: 'M3 5h12v9H8l-4 3v-3H3zM17 9h2v8h-1v2.5L15.5 17H11v-1.5',
+  ai: 'M5 6h12v10H5zM8 3v3M14 3v3M8 16v3M14 16v3M2 9h3M2 13h3M17 9h3M17 13h3M9 9.5h4v3H9z',
+  access: 'M4 6h14v10H4zM7 10h4M7 13h2M15 9.5v3',
+  filling: 'M4 4h14v15H4zM4 9h14M4 14h14M9 6.5h4M9 11.5h4M9 16.5h4',
   service: 'M14.5 3.5a4 4 0 0 0-4.9 5.4L3.5 15l3.5 3.5 6.1-6.1a4 4 0 0 0 5.4-4.9l-2.6 2.6-2.4-.6-.6-2.4z',
 };
 const all: Record<string, string> = { ...solutionIcons, ...productIcons };

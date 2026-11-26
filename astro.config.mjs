@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 // Hosted on Cloudflare Pages (spind-8ty.pages.dev). SITE_URL is set in the Pages project's environment
 // variables; change it there when the final domain is known. Used for canonical URLs, Open Graph and the sitemap.
-const SITE = process.env.SITE_URL || 'https://example.com';
+const SITE = process.env.SITE_URL || 'https://spind-8ty.pages.dev';
 
 export default defineConfig({
   site: SITE,
@@ -15,9 +15,14 @@ export default defineConfig({
   build: { format: 'directory', inlineStylesheets: 'always' },
   i18n: {
     defaultLocale: 'en',
-    // Add 'de' here (and src/pages/de/...) when the German translation is ready.
-    locales: ['en'],
+    // English at /, German at /de/ (src/pages/de re-uses the English page files; copy lives in site.ts and site.de.ts).
+    locales: ['en', 'de'],
     routing: { prefixDefaultLocale: false },
   },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes('/og'),
+      i18n: { defaultLocale: 'en', locales: { en: 'en-GB', de: 'de-DE' } },
+    }),
+  ],
 });

@@ -1,3 +1,9 @@
 # Use case pages moved from /solutions to /use-cases (Nov 2026).
 /solutions /#workflows 301
 /solutions/* /use-cases/:splat 301
+# Nov 2026: "New device pickup" use case removed; customer stories anonymized with new slugs.
+/use-cases/new-device-pickup /use-cases/faulty-device-swap 301
+/customers/muster-logistik /customers/logistics-network 301
+/customers/klinikum-musterstadt /customers/hospital-network 301
+/customers/beispiel-energie /customers 301
+/customers/beispiel-versicherung /customers 301

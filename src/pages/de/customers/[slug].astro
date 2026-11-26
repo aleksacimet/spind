@@ -1,0 +1,9 @@
+---
+/** German version: the same page file as English. Language comes from the /de/ URL (Astro.currentLocale). */
+import Page from '../../customers/[slug].astro';
+import { getContent, showStories } from '../../../content/site';
+export function getStaticPaths() {
+  return showStories ? getContent('de').proof.stories.map((s) => ({ params: { slug: s.slug } })) : [];
+}
+---
+<Page />

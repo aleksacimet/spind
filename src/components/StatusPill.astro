@@ -1,0 +1,33 @@
+---
+/**
+ * Integration status pill (overline type: Geist Mono caps). One component for every integration card.
+ * available: green, the dot blinks (the connection is live). request: neutral grey ("On request", to be confirmed).
+ * pilot: light blue (proposal, pilot recommended). Labels come from site.ts → status.
+ */
+import { getContent } from '../content/site';
+import type { IntegrationStatus } from '../content/site';
+interface Props { status: IntegrationStatus; class?: string }
+const { status, class: className = '' } = Astro.props;
+const t = getContent(Astro.currentLocale);
+---
+<span class:list={['pill', `pill--${status}`, className]}><span class="pill-dot" aria-hidden="true"></span>{t.status[status]}</span>
+
+<style>
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; flex: none;
+    height: 28px; padding: 0 12px; border-radius: 999px;
+    font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+  }
+  .pill-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .pill--available { background: #DDF3E8; box-shadow: inset 0 0 0 var(--hair) #9FD8BC; color: #17663F; }
+  .pill--available .pill-dot { background: #2F9E6B; }
+  .pill--request { background: var(--surface-neutral-page, #F1F4F7); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); color: var(--text-neutral-body); }
+  .pill--request .pill-dot { background: var(--icon-neutral-subtle, #8A94A3); }
+  .pill--pilot { background: var(--surface-action-washed); box-shadow: inset 0 0 0 var(--hair) var(--primary-300, #A9C2FF); color: var(--text-action-default); }
+  @media (prefers-reduced-motion: no-preference) {
+    .pill--available { animation: pill-blink 2s var(--ease) infinite; animation-delay: var(--d, 0ms); }
+    .pill--available .pill-dot { animation: pill-dot 1s steps(1) infinite; animation-delay: var(--d, 0ms); }
+  }
+  @keyframes pill-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }
+  @keyframes pill-dot { 0% { opacity: 1; } 50% { opacity: 0.15; } }
+</style>

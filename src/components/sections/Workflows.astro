@@ -3,7 +3,7 @@ import Section from '../Section.astro';
 import { getContent } from '../../content/site';
 import UseCaseCard from '../UseCaseCard.astro';
 import Logo from '../Logo.astro';
-const t = getContent(Astro.props.locale);
+const t = getContent(Astro.currentLocale);
 const w = t.workflows;
 ---
 <Section id="workflows" title={w.title} intro={w.intro}>

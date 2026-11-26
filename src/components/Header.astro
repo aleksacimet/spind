@@ -10,26 +10,24 @@ interface Props {
   locale?: string;
 }
 const { overlay = false, base = '', locale = 'en' } = Astro.props;
-const t = getContent(locale);
+const t = getContent(locale ?? Astro.currentLocale);
 const home = locale === 'en' ? '/' : `/${locale}/`;
 import { href as resolve } from '../content/links';
 import { iconFor } from '../content/icons';
+import { switchPath, asLocale } from '../i18n';
 const prefix = locale === 'en' ? '' : `/${locale}`;
 const to = (h: string) => resolve(h, base, prefix);
 const groups = t.nav.groups;
 // Menus keep 2 link columns + the feature card. A menu with more sections (Case studies, one per industry) stacks them in pairs.
 const stacks = (cols: typeof groups[number]['columns']) => cols.length <= 2 ? cols.map((c) => [c]) : [cols.filter((_, i) => i % 2 === 0), cols.filter((_, i) => i % 2 === 1)];
 const current = t.nav.languages.find((l) => l.code === locale) ?? t.nav.languages[0];
-// Flags drawn inline (no image requests): Germany and the United Kingdom.
-const flags: Record<string, string> = {
-  de: '<rect width="20" height="4.67" fill="#000"/><rect y="4.67" width="20" height="4.67" fill="#DD0000"/><rect y="9.33" width="20" height="4.67" fill="#FFCE00"/>',
-  en: '<rect width="20" height="14" fill="#012169"/><path d="M0 0l20 14M20 0L0 14" stroke="#fff" stroke-width="2.8"/><path d="M0 0l20 14M20 0L0 14" stroke="#C8102E" stroke-width="1.2"/><path d="M10 0v14M0 7h20" stroke="#fff" stroke-width="4.2"/><path d="M10 0v14M0 7h20" stroke="#C8102E" stroke-width="2.4"/>',
-};
+// Each language links to the same page in that language (not to its home page).
+const langHref = (code: string) => switchPath(Astro.url.pathname, asLocale(code));
 ---
 <header class:list={['site-header', { 'is-overlay': overlay }]} data-header>
   <div class="nav-overlay" aria-hidden="true"></div>
   <div class="container header-inner">
-    <a class="brand" href={home} aria-label="Spind, home">
+    <a class="brand" href={home} aria-label={t.meta.homeLabel}>
       <Logo height={40} title="" />
     </a>
 
@@ -80,17 +78,17 @@ const flags: Record<string, string> = {
           <li class="nav-item"><a class="nav-link" href={to(l.href)} data-nav={l.id}>{l.label}</a></li>
         ))}
         <li class="nav-item lang-item">
+          <!-- Language selector: mono code in a hairline box (same type as the label strips), menu like the mega menu. -->
           <details class="lang" data-lang>
-            <summary class="nav-link lang-trigger" aria-label={`${t.nav.languageLabel}: ${current.label}`}>
-              <svg class="flag" viewBox="0 0 20 14" width="20" height="14" aria-hidden="true" set:html={flags[current.code]} />
-              <span>{current.code.toUpperCase()}</span><span class="chev" aria-hidden="true"></span>
+            <summary class="lang-trigger" aria-label={`${t.nav.languageLabel}: ${current.label}`}>
+              <span class="lang-code">{current.code}</span><span class="chev" aria-hidden="true"></span>
             </summary>
             <ul role="list" class="lang-menu">
               {t.nav.languages.map((l) => (
                 <li>
-                  {l.available
-                    ? <a href={l.href} hreflang={l.code} lang={l.code} aria-current={l.code === current.code ? 'true' : undefined}><svg class="flag" viewBox="0 0 20 14" width="20" height="14" aria-hidden="true" set:html={flags[l.code]} />{l.label}</a>
-                    : <span class="lang-soon" lang={l.code}><svg class="flag" viewBox="0 0 20 14" width="20" height="14" aria-hidden="true" set:html={flags[l.code]} />{l.label}<em>{t.nav.soon}</em></span>}
+                  <a href={langHref(l.code)} hreflang={l.code} lang={l.code} aria-current={l.code === current.code ? 'true' : undefined}>
+                    <span class="lang-code">{l.code}</span>{l.label}<span class="sq" aria-hidden="true"></span>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -132,9 +130,12 @@ const flags: Record<string, string> = {
           <li style={`--k:${groups.length + i}`}><a class="m-top" href={to(l.href)} data-nav={l.id} data-menu-link>{l.label}</a></li>
         ))}
         <li class="m-lang" style={`--k:${groups.length + t.nav.links.length}`}>
-          {t.nav.languages.map((l) => l.available
-            ? <a href={l.href} hreflang={l.code} aria-current={l.code === current.code ? 'true' : undefined}><svg class="flag" viewBox="0 0 20 14" width="20" height="14" aria-hidden="true" set:html={flags[l.code]} />{l.label}</a>
-            : <span class="lang-soon"><svg class="flag" viewBox="0 0 20 14" width="20" height="14" aria-hidden="true" set:html={flags[l.code]} />{l.label}<em>{t.nav.soon}</em></span>)}
+          <p class="m-lang-title">{t.nav.languageLabel}</p>
+          <div class="m-lang-row">
+            {t.nav.languages.map((l) => (
+              <a href={langHref(l.code)} hreflang={l.code} lang={l.code} aria-current={l.code === current.code ? 'true' : undefined}><span class="lang-code">{l.code}</span>{l.label}</a>
+            ))}
+          </div>
         </li>
       </ul>
       <a class="btn btn--cta" href={to("/contact")} data-menu-link>{t.nav.cta}<span class="arrow" aria-hidden="true">→</span></a>
@@ -263,7 +264,8 @@ const flags: Record<string, string> = {
     border-top: var(--hair) solid var(--line);
     border-bottom: var(--hair) solid var(--line);
   }
-  @media (min-width: 960px) { .dd-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  /* Every menu has the same height (room for a 4-item column), so switching menus or hovering items never changes it. */
+  @media (min-width: 960px) { .dd-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); min-height: calc(48px + 16px + 4 * 72px + 3 * 4px); } }
   .dd-list + .dd-title { border-top: var(--hair) solid var(--line); } /* second section in a stacked column */
   .dd-col { display: flex; flex-direction: column; }
   .dd-col + .dd-col { border-left: var(--hair) solid var(--line); }
@@ -274,9 +276,12 @@ const flags: Record<string, string> = {
   }
   .dd-title .sq { width: 6px; height: 6px; background: var(--surface-action-default); flex: none; }
   .dd-list { display: grid; padding: 8px; gap: 4px; } /* 8 + 16 = icons on the 24px line of the label square */
+  /* Every menu item has the same fixed height (12 + 48 + 12): the icon tile and the text block are centred on each
+     other, at rest (title only) and on hover (title + subtitle), so the menu never grows when an item opens. */
   .dd-link {
-    display: flex; align-items: flex-start; gap: var(--spacing-gap-general-object-lg);
-    padding: var(--spacing-padding-container-md) calc(var(--inset) - 8px); /* 8px list + this = icons on the inset line */
+    display: flex; align-items: center; gap: var(--spacing-gap-general-object-lg);
+    height: 72px;
+    padding: 12px calc(var(--inset) - 8px); /* 8px list + this = icons on the inset line */
     text-decoration: none;
     transition: background-color var(--dur-fast) var(--ease);
   }
@@ -291,13 +296,13 @@ const flags: Record<string, string> = {
     .dd-link:hover .dd-icon path { animation: icon-draw 300ms var(--ease-out); }
   }
   .dd-link:hover .dd-label { color: var(--text-action-default); }
-  .dd-label { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 24px; color: var(--text-neutral-headings); transition: color var(--dur-fast) var(--ease); }
-  /* Menu items show only the name; the subtitle opens under it on hover or focus. Title sits centred on the 48px icon at rest. */
-  .dd-link .title-body { display: grid; grid-template-rows: auto 0fr; gap: 0; padding-top: 12px; transition: grid-template-rows var(--dur-fast) var(--ease); }
-  .dd-text { min-height: 0; overflow: hidden; opacity: 0; font-size: 16px; line-height: 24px; color: var(--text-neutral-body); transition: opacity var(--dur-fast) var(--ease); }
-  .dd-link:is(:hover, :focus-visible) .title-body { grid-template-rows: auto 1fr; }
+  .dd-label { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 22px; color: var(--text-neutral-headings); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color var(--dur-fast) var(--ease); }
+  /* Menu items show only the name; the subtitle opens right under it (2px) on hover or focus. */
+  .dd-link .title-body { min-width: 0; display: grid; grid-template-rows: auto 0fr; row-gap: 0; transition: grid-template-rows var(--dur-fast) var(--ease), row-gap var(--dur-fast) var(--ease); }
+  .dd-text { min-height: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; opacity: 0; font-size: 15px; line-height: 20px; color: var(--text-neutral-body); transition: opacity var(--dur-fast) var(--ease); }
+  .dd-link:is(:hover, :focus-visible) .title-body { grid-template-rows: auto 1fr; row-gap: 2px; }
   .dd-link:is(:hover, :focus-visible) .dd-text { opacity: 1; }
-  @media (hover: none) { .dd-link .title-body { grid-template-rows: auto 1fr; } .dd-text { opacity: 1; } }
+  @media (hover: none) { .dd-link .title-body { grid-template-rows: auto 1fr; row-gap: 2px; } .dd-text { opacity: 1; } }
   .dd-feature {
     flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start;
     gap: var(--spacing-gap-text-lg);
@@ -322,40 +327,45 @@ const flags: Record<string, string> = {
   .site-header:not(.is-overlay) .nav-link.is-active,
   .site-header.is-scrolled .nav-link.is-active { color: var(--text-action-default); }
 
-  /* Language selector (Figma component "Language selector"): flag, code, chevron. */
+  /* Language selector: the code in Geist Mono caps (label strip type) in a 44px hairline box, same height as Book a call.
+     Hover and open: fill only. The menu is a white panel with hairlines, like the mega menu. */
   .lang { position: relative; height: 100%; display: flex; align-items: center; }
-  /* Language selector: a light filled box (flag, code, chevron); the dropdown opens under it. */
-  .lang-trigger { gap: var(--spacing-gap-text-md); list-style: none; cursor: pointer; height: 44px; padding: 0 12px; background: var(--surface-neutral-default); /* same height as the Small button (Book a call) */ transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
-  .lang-trigger::after { display: none; }
-  .header-cta { height: 44px; padding-block: 0; } /* exactly the language box height */
-  .is-overlay:not(.is-scrolled) .lang-trigger { background: color-mix(in srgb, var(--neutral-white) 10%, transparent); }
-  .lang-trigger:hover, .lang[open] .lang-trigger { background: var(--surface-action-washed); }
-  .is-overlay:not(.is-scrolled) .lang-trigger:hover, .is-overlay:not(.is-scrolled) .lang[open] .lang-trigger { background: color-mix(in srgb, var(--neutral-white) 18%, transparent); }
+  .lang-trigger {
+    display: flex; align-items: center; gap: var(--spacing-gap-text-md);
+    height: 44px; padding: 0 14px; list-style: none; cursor: pointer;
+    color: inherit; background: transparent; box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default);
+    transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  }
   .lang-trigger::-webkit-details-marker { display: none; }
-  .lang-trigger:hover { color: var(--text-action-default); }
-  .is-overlay:not(.is-scrolled) .lang-trigger:hover { color: var(--text-action-ondark); }
+  .lang-code { font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .lang-trigger:hover, .lang[open] .lang-trigger { background: var(--surface-action-washed); color: var(--text-action-default); }
+  .is-overlay:not(.is-scrolled):not(.dd-open) .lang-trigger { box-shadow: inset 0 0 0 var(--hair) color-mix(in srgb, var(--neutral-white) 28%, transparent); }
+  .is-overlay:not(.is-scrolled):not(.dd-open) .lang-trigger:hover, .is-overlay:not(.is-scrolled):not(.dd-open) .lang[open] .lang-trigger { background: color-mix(in srgb, var(--neutral-white) 12%, transparent); color: var(--text-neutral-onsurface); }
   .lang[open] .chev { transform: translateY(1px) rotate(-135deg); }
-  .flag { display: block; width: 20px; height: 14px; flex: none; box-shadow: 0 0 0 var(--hair) var(--border-neutral-ondark); }
   .lang-menu {
     position: absolute; right: 0; top: calc(50% + 22px);
-    min-width: 200px;
-    padding: var(--spacing-padding-container-2xs) 0;
-    background: var(--surface-neutral-default);
-    color: var(--text-neutral-headings);
-    border: var(--hair) solid var(--border-neutral-default);
-    box-shadow: 0 24px 48px -24px rgba(22, 25, 30, 0.18);
+    min-width: 200px; padding: 8px;
+    display: grid; gap: 4px;
+    background: var(--surface-neutral-default); color: var(--text-neutral-headings);
+    box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default), 0 24px 48px -24px rgba(22, 25, 30, 0.18);
   }
-  .lang-menu a, .lang-soon {
+  .lang-menu a {
     display: flex; align-items: center; gap: var(--spacing-gap-text-lg);
-    padding: var(--spacing-padding-container-xs) var(--spacing-padding-container-sm);
-    font-size: 16px; line-height: 24px; text-decoration: none;
+    height: 44px; padding: 0 12px;
+    font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px; text-decoration: none;
+    transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
   }
-  .lang-menu a:hover { background: var(--surface-neutral-page); color: var(--text-action-default); }
-  .lang-menu a[aria-current='true'] { font-weight: 500; color: var(--text-action-default); }
-  .lang-soon { color: var(--text-disabled); }
-  .m-lang { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-general-object-lg); padding: var(--spacing-padding-container-sm) 0; }
-  .mobile-list .m-lang a, .m-lang .lang-soon { display: inline-flex; align-items: center; gap: var(--spacing-gap-text-md); padding: 0; font-family: var(--font-body); font-weight: 500; font-size: 16px; line-height: 24px; letter-spacing: 0; }
-  .lang-soon em { margin-left: auto; font-style: normal; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .lang-menu .lang-code { width: 24px; color: var(--text-neutral-subtle); }
+  .lang-menu .sq { width: 6px; height: 6px; margin-left: auto; background: var(--surface-action-default); opacity: 0; }
+  .lang-menu a:hover { background: var(--surface-action-washed); color: var(--text-action-default); }
+  .lang-menu a[aria-current='true'] { color: var(--text-action-default); }
+  .lang-menu a[aria-current='true'] .sq { opacity: 1; }
+  .m-lang { padding: var(--spacing-padding-container-sm) 0; }
+  .m-lang-title { font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-neutral-subtle); margin-bottom: var(--spacing-gap-text-lg); }
+  .m-lang-row { display: grid; grid-template-columns: 1fr 1fr; box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); }
+  .mobile-list .m-lang-row a { display: flex; align-items: center; gap: var(--spacing-gap-text-md); height: 48px; padding: 0 16px; font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px; letter-spacing: 0; }
+  .mobile-list .m-lang-row a + a { box-shadow: inset var(--hair) 0 0 var(--border-neutral-default); }
+  .mobile-list .m-lang-row a[aria-current='true'] { background: var(--surface-action-washed); color: var(--text-action-default); }
   .is-overlay:not(.is-scrolled) :focus-visible { outline-color: var(--border-neutral-white); }
 
   .menu-toggle {
@@ -387,6 +397,7 @@ const flags: Record<string, string> = {
   }
   .mobile-menu[hidden] { display: none; }
   .mobile-list { margin-bottom: 32px; }
+  .mobile-menu .btn--cta { width: 100%; justify-content: center; } /* phones: the call to action spans the menu width */
   .mobile-list a {
     display: block;
     padding: 14px 0;
