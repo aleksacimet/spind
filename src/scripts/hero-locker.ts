@@ -439,6 +439,8 @@ export function initHeroLocker(stage: HTMLElement) {
     return { N, bits };
   })();
 
+  /** Highlight colour (CTA yellow) for the How it works screens. */
+  const HL = '#FFD369';
   function screenBase(glowStrength: number) {
     const ctx = scr;
     const { width: w, height: h } = scrCanvas;
@@ -453,16 +455,35 @@ export function initHeroLocker(stage: HTMLElement) {
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, w, h);
     ctx.drawImage(logoWhite, 56, 44, 108, 108 * (3687 / 8342));
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.fillRect(56, h - 92, w - 112, 2);
+    if (story) {
+      // How it works: no text on the screen, only shapes (the step titles sit in the tabs above).
+      roundRect(ctx, w - 56 - 84, 50, 84, 20, 10);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+      ctx.fill();
+      roundRect(ctx, 56, h - 62, 160, 16, 8);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.18)';
+      ctx.fill();
+      return;
+    }
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
     ctx.font = `700 30px ${fontDisplay}`;
     ctx.textAlign = 'right';
     ctx.fillText('08:42', w - 56, 78);
     ctx.textAlign = 'left';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-    ctx.fillRect(56, h - 92, w - 112, 2);
     ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
     ctx.font = `400 26px ${fontBody}`;
     ctx.fillText(copy.footer || '', 56, h - 46);
+  }
+  /** Text-free title: a bold bar and a thinner subtitle bar (How it works screens). */
+  function titleBars(w1 = 380, w2 = 260) {
+    roundRect(scr, 56, 214, w1, 44, 12);
+    scr.fillStyle = 'rgba(255, 255, 255, 0.92)';
+    scr.fill();
+    roundRect(scr, 56, 284, w2, 18, 9);
+    scr.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    scr.fill();
   }
   function title(text: string, sub?: string) {
     scr.fillStyle = '#ffffff';
@@ -474,7 +495,7 @@ export function initHeroLocker(stage: HTMLElement) {
       scr.fillText(sub, 56, 322);
     }
   }
-  function miniMap(active: number | null) {
+  function miniMap(active: number | null, on = '#0079FF') {
     const cols = 3;
     const tw = 92;
     const th = 50;
@@ -483,17 +504,17 @@ export function initHeroLocker(stage: HTMLElement) {
     for (let r = 0; r < 4; r++) {
       for (let c = 0; c < cols; c++) {
         roundRect(scr, ox + c * (tw + gx), 196 + r * (th + gx), tw, th, 8);
-        scr.fillStyle = active !== null && r * cols + c === (active - 1) % 12 ? '#0079FF' : 'rgba(255, 255, 255, 0.09)';
+        scr.fillStyle = active !== null && r * cols + c === (active - 1) % 12 ? on : 'rgba(255, 255, 255, 0.09)';
         scr.fill();
       }
     }
   }
-  function progress(frac: number) {
+  function progress(frac: number, on = '#2E8EFF') {
     roundRect(scr, 56, 384, 420, 12, 6);
     scr.fillStyle = 'rgba(255, 255, 255, 0.14)';
     scr.fill();
     roundRect(scr, 56, 384, 420 * frac, 12, 6);
-    scr.fillStyle = '#2E8EFF';
+    scr.fillStyle = on;
     scr.fill();
   }
 
@@ -521,25 +542,28 @@ export function initHeroLocker(stage: HTMLElement) {
     if (!story) return;
     screenBase(step === 2 ? 0.45 : 0.22);
     if (step === 0) {
-      title(story.request);
-      roundRect(scr, 56, 300, 360, 14, 7);
-      scr.fillStyle = 'rgba(255, 255, 255, 0.5)';
-      scr.fill();
+      titleBars(360, 240);
       roundRect(scr, 56, 330, 250, 14, 7);
-      scr.fillStyle = 'rgba(255, 255, 255, 0.25)';
+      scr.fillStyle = 'rgba(255, 255, 255, 0.2)';
       scr.fill();
       roundRect(scr, 56, 390, 200, 64, 32);
-      scr.fillStyle = '#0079FF';
+      scr.fillStyle = HL;
       scr.fill();
-      scr.fillStyle = '#ffffff';
-      scr.font = `700 32px ${fontDisplay}`;
-      scr.fillText('→', 140, 433);
+      // Arrow drawn as lines (no text).
+      scr.strokeStyle = '#16191E';
+      scr.lineWidth = 6;
+      scr.lineCap = 'round';
+      scr.lineJoin = 'round';
+      scr.beginPath();
+      scr.moveTo(134, 422); scr.lineTo(176, 422);
+      scr.moveTo(162, 408); scr.lineTo(176, 422); scr.lineTo(162, 436);
+      scr.stroke();
       miniMap(null);
     } else if (step === 1) {
-      title(story.code);
+      titleBars(300, 200);
       const s = 9;
       const ox = 56;
-      const oy = 300;
+      const oy = 330;
       roundRect(scr, ox - 12, oy - 12, qr.N * s + 24, qr.N * s + 24, 10);
       scr.fillStyle = '#ffffff';
       scr.fill();
@@ -561,17 +585,14 @@ export function initHeroLocker(stage: HTMLElement) {
       finder(14, 0);
       finder(0, 14);
       for (let k = 0; k < 5; k++) {
-        roundRect(scr, 300 + k * 62, 380, 44, 44, 10);
-        scr.fillStyle = k < 3 ? '#2E8EFF' : 'rgba(255, 255, 255, 0.14)';
+        roundRect(scr, 300 + k * 62, 430, 44, 44, 10);
+        scr.fillStyle = k < 3 ? HL : 'rgba(255, 255, 255, 0.14)';
         scr.fill();
       }
     } else if (step === 2) {
-      title(story.open);
-      progress(0.7);
-      scr.fillStyle = '#ffffff';
-      scr.font = `700 120px ${fontDisplay}`;
-      scr.fillText(pad2(storyDrawer), 56, 540);
-      miniMap(storyDrawer);
+      titleBars(400, 280);
+      progress(0.7, HL);
+      miniMap(storyDrawer, HL);
     } else {
       scr.fillStyle = '#2F9E6B';
       scr.beginPath();
@@ -586,9 +607,12 @@ export function initHeroLocker(stage: HTMLElement) {
       scr.lineTo(112, 324);
       scr.lineTo(152, 280);
       scr.stroke();
-      scr.fillStyle = '#ffffff';
-      scr.font = `700 64px ${fontDisplay}`;
-      scr.fillText(story.logged, 220, 322);
+      roundRect(scr, 220, 262, 300, 44, 12);
+      scr.fillStyle = 'rgba(255, 255, 255, 0.92)';
+      scr.fill();
+      roundRect(scr, 220, 322, 200, 18, 9);
+      scr.fillStyle = 'rgba(255, 255, 255, 0.4)';
+      scr.fill();
       miniMap(null);
     }
     scrTex.needsUpdate = true;

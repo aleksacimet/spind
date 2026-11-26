@@ -544,3 +544,4 @@ Everything below was built. Website-only details:
 - 2026-11-26 · Highlight colour is yellow site-wide: selected text and the text cursor use the CTA yellow on light and dark surfaces. Screen accents in How it works are yellow too.
 - 2026-11-26 · Case study cards: role and context lines sit tight (no gap, 24px lines). "Logistics network" → "Logistics company" (DE: Logistikunternehmen).
 - 2026-11-26 · Language selector: no box. Mono code + chevron like the menu links; hover and open change the text colour only.
+- 2026-11-26 · How it works: back to the whole 3D Spind (Otto + Lotte), zoomed in on its upper part: the touch screen near the centre, the top drawers beside it, the rest of the locker runs out of the frame and fades. The screen has no text in these steps (shapes only: title bars, arrow button, QR, PIN dots, drawer map, check), accents in yellow. Caption under the visual removed.

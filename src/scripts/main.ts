@@ -134,7 +134,7 @@ document.addEventListener('click', (e) => { if (openDD() && !(e.target as Elemen
    screen, pauses while a tab has keyboard focus, and doesn't run at all with reduced motion (then tabs are click only). */
 const story = document.querySelector<HTMLElement>('[data-story]');
 // The 3D locker and its flat fallback drawing both follow the step (data-state 0-3).
-const storyLockers = story ? [...story.querySelectorAll<HTMLElement | SVGSVGElement>('[data-locker], [data-locker-3d], [data-screen-mock]')] : [];
+const storyLockers = story ? [...story.querySelectorAll<HTMLElement | SVGSVGElement>('[data-locker], [data-locker-3d]')] : [];
 const storyTabs = story ? [...story.querySelectorAll<HTMLButtonElement>('[role="tab"]')] : [];
 const storyCopy = story ? [...story.querySelectorAll<HTMLElement>('[data-copy]')] : [];
 function setStory(i: number) {
