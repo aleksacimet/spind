@@ -543,3 +543,4 @@ Everything below was built. Website-only details:
 - 2026-11-26 · How it works shows only the part of the locker that changes: Otto's touch screen (white clay bezel, badge reader left, scanner right) built in HTML, large and crisp, with a caption (role + text) under it. Steps: New request → Badge, QR or PIN (badge, QR code, PIN dots) → Drawer 08 open (drawer map, progress) → Logged (green check). 3 s per step; the tab progress bar is yellow.
 - 2026-11-26 · Highlight colour is yellow site-wide: selected text and the text cursor use the CTA yellow on light and dark surfaces. Screen accents in How it works are yellow too.
 - 2026-11-26 · Case study cards: role and context lines sit tight (no gap, 24px lines). "Logistics network" → "Logistics company" (DE: Logistikunternehmen).
+- 2026-11-26 · Language selector: no box. Mono code + chevron like the menu links; hover and open change the text colour only.

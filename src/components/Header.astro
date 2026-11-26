@@ -78,7 +78,7 @@ const langHref = (code: string) => switchPath(Astro.url.pathname, asLocale(code)
           <li class="nav-item"><a class="nav-link" href={to(l.href)} data-nav={l.id}>{l.label}</a></li>
         ))}
         <li class="nav-item lang-item">
-          <!-- Language selector: mono code in a hairline box (same type as the label strips), menu like the mega menu. -->
+          <!-- Language selector: mono code and chevron, no box (like the menu links); menu like the mega menu. -->
           <details class="lang" data-lang>
             <summary class="lang-trigger" aria-label={`${t.nav.languageLabel}: ${current.label}`}>
               <span class="lang-code">{current.code}</span><span class="chev" aria-hidden="true"></span>
@@ -330,17 +330,17 @@ const langHref = (code: string) => switchPath(Astro.url.pathname, asLocale(code)
   /* Language selector: the code in Geist Mono caps (label strip type) in a 44px hairline box, same height as Book a call.
      Hover and open: fill only. The menu is a white panel with hairlines, like the mega menu. */
   .lang { position: relative; height: 100%; display: flex; align-items: center; }
+  /* Plain like the menu links: no box, no fill. Hover and open change the text colour only. */
   .lang-trigger {
     display: flex; align-items: center; gap: var(--spacing-gap-text-md);
-    height: 44px; padding: 0 14px; list-style: none; cursor: pointer;
-    color: inherit; background: transparent; box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default);
-    transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+    height: 44px; padding: 0 8px; list-style: none; cursor: pointer;
+    color: inherit; background: none;
+    transition: color var(--dur-fast) var(--ease);
   }
   .lang-trigger::-webkit-details-marker { display: none; }
   .lang-code { font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; }
-  .lang-trigger:hover, .lang[open] .lang-trigger { background: var(--surface-action-washed); color: var(--text-action-default); }
-  .is-overlay:not(.is-scrolled):not(.dd-open) .lang-trigger { box-shadow: inset 0 0 0 var(--hair) color-mix(in srgb, var(--neutral-white) 28%, transparent); }
-  .is-overlay:not(.is-scrolled):not(.dd-open) .lang-trigger:hover, .is-overlay:not(.is-scrolled):not(.dd-open) .lang[open] .lang-trigger { background: color-mix(in srgb, var(--neutral-white) 12%, transparent); color: var(--text-neutral-onsurface); }
+  .lang-trigger:hover, .lang[open] .lang-trigger { color: var(--text-action-default); }
+  .is-overlay:not(.is-scrolled):not(.dd-open) .lang-trigger:hover, .is-overlay:not(.is-scrolled):not(.dd-open) .lang[open] .lang-trigger { color: var(--text-action-ondark); }
   .lang[open] .chev { transform: translateY(1px) rotate(-135deg); }
   .lang-menu {
     position: absolute; right: 0; top: calc(50% + 22px);
