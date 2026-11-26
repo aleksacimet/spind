@@ -8,7 +8,7 @@
  * - When you change English copy here, change the same line in site.de.ts.
  *
  * Customer rule (Nov 2026): no logos, no company names and no names of people anywhere on the site.
- * Describe customers by industry and size only, for example "Logistics network, 12 sites".
+ * Describe customers by industry and size only, for example "Logistics company, 12 sites".
  */
 import { de } from './site.de';
 
@@ -211,6 +211,9 @@ const en = {
     lockerLabel: 'Spind locker showing the current step: request, identify, open drawer or logged',
     /** Locker screen per step. Keep each under 18 characters. */
     screen: { request: 'New request', code: 'Badge, QR or PIN', open: 'Drawer 08 open', logged: 'Logged' },
+    /** Smaller line under the title on the screen, per step. */
+    screenSub: { request: 'Swap a faulty device', code: 'Tap your badge or scan the code', open: 'Take the new one, leave the old one', logged: 'Swap saved for IT' },
+    drawerLabel: 'Drawer',
   },
 
   modules: {
@@ -641,13 +644,13 @@ const en = {
         slug: 'logistics-network',
         industry: 'Logistics',
         industryKey: 'logistics',
-        company: 'Logistics network',
-        navLabel: 'Logistics, 12 sites',
+        company: 'Logistics company',
+        navLabel: 'Logistics company, 12 sites',
         size: 'Shift work, no IT on site',
         sites: '12 sites',
         solutions: ['faulty-device-swap', 'multi-site'],
         headline: 'Defective scanner at 10 p.m.: the driver swaps it themselves',
-        summary: 'A logistics network with twelve sites and no IT staff on site keeps scanners and handhelds running through shift work.',
+        summary: 'A logistics company with twelve sites and no IT staff on site keeps scanners and handhelds running through shift work.',
         metrics: [
           { value: '12', label: 'sites without IT on site' },
           { value: '24/7', label: 'swaps, also on weekends' },
@@ -656,7 +659,7 @@ const en = {
         challenge: 'When a scanner failed at one site, it meant a ticket, a courier and often two days without a device.',
         solution: 'Each site has a Spind locker. Drivers and dispatchers collect the replacement scanner themselves and put the defective one into the drawer, our field service partner collects it and places a new device, and the light shows which drawer needs swapping.',
         results: 'Swaps happen without a hotline, and dispatchers see every swap per site in one overview. Shift changes, night routes and weekends are covered, because self-pickup works at any time.',
-        quote: { text: 'Our drivers no longer lose a shift to a broken scanner, they swap it at the start of the route.', role: 'Head of IT, logistics network' },
+        quote: { text: 'Our drivers no longer lose a shift to a broken scanner, they swap it at the start of the route.', role: 'Head of IT, logistics company' },
       },
       {
         slug: 'hospital-network',

@@ -76,7 +76,7 @@ const stories = t.proof.stories.filter((s) => s.slug !== exclude).slice(0, 3);
   .avatar svg path { vector-effect: non-scaling-stroke; }
   .q-card--accent :global(.ind-box) { background: var(--surface-action-hover); }
   .q-card--accent :global(.ind-box svg) { stroke: var(--icon-neutral-onsurface); }
-  .who { display: grid; gap: var(--spacing-gap-text-sm); font-size: 16px; line-height: 28px; }
+  .who { display: grid; gap: 0; font-size: 16px; line-height: 24px; } /* role and context read as one block */
   .who strong { font-weight: 600; color: var(--text-neutral-headings); }
   .who span { color: var(--text-neutral-body); }
 

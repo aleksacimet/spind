@@ -129,12 +129,12 @@ document.addEventListener('keydown', (e) => {
 });
 document.addEventListener('click', (e) => { if (openDD() && !(e.target as Element).closest('[data-dd]')) setDD(null); });
 
-/* ---------- How it works: steps play on their own (5 s each, looping); the open tab's bottom line is the progress bar ----------
+/* ---------- How it works: steps play on their own (3 s each, looping); the open tab's bottom line is the progress bar ----------
    The CSS animation on that line is the timer: when it ends, the next step opens. It plays only while the section is on
    screen, pauses while a tab has keyboard focus, and doesn't run at all with reduced motion (then tabs are click only). */
 const story = document.querySelector<HTMLElement>('[data-story]');
 // The 3D locker and its flat fallback drawing both follow the step (data-state 0-3).
-const storyLockers = story ? [...story.querySelectorAll<HTMLElement | SVGSVGElement>('[data-locker], [data-locker-3d]')] : [];
+const storyLockers = story ? [...story.querySelectorAll<HTMLElement | SVGSVGElement>('[data-locker], [data-locker-3d], [data-screen-mock]')] : [];
 const storyTabs = story ? [...story.querySelectorAll<HTMLButtonElement>('[role="tab"]')] : [];
 const storyCopy = story ? [...story.querySelectorAll<HTMLElement>('[data-copy]')] : [];
 function setStory(i: number) {

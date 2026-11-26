@@ -61,14 +61,10 @@ p { text-wrap: pretty; }
   color: var(--text-neutral-subtle);
 }
 a { color: inherit; }
-/* Text cursor (blinking caret) in the signal colour, like the CTA buttons: blue on light, yellow on dark. */
-input, textarea, [contenteditable] { caret-color: var(--signal); }
-/* Selected text, like the CTA buttons: Signal blue with white text on light surfaces, yellow with black text on dark ones.
-   (Set per surface, because ::selection doesn't reliably read custom properties.) */
-::selection { background: var(--surface-cta-onlight-default); color: var(--text-cta-onlight-default); }
-::-moz-selection { background: var(--surface-cta-onlight-default); color: var(--text-cta-onlight-default); }
-:is(.space, .glow-band, .on-accent, .site-footer, [data-surface='dark']) ::selection { background: var(--surface-cta-default); color: var(--text-cta-default); }
-:is(.space, .glow-band, .on-accent, .site-footer, [data-surface='dark']) ::-moz-selection { background: var(--surface-cta-default); color: var(--text-cta-default); }
+/* Highlight colour, whole site: yellow (the CTA yellow) for selected text and the text cursor, on light and dark surfaces. */
+input, textarea, [contenteditable] { caret-color: var(--surface-cta-default); }
+::selection { background: var(--surface-cta-default); color: var(--text-cta-default); }
+::-moz-selection { background: var(--surface-cta-default); color: var(--text-cta-default); }
 strong { font-weight: 600; }
 .accent-text { color: var(--text-action-default); }
 .tabular { font-variant-numeric: tabular-nums; }

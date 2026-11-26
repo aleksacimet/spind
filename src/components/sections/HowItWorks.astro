@@ -1,94 +1,187 @@
 ---
 import Section from '../Section.astro';
-import Locker3D from '../Locker3D.astro';
+import Logo from '../Logo.astro';
 import { getContent } from '../../content/site';
 const t = getContent(Astro.currentLocale);
 const h = t.how;
+const drawer = 8;
+const pad = (n: number) => String(n).padStart(2, '0');
+const QR = 'M8 0h1v1h-1zM9 0h1v1h-1zM11 0h1v1h-1zM8 1h1v1h-1zM9 1h1v1h-1zM11 1h1v1h-1zM12 1h1v1h-1zM8 2h1v1h-1zM9 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM8 3h1v1h-1zM12 3h1v1h-1zM9 4h1v1h-1zM11 4h1v1h-1zM12 4h1v1h-1zM8 5h1v1h-1zM9 5h1v1h-1zM11 5h1v1h-1zM9 6h1v1h-1zM11 6h1v1h-1zM12 6h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM11 7h1v1h-1zM0 8h1v1h-1zM1 8h1v1h-1zM4 8h1v1h-1zM9 8h1v1h-1zM11 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM15 8h1v1h-1zM16 8h1v1h-1zM0 9h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM9 9h1v1h-1zM14 9h1v1h-1zM15 9h1v1h-1zM17 9h1v1h-1zM18 9h1v1h-1zM19 9h1v1h-1zM20 9h1v1h-1zM0 10h1v1h-1zM2 10h1v1h-1zM3 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM7 10h1v1h-1zM12 10h1v1h-1zM13 10h1v1h-1zM14 10h1v1h-1zM17 10h1v1h-1zM18 10h1v1h-1zM19 10h1v1h-1zM20 10h1v1h-1zM0 11h1v1h-1zM2 11h1v1h-1zM3 11h1v1h-1zM4 11h1v1h-1zM5 11h1v1h-1zM12 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM19 11h1v1h-1zM0 12h1v1h-1zM1 12h1v1h-1zM2 12h1v1h-1zM3 12h1v1h-1zM4 12h1v1h-1zM5 12h1v1h-1zM6 12h1v1h-1zM7 12h1v1h-1zM8 12h1v1h-1zM9 12h1v1h-1zM10 12h1v1h-1zM13 12h1v1h-1zM14 12h1v1h-1zM15 12h1v1h-1zM16 12h1v1h-1zM17 12h1v1h-1zM20 12h1v1h-1zM8 13h1v1h-1zM9 13h1v1h-1zM10 13h1v1h-1zM11 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM15 13h1v1h-1zM18 13h1v1h-1zM20 13h1v1h-1zM12 14h1v1h-1zM13 14h1v1h-1zM14 14h1v1h-1zM18 14h1v1h-1zM19 14h1v1h-1zM13 15h1v1h-1zM15 15h1v1h-1zM16 15h1v1h-1zM17 15h1v1h-1zM18 15h1v1h-1zM19 15h1v1h-1zM9 16h1v1h-1zM13 16h1v1h-1zM14 16h1v1h-1zM15 16h1v1h-1zM16 16h1v1h-1zM17 16h1v1h-1zM8 17h1v1h-1zM11 17h1v1h-1zM16 17h1v1h-1zM17 17h1v1h-1zM19 17h1v1h-1zM9 18h1v1h-1zM10 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM15 18h1v1h-1zM18 18h1v1h-1zM9 19h1v1h-1zM11 19h1v1h-1zM12 19h1v1h-1zM17 19h1v1h-1zM20 19h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM12 20h1v1h-1zM13 20h1v1h-1zM14 20h1v1h-1zM16 20h1v1h-1zM17 20h1v1h-1zM20 20h1v1h-1zM0 0h7v7h-7zM1 1v5h5v-5zM2 2h3v3h-3zM14 0h7v7h-7zM15 1v5h5v-5zM16 2h3v3h-3zM0 14h7v7h-7zM1 15v5h5v-5zM2 16h3v3h-3z';
 ---
-<!-- Tabs: four steps across the top. The steps play on their own: the open tab's bottom line is a progress bar that fills
-     in 5 s, then the next step opens (looping). A click opens a step and plays on from there. Hover only fills a tab.
-     Below: one 3D locker (Otto with 8 drawers under the screen) on a darker grey surface; its screen follows the step.
-     It turns toward the mouse and a drawer opens while the mouse is over it. The step text is for screen readers. -->
+<!-- How it works: only the part of the locker that changes, Otto's touch screen (white bezel, badge reader left,
+     scanner right), large and crisp in HTML. Four tabs on top play on their own, 3 s each (the open tab's bottom line is
+     the progress bar, in the yellow highlight colour); a click opens a step and plays on from there. The screen and the
+     caption under it follow the step. -->
 <Section id="how-it-works" title={h.title} intro={h.intro}>
   <div class="story" data-story>
     <div class="story-tabs" role="tablist" aria-label={h.title}>
       {h.steps.map((s, i) => (
-        <button
-          class="story-tab"
-          type="button"
-          role="tab"
-          id={`story-tab-${i}`}
-          aria-controls="story-panel"
-          aria-selected={i === 0 ? 'true' : 'false'}
-          tabindex={i === 0 ? 0 : -1}
-          data-step={i}
-        >
-          <span class="tab-num tabular" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+        <button class="story-tab" type="button" role="tab" id={`story-tab-${i}`} aria-controls="story-panel"
+          aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-step={i}>
+          <span class="tab-num tabular" aria-hidden="true">{pad(i + 1)}</span>
           <span class="tab-title">{s.title}</span>
           <span class="tab-progress" aria-hidden="true"></span>
         </button>
       ))}
     </div>
     <div class="story-panel" id="story-panel" role="tabpanel" aria-labelledby="story-tab-0">
-      {h.steps.map((s, i) => (
-        <p class="sr-only" data-copy={i} hidden={i !== 0}>{s.role}: {s.text}</p>
-      ))}
       <div class="story-stage">
-        <Locker3D id="story" modules={['compact']} label={h.lockerLabel} story={h.screen} storyDrawer={8} locale={Astro.props.locale} />
+        <figure class="otto" data-screen-mock data-state="0" aria-hidden="true">
+          <span class="reader reader--badge"><svg viewBox="0 0 24 24"><path d="M8 8.5a5 5 0 0 1 0 7M11 6a8.5 8.5 0 0 1 0 12M14 3.5a12 12 0 0 1 0 17" /></svg></span>
+          <div class="scr">
+            <div class="scr-top"><Logo height={22} title="" class="scr-logo" /><span class="scr-time tabular">08:42</span></div>
+
+            <div class="st st-0">
+              <div class="st-copy">
+                <p class="st-title">{h.screen.request}</p>
+                <p class="st-sub">{h.screenSub.request}</p>
+                <span class="bar bar--1"></span><span class="bar bar--2"></span>
+                <span class="go">→</span>
+              </div>
+              <div class="map">{Array.from({ length: 12 }, () => <span></span>)}</div>
+            </div>
+
+            <div class="st st-1">
+              <div class="st-copy">
+                <p class="st-title">{h.screen.code}</p>
+                <p class="st-sub">{h.screenSub.code}</p>
+                <div class="pin">{[0, 1, 2, 3, 4].map((k) => <span class:list={{ on: k < 3 }}></span>)}</div>
+              </div>
+              <div class="ids">
+                <span class="badge"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM8 13.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 16.5c.4-1.2 1.2-1.8 2-1.8s1.6.6 2 1.8M13 10h4M13 13h3" /></svg></span>
+                <span class="qr"><svg viewBox="-1 -1 23 23"><path d={QR} /></svg></span>
+              </div>
+            </div>
+
+            <div class="st st-2">
+              <div class="st-copy">
+                <p class="st-title">{h.screen.open}</p>
+                <p class="st-sub">{h.screenSub.open}</p>
+                <span class="progress"><span></span></span>
+              </div>
+              <div class="map map--open">{Array.from({ length: 12 }, (_, k) => <span class:list={{ on: k === drawer - 1 }}>{k === drawer - 1 ? pad(drawer) : ''}</span>)}</div>
+            </div>
+
+            <div class="st st-3">
+              <div class="st-copy st-copy--done">
+                <span class="check"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" /></svg></span>
+                <div><p class="st-title">{h.screen.logged}</p><p class="st-sub">{h.screenSub.logged}</p></div>
+              </div>
+              <div class="map">{Array.from({ length: 12 }, () => <span></span>)}</div>
+            </div>
+
+            <div class="scr-foot">{t.hero.screen.footer}</div>
+          </div>
+          <span class="reader reader--scan"><span></span></span>
+        </figure>
+        <div class="caption">
+          {h.steps.map((s, i) => (
+            <p class="cap" data-copy={i} hidden={i !== 0}><span class="cap-role">{s.role}</span>{s.text}</p>
+          ))}
+        </div>
       </div>
     </div>
   </div>
 </Section>
 
 <style>
-  .story { display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
+  .story { display: grid; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); --step-time: 3s; --hl: var(--surface-cta-default); }
 
   /* Tabs: one row of four, hairline frame like the other card grids. */
   .story-tabs { display: grid; grid-template-columns: repeat(2, 1fr); }
   .story-tab {
-    position: relative;
-    display: flex; align-items: center; gap: var(--spacing-gap-general-object-md, 12px);
-    min-height: 80px;
-    padding: 0 var(--inset);
-    background: var(--surface-neutral-default);
-    border: 0;
-    border-top: var(--hair) solid var(--border-neutral-default);
-    border-left: var(--hair) solid var(--border-neutral-default);
-    color: var(--text-neutral-headings);
-    text-align: left;
-    cursor: pointer;
-    font: inherit;
+    position: relative; display: flex; align-items: center; gap: 12px;
+    min-height: 80px; padding: 0 var(--inset);
+    background: var(--surface-neutral-default); border: 0;
+    border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default);
+    color: var(--text-neutral-headings); text-align: left; cursor: pointer; font: inherit;
     transition: background-color var(--dur) var(--ease);
   }
   .story-tab:hover { background: var(--surface-action-washed); }
   .story-tab:focus-visible { outline: none; box-shadow: inset 0 0 0 var(--border-width-focus) var(--border-focus); }
   .tab-num { font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; color: var(--text-neutral-decorative); transition: color var(--dur) var(--ease); }
   .tab-title { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 24px; transition: color var(--dur) var(--ease); }
-  .story-tab[aria-selected='true'] .tab-num,
-  .story-tab[aria-selected='true'] .tab-title { color: var(--text-action-default); }
+  .story-tab[aria-selected='true'] .tab-num, .story-tab[aria-selected='true'] .tab-title { color: var(--text-neutral-headings); }
+  .story-tab[aria-selected='true'] .tab-num { color: var(--text-neutral-body); }
 
-  /* Opened tab: its bottom line is the step's progress bar. A pale blue track, the blue fill runs left to right in
-     --step-time, then main.ts opens the next step. Without motion (or before JS) the line is simply full. */
-  .story { --step-time: 5s; }
-  .tab-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--surface-action-washed); opacity: 0; overflow: hidden; }
-  .tab-progress::after { content: ''; position: absolute; inset: 0; background: var(--surface-action-default); transform-origin: left; }
+  /* Progress bar of the open tab, in the yellow highlight: fills in --step-time, then main.ts opens the next step. */
+  .tab-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: color-mix(in srgb, var(--hl) 30%, transparent); opacity: 0; overflow: hidden; }
+  .tab-progress::after { content: ''; position: absolute; inset: 0; background: var(--hl); transform-origin: left; }
   .story-tab[aria-selected='true'] .tab-progress { opacity: 1; }
   :global(.story.is-playing) .story-tab[aria-selected='true'] .tab-progress::after { animation: tab-fill var(--step-time) linear both; }
   :global(.story.is-paused) .story-tab[aria-selected='true'] .tab-progress::after { animation-play-state: paused; }
   @keyframes tab-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-  /* Panel: one locker on a darker grey surface (Ice/200, a studio backdrop for the white locker), full width under
-     the tabs. The stage height sets the locker size (Locker3D keeps the same vertical framing at every width). */
+  /* Stage: grey studio surface with the screen module centred, the step caption under it. */
   .story-panel { border-top: var(--hair) solid var(--border-neutral-default); }
   .story-stage {
-    background: var(--neutral-200);
-    border-left: var(--hair) solid var(--border-neutral-default);
-    aspect-ratio: 4 / 3;
+    display: grid; justify-items: center; gap: var(--spacing-gap-general-object-lg);
+    padding: var(--spacing-padding-section-xs, 40px) var(--inset);
+    background: var(--neutral-200); border-left: var(--hair) solid var(--border-neutral-default);
   }
-  @media (min-width: 640px) { .story-stage { aspect-ratio: 16 / 9; } }
-  @media (min-width: 960px) {
-    .story-tabs { grid-template-columns: repeat(4, 1fr); }
-    .story-stage { aspect-ratio: auto; height: 460px; }
+
+  /* Otto's upper part: white clay bezel (soft light from the top, no dark outlines), readers left and right. */
+  .otto {
+    margin: 0; width: min(100%, 860px);
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: clamp(10px, 2.4vw, 28px);
+    padding: clamp(12px, 2.6vw, 32px);
+    background: linear-gradient(180deg, #FFFFFF 0%, #F1F4F8 100%);
+    border-radius: 14px;
+    box-shadow: 0 1px 0 #fff inset, 0 30px 60px -30px rgba(22, 25, 30, 0.35), 0 8px 18px -10px rgba(22, 25, 30, 0.2);
   }
-  @media (min-width: 1280px) { .story-stage { height: 560px; } }
+  .reader { display: grid; place-items: center; width: clamp(26px, 5vw, 56px); aspect-ratio: 1; border-radius: 50%; background: #E6EBF1; box-shadow: inset 0 2px 4px rgba(22, 25, 30, 0.12); }
+  .reader svg { width: 55%; fill: none; stroke: #8A97A8; stroke-width: 1.6; stroke-linecap: round; }
+  .reader--scan span { width: 40%; aspect-ratio: 1; border-radius: 50%; background: #1E2530; box-shadow: 0 0 0 3px #CBD3DD; }
+
+  /* The screen. Sizes follow the screen width (container query units), so it reads the same at every size. */
+  .scr {
+    container-type: inline-size; position: relative; aspect-ratio: 16 / 10; overflow: hidden;
+    border-radius: 8px; color: #fff;
+    background: radial-gradient(70% 70% at 88% 8%, rgba(0, 121, 255, 0.28), transparent 70%), linear-gradient(135deg, #1C3658, #0A1422);
+    box-shadow: 0 0 0 4px #1E2530;
+  }
+  .scr-top { position: absolute; top: 6cqi; left: 6cqi; right: 6cqi; display: flex; justify-content: space-between; align-items: center; }
+  .scr :global(.scr-logo) { height: 4.2cqi; width: auto; color: #fff; }
+  .scr-time { font-family: var(--font-display); font-weight: 700; font-size: 3.2cqi; color: rgba(255, 255, 255, 0.6); }
+  .scr-foot { position: absolute; left: 6cqi; right: 6cqi; bottom: 4.6cqi; padding-top: 2.6cqi; border-top: 1px solid rgba(255, 255, 255, 0.12); font-size: 2.8cqi; line-height: 1.2; color: rgba(255, 255, 255, 0.45); }
+
+  /* One state per step, stacked; the open step fades in. */
+  .st { position: absolute; left: 6cqi; right: 6cqi; top: 17cqi; bottom: 15cqi; display: flex; justify-content: space-between; gap: 5cqi; opacity: 0; transition: opacity 260ms var(--ease); }
+  .otto[data-state='0'] .st-0, .otto[data-state='1'] .st-1, .otto[data-state='2'] .st-2, .otto[data-state='3'] .st-3 { opacity: 1; }
+  .st-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 1.6cqi; min-width: 0; }
+  .st-title { font-family: var(--font-display); font-weight: 700; font-size: 6.6cqi; line-height: 1.1; letter-spacing: -0.02em; color: #fff; white-space: nowrap; }
+  .st-sub { font-size: 3.2cqi; line-height: 1.3; color: rgba(255, 255, 255, 0.66); }
+  .bar { display: block; height: 1.5cqi; border-radius: 1cqi; background: rgba(255, 255, 255, 0.4); }
+  .bar--1 { width: 34cqi; margin-top: 1.6cqi; } .bar--2 { width: 24cqi; background: rgba(255, 255, 255, 0.2); }
+  .go { margin-top: auto; display: grid; place-items: center; width: 20cqi; height: 6.6cqi; border-radius: 4cqi; background: var(--hl); color: var(--text-cta-default); font-family: var(--font-display); font-weight: 700; font-size: 3.4cqi; }
+  .map { flex: none; align-self: center; display: grid; grid-template-columns: repeat(3, 9cqi); gap: 1.2cqi; }
+  .map span { display: grid; place-items: center; height: 5cqi; border-radius: 0.8cqi; background: rgba(255, 255, 255, 0.09); font-family: var(--font-display); font-weight: 700; font-size: 2.6cqi; color: var(--text-cta-default); }
+  .map span.on { background: var(--hl); }
+  .pin { display: flex; gap: 1.6cqi; margin-top: auto; }
+  .pin span { width: 4.6cqi; aspect-ratio: 1; border-radius: 1cqi; background: rgba(255, 255, 255, 0.14); }
+  .pin span.on { background: var(--hl); }
+  .ids { flex: none; align-self: center; display: flex; align-items: center; gap: 2.4cqi; }
+  .badge { display: grid; place-items: center; width: 13cqi; aspect-ratio: 1; border-radius: 1.6cqi; background: rgba(255, 255, 255, 0.1); }
+  .badge svg { width: 62%; fill: none; stroke: var(--hl); stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round; }
+  .qr { width: 21cqi; aspect-ratio: 1; padding: 1.2cqi; border-radius: 1.2cqi; background: #fff; }
+  .qr svg { display: block; width: 100%; height: 100%; fill: #0E1B2C; }
+  .progress { margin-top: auto; width: 40cqi; height: 1.4cqi; border-radius: 1cqi; background: rgba(255, 255, 255, 0.14); overflow: hidden; }
+  .progress span { display: block; height: 100%; width: 70%; background: var(--hl); }
+  .st-copy--done { flex-direction: row; align-items: center; gap: 3.4cqi; align-self: center; }
+  .check { flex: none; display: grid; place-items: center; width: 13cqi; aspect-ratio: 1; border-radius: 50%; background: #2F9E6B; }
+  .check svg { width: 60%; fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  @media (prefers-reduced-motion: no-preference) {
+    .otto[data-state='2'] .map span.on { animation: hl-pulse 900ms var(--ease) infinite alternate; }
+    .otto[data-state='2'] .progress span { animation: grow 3s var(--ease-out) both; }
+  }
+  @keyframes hl-pulse { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--hl) 50%, transparent); } to { box-shadow: 0 0 0 0.8cqi color-mix(in srgb, var(--hl) 0%, transparent); } }
+  @keyframes grow { from { width: 0; } to { width: 100%; } }
+
+  /* Caption: who does what in this step. */
+  .caption { width: min(100%, 860px); text-align: center; }
+  .cap { color: var(--text-neutral-body); font-size: 18px; line-height: 28px; }
+  .cap-role { display: block; margin-bottom: 4px; font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-neutral-subtle); }
+
+  @media (max-width: 639px) { .map, .ids .qr { display: none; } }
+  @media (min-width: 960px) { .story-tabs { grid-template-columns: repeat(4, 1fr); } .story-stage { padding-block: 56px; } }
 </style>

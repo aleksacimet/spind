@@ -165,6 +165,8 @@ export const de: SiteContent = {
     ],
     lockerLabel: 'Spind Locker mit dem aktuellen Schritt: Anfrage, Ausweis, offenes Fach oder protokolliert',
     screen: { request: 'Neue Anfrage', code: 'Ausweis, QR, PIN', open: 'Fach 08 offen', logged: 'Protokolliert' },
+    screenSub: { request: 'Defektes Gerät tauschen', code: 'Ausweis antippen oder Code scannen', open: 'Neues nehmen, altes hineinlegen', logged: 'Tausch für die IT gespeichert' },
+    drawerLabel: 'Fach',
   },
 
   modules: {
@@ -578,13 +580,13 @@ export const de: SiteContent = {
         slug: 'logistics-network',
         industry: 'Logistik',
         industryKey: 'logistics',
-        company: 'Logistiknetz',
-        navLabel: 'Logistik, 12 Standorte',
+        company: 'Logistikunternehmen',
+        navLabel: 'Logistikunternehmen, 12 Standorte',
         size: 'Schichtbetrieb, keine IT vor Ort',
         sites: '12 Standorte',
         solutions: ['faulty-device-swap', 'multi-site'],
         headline: 'Defekter Scanner um 22 Uhr: Der Fahrer tauscht ihn selbst',
-        summary: 'Ein Logistiknetz mit zwölf Standorten ohne IT vor Ort hält Scanner und Handhelds im Schichtbetrieb einsatzbereit.',
+        summary: 'Ein Logistikunternehmen mit zwölf Standorten ohne IT vor Ort hält Scanner und Handhelds im Schichtbetrieb einsatzbereit.',
         metrics: [
           { value: '12', label: 'Standorte ohne IT vor Ort' },
           { value: '24/7', label: 'Tausch, auch am Wochenende' },
@@ -593,7 +595,7 @@ export const de: SiteContent = {
         challenge: 'Fiel an einem Standort ein Scanner aus, bedeutete das ein Ticket, einen Kurier und oft zwei Tage ohne Gerät.',
         solution: 'Jeder Standort hat einen Spind Locker. Fahrer und Disponenten holen den Ersatzscanner selbst und legen den defekten ins Fach, unser Field-Service-Partner holt ihn ab und legt ein neues Gerät ein, und das Licht zeigt, welches Fach getauscht werden muss.',
         results: 'Getauscht wird ohne Hotline, und die Disposition sieht jeden Tausch pro Standort in einer Übersicht. Schichtwechsel, Nachttouren und Wochenenden sind abgedeckt, weil die Selbstabholung jederzeit funktioniert.',
-        quote: { text: 'Unsere Fahrer verlieren keine Schicht mehr wegen eines kaputten Scanners, sie tauschen ihn vor der Tour.', role: 'IT-Leitung, Logistiknetz' },
+        quote: { text: 'Unsere Fahrer verlieren keine Schicht mehr wegen eines kaputten Scanners, sie tauschen ihn vor der Tour.', role: 'IT-Leitung, Logistikunternehmen' },
       },
       {
         slug: 'hospital-network',
