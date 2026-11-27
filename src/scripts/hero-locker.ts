@@ -46,7 +46,7 @@ import {
 } from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { LOGO_PATHS } from '../components/logo-path';
+import { LOGO_PATHS, LOGO_W, LOGO_H } from '../components/logo-path';
 
 /* ---------- Dimensions in metres (a module is 600 wide, 910 tall, 500 deep) ---------- */
 const W = 0.6; // module width
@@ -137,9 +137,9 @@ function contactShadow(w: number, d: number, pad: number) {
 
 /** The Spind logo in one flat colour on transparent. */
 function logoCanvas(color: string, w: number) {
-  const h = Math.round((w * 3687) / 8342);
+  const h = Math.round((w * LOGO_H) / LOGO_W);
   const [c, ctx] = makeCanvas(w, h);
-  ctx.scale(w / 8342, h / 3687);
+  ctx.scale(w / LOGO_W, h / LOGO_H);
   ctx.fillStyle = color;
   for (const p of LOGO_PATHS) ctx.fill(new Path2D(p.d), p.evenodd ? 'evenodd' : 'nonzero');
   return c;
@@ -454,7 +454,7 @@ export function initHeroLocker(stage: HTMLElement) {
     glow.addColorStop(1, 'rgba(46, 142, 255, 0)');
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, w, h);
-    ctx.drawImage(logoWhite, 56, 44, 108, 108 * (3687 / 8342));
+    ctx.drawImage(logoWhite, 56, 44, 108, 108 * (LOGO_H / LOGO_W));
     ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
     ctx.fillRect(56, h - 92, w - 112, 2);
     if (story) {
@@ -736,7 +736,7 @@ export function initHeroLocker(stage: HTMLElement) {
     const top = 0.47;
     const y0 = PL + FM;
     const lw = 0.078;
-    const lh = (lw * 3687) / 8342;
+    const lh = (lw * LOGO_H) / LOGO_W;
     const logoMat = () =>
       new MeshStandardMaterial({ map: texture(logoCanvas('#b8c0ca', 1024)), transparent: true, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2 });
 

@@ -1,15 +1,15 @@
 ---
-import { LOGO_PATHS, LOGO_VIEWBOX } from './logo-path';
+import { LOGO_PATHS, LOGO_VIEWBOX, LOGO_W, LOGO_H } from './logo-path';
 
 interface Props {
-  /** Visual height in px. Width follows the aspect ratio (8342 x 3687). */
+  /** Visual height in px. Width follows the aspect ratio (472 x 197). */
   height?: number;
   class?: string;
   /** Accessible name. Pass "" when visible text next to it already says Spind. */
   title?: string;
 }
-const { height = 40, class: className = '', title = 'Spind by Cimet' } = Astro.props;
-const width = Math.round((height * 8342) / 3687);
+const { height = 40, class: className = '', title = 'Spind' } = Astro.props;
+const width = Math.round((height * LOGO_W) / LOGO_H);
 ---
 <svg
   class:list={['logo', className]}

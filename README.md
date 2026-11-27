@@ -1,6 +1,6 @@
 # Spind website
 
-Marketing site for **Spind**, the smart locker for enterprise IT by Cimet. Built with [Astro](https://astro.build) as a fully static site, plain CSS and a small amount of TypeScript. Fonts are self-hosted, there are no trackers and no cookies.
+Marketing site for **Spind**, the smart locker for enterprise IT. Built with [Astro](https://astro.build) as a fully static site, plain CSS and a small amount of TypeScript. Fonts are self-hosted, there are no trackers and no cookies.
 
 ## Run it
 
@@ -105,17 +105,17 @@ public/
 
 - Final domain: set `SITE_URL` (placeholder is `https://example.com`).
 - Form endpoint: Formspree or a Cloudflare Pages Function.
-- Impressum and privacy text: pages exist with placeholders marked `TODO: legal text from Cimet`.
+- Impressum and privacy text: pages exist with placeholders marked `TODO: legal text`.
 - Permission to show BVG and Wiener Stadtwerke (`showClients`).
 - Real photos: none yet, the site uses the locker drawing and CSS illustrations only.
-- Content that competitors show and Spind could add once Cimet confirms the facts: security and hosting (EU hosting, ISO 27001, GDPR/DPA), named integrations (for example ServiceNow, Intune, Entra ID), behaviour during a power or network outage, installation requirements and lead time, contract term, and client proof with verified figures.
+- Content that competitors show and Spind could add once the facts are confirmed: security and hosting (EU hosting, ISO 27001, GDPR/DPA), named integrations (for example ServiceNow, Intune, Entra ID), behaviour during a power or network outage, installation requirements and lead time, contract term, and client proof with verified figures.
 
 ## Menus, solution pages and the business case
 
 - **Header menus** (`nav.groups` in `src/content/site.ts`): Product, Solutions and Resources open a full-width panel with link columns and a featured card. `href` is `#section` for a home page section or `/path` for a page. The footer link groups are built from the same data.
 - **Solution pages** (`solutions.items`): each item becomes `/solutions/<slug>` with today, steps, benefits, related FAQ (indexes into `faq.items`), more solutions and the demo form. The Workflows tiles on the home page link to them by `slug`.
 - **Business case calculator** (`businessCase`, home page `#business-case`): visitors set their own numbers; the formula is in `src/scripts/calc.ts` and repeated in `BusinessCase.astro` for the no-JS render. It uses `pricing.price`.
-- **Customer stories** (`/customers`): built and linked in Resources and the footer only when `flags.showClients` is true. TODO: client permission, story text and quotes from Cimet.
+- **Customer stories** (`/customers`): built and linked in Resources and the footer only when `flags.showClients` is true. TODO: client permission, story text and quotes.
 
 ## Pilot, checklist and roles
 

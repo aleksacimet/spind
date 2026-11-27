@@ -1411,13 +1411,11 @@ const en = {
   },
 
   footer: {
-    byline: 'Spind by Cimet',
+    byline: 'Spind',
     impressum: 'Impressum',
     privacy: 'Privacy',
-    rightsOwner: 'Cimet',
-    rightsUrl: 'https://cimet.rs/',
+    rightsOwner: 'Spind',
     rights: 'All rights reserved.',
-    productOf: 'Spind is a product of',
     copyright: 'Copyright',
     legalNav: 'Legal',
     pageNav: 'Sections',
@@ -1429,21 +1427,21 @@ const en = {
   legal: {
     impressum: {
       title: 'Impressum',
-      description: 'Legal notice for the Spind website by Cimet.',
+      description: 'Legal notice for the Spind website.',
       body: [
-        'This page is a placeholder. The final legal notice will be provided by Cimet before launch.',
+        'This page is a placeholder. The final legal notice will be provided before launch.',
       ],
       heading: 'Company details',
-      todo: 'TODO: legal text from Cimet (company name, address, commercial register number, VAT ID, managing directors, contact details, supervisory authority if applicable).',
+      todo: 'TODO: legal text (company name, address, commercial register number, VAT ID, managing directors, contact details, supervisory authority if applicable).',
     },
     privacy: {
       title: 'Privacy',
-      description: 'Privacy policy for the Spind website by Cimet.',
+      description: 'Privacy policy for the Spind website.',
       body: [
-        'This page is a placeholder. The final privacy policy will be provided by Cimet before launch.',
+        'This page is a placeholder. The final privacy policy will be provided before launch.',
       ],
       heading: 'Data we process',
-      todo: 'TODO: legal text from Cimet (controller, data from the contact form and where it is sent, hosting on Cloudflare Pages, analytics if enabled, retention periods, rights of data subjects). Technical note: this site self-hosts its fonts, loads no third-party trackers and sets no cookies.',
+      todo: 'TODO: legal text (controller, data from the contact form and where it is sent, hosting on Cloudflare Pages, analytics if enabled, retention periods, rights of data subjects). Technical note: this site self-hosts its fonts, loads no third-party trackers and sets no cookies.',
     },
     back: 'Back to the homepage',
   },
