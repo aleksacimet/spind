@@ -310,7 +310,7 @@ main > .section.glow-band, main > article > .section.glow-band {
   background: var(--surface-neutral-default);
   border-top: var(--hair) solid var(--border-neutral-default);
   border-left: var(--hair) solid var(--border-neutral-default);
-  padding: var(--pad-block) var(--inset); /* text on the same --inset line as titles and labels, at every width */
+  padding: var(--card-pad-block) var(--card-inset); /* cards: half the section inset */
   grid-row: span var(--rows, 2);
   min-width: 0;
   overflow: hidden;

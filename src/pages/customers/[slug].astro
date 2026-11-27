@@ -41,6 +41,7 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
       <aside class="facts" aria-label={s.company}>
         <dl>
           <div><dt class="label">{c.facts.industry}</dt><dd>{s.industry}</dd></div>
+          <div><dt class="label">{c.facts.employees}</dt><dd>{s.employees}</dd></div>
           <div><dt class="label">{c.facts.size}</dt><dd>{s.size}</dd></div>
           <div><dt class="label">{c.facts.sites}</dt><dd>{s.sites}</dd></div>
           <div>
@@ -95,13 +96,13 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
   .st-metrics dl > div { height: var(--card-h); padding-block: var(--spacing-padding-container-lg) !important; justify-content: center !important; } /* 24 + 48 + 8 + 28 + 24 */
   @media (min-width: 960px) { .st-top { --card-h: 132px; --rows: 1; } }
   .st-metrics dl { display: grid; clip-path: inset(0 0 0 var(--hair)); box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
-  .st-metrics dl > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--spacing-gap-text-md); padding: var(--pad-block) var(--inset); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); }
+  .st-metrics dl > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--spacing-gap-text-md); padding: var(--card-pad-block) var(--card-inset); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); }
   .st-metrics dd { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-stat); line-height: 48px; letter-spacing: -0.03em; color: var(--text-neutral-headings); }
   .st-metrics dt { color: var(--text-neutral-body); }
 
   .st-body { display: flex; flex-direction: column; gap: var(--spacing-gap-general-section-md); padding-block: var(--spacing-padding-section-md) var(--spacing-padding-section-xl); }
   /* Facts widget: white card on the page background. */
-  .facts dl { display: grid; gap: var(--spacing-gap-general-object-lg); padding: var(--pad-block) var(--inset); background: var(--surface-neutral-default); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); }
+  .facts dl { display: grid; gap: var(--spacing-gap-general-object-lg); padding: var(--card-pad-block) var(--card-inset); background: var(--surface-neutral-default); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); }
   .facts dd { margin-top: var(--spacing-gap-text-sm); font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-headings); }
   .cities { display: block; font-family: var(--font-body); font-weight: 400; font-size: 14px; line-height: 20px; color: var(--text-neutral-body); margin-top: var(--spacing-gap-text-sm); }
   .sol-links { display: grid; gap: var(--spacing-gap-text-md); margin-top: var(--spacing-gap-text-sm); }
@@ -112,7 +113,7 @@ const sol = (slug: string) => t.solutions.items.find((i) => i.slug === slug)!;
   .text h2 { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); letter-spacing: 0; margin-bottom: var(--spacing-gap-text-md); }
   .text p { color: var(--text-neutral-body); }
   .text section p + p { margin-top: var(--spacing-gap-general-object-md); }
-  .big-quote { margin: 0; padding: var(--pad-block) var(--inset); background: var(--surface-action-default); color: var(--text-neutral-onsurface); display: grid; gap: var(--spacing-gap-general-object-lg); }
+  .big-quote { margin: 0; padding: var(--card-pad-block) var(--card-inset); background: var(--surface-action-default); color: var(--text-neutral-onsurface); display: grid; gap: var(--spacing-gap-general-object-lg); }
   .big-quote blockquote p { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: -0.01em; color: var(--text-neutral-onsurface); }
   .big-quote figcaption { display: flex; align-items: center; gap: var(--spacing-gap-general-object-md); }
   .q-photo { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: var(--scale-max); object-fit: cover; background: var(--surface-action-hover); color: var(--text-neutral-onsurface); font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px; }

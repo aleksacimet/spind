@@ -24,7 +24,7 @@ const s = t.proof.stories.find((x) => x.slug === slug)!;
 </article>
 
 <style>
-  .story { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-md); padding: var(--pad-block) var(--inset); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); transition: background-color var(--dur) var(--ease); }
+  .story { position: relative; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-md); padding: var(--card-pad-block) var(--card-inset); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); transition: background-color var(--dur) var(--ease); }
   .story:hover { background: var(--surface-action-washed); }
   .story--featured :global(.ind-box) { background: color-mix(in srgb, var(--neutral-white) 10%, transparent); }
   .story--featured :global(.ind-box svg) { stroke: var(--surface-cta-default); }

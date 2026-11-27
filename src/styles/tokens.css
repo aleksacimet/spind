@@ -184,10 +184,14 @@
    * --pad-block: vertical padding inside tiles, panels and bands.
    * --head-pad: space above and below a section title block.
    * --spacer: white strip between two blocks.
+   * --card-inset / --card-pad-block: padding inside cards (tiles, story, quote, metric and pricing cards):
+   *          half of --inset and --pad-block, so content sits tight in the card (12/12 mobile, 20/16 desktop).
    */
   --inset: var(--spacing-padding-container-lg);          /* 24 */
   --pad-block: var(--spacing-padding-container-lg);      /* 24 */
   --head-pad: var(--spacing-padding-container-2xl);      /* 32 */
+  --card-inset: calc(var(--inset) / 2);                  /* 12, 20 from 960px */
+  --card-pad-block: calc(var(--pad-block) / 2);          /* 12, 16 from 960px */
   /* Page heroes (dark bands under the header): same top and bottom on every page. */
   --hero-top: calc(var(--header-h) + var(--spacing-padding-section-md));
   --hero-bottom: var(--spacing-padding-section-md);

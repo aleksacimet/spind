@@ -32,7 +32,7 @@ const groups = t.nav.groups.map((g) => ({
       <nav aria-label={g.label}>
         <p class="footer-title label">{g.label}</p>
         <ul role="list" class="footer-links">
-          {g.items.map((it) => <li><a href={to(it.href)}>{it.label}</a></li>)}
+          {g.items.map((it) => <li><a href={to(it.href)}>{(it as { footerLabel?: string }).footerLabel ?? it.label}</a></li>)}
         </ul>
       </nav>
     ))}

@@ -28,7 +28,7 @@ const { slug, title, text, delay = 0 } = Astro.props;
   .uc-icon svg { stroke: var(--icon-action-strong); transition: stroke var(--dur-fast) var(--ease); }
   .uc-link { text-decoration: none; }
   .uc-link::after { content: ''; position: absolute; inset: 0; z-index: 2; }
-  .uc .arrow { position: absolute; right: var(--inset); bottom: var(--pad-block); font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 28px; color: var(--text-action-default); opacity: 0; transition: opacity var(--dur) var(--ease); }
+  .uc .arrow { position: absolute; right: var(--card-inset); bottom: var(--card-pad-block); font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 28px; color: var(--text-action-default); opacity: 0; transition: opacity var(--dur) var(--ease); }
   .uc:hover, .uc:focus-within { background: var(--surface-action-washed); }
   .uc:hover h3, .uc:focus-within h3 { color: var(--text-action-default); }
   .uc:hover .uc-icon, .uc:focus-within .uc-icon { background: var(--surface-action-default); }

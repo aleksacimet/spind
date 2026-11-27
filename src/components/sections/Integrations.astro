@@ -61,7 +61,7 @@ const n = t.integrations;
 
 <style>
   .intg { display: grid; gap: var(--spacing-gap-general-group-md); }
-  .hub { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); padding: var(--pad-block) var(--inset); min-height: 360px; }
+  .hub { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); padding: var(--card-pad-block) var(--card-inset); min-height: 360px; }
   .hub h3 { color: var(--text-neutral-onsurface); }
   .hub p { color: var(--text-neutral-ondark); max-width: 360px; }
   .hub .hub-note { margin-top: auto; font-size: 16px; line-height: 24px; color: var(--text-neutral-decorative); }
@@ -76,7 +76,7 @@ const n = t.integrations;
   .orbit { fill: var(--surface-cta-default); transform-origin: 60px 60px; transform: rotate(calc(var(--k) * 90deg)); }
 
   .intg-list { display: grid; grid-template-columns: 1fr; box-shadow: var(--hair) var(--hair) 0 0 var(--border-neutral-default); }
-  .intg-item { grid-row: auto; min-height: 0; display: flex; gap: 16px; align-items: flex-start; padding: 20px var(--inset) 20px 20px; transition: background-color var(--dur) var(--ease), clip-path 750ms var(--ease-out) var(--d, 0ms); }
+  .intg-item { grid-row: auto; min-height: 0; display: flex; gap: 16px; align-items: flex-start; padding: var(--spacing-padding-container-xs) var(--card-inset) var(--spacing-padding-container-xs) var(--spacing-padding-container-xs); transition: background-color var(--dur) var(--ease), clip-path 750ms var(--ease-out) var(--d, 0ms); }
   .intg-item h3 { margin: 0; font-size: 18px; line-height: 24px; transition: color var(--dur-fast) var(--ease); }
   /* Title and subtitle read as one text block: subtitle 16px at 1.6 line height, 4px under the title. */
   .intg-item p, .hub .title-body p { font-size: 16px; line-height: 1.6; }
@@ -119,9 +119,9 @@ const n = t.integrations;
   @media (min-width: 640px) { .intg-list { grid-template-columns: 1fr 1fr; } }
   @media (min-width: 960px) {
     .intg { grid-template-columns: 5fr 7fr; gap: 0; }
-    .intg-item { flex-direction: column; padding-right: 20px; } /* narrow desktop: icon above the text */
+    .intg-item { flex-direction: column; padding-right: var(--spacing-padding-container-xs); } /* narrow desktop: icon above the text */
   }
   @media (min-width: 1280px) {
-    .intg-item { flex-direction: row; padding-right: 20px; } /* compact cards: icon beside the text, status pill under it */
+    .intg-item { flex-direction: row; padding-right: var(--spacing-padding-container-xs); } /* compact cards: icon beside the text, status pill under it */
   }
 </style>

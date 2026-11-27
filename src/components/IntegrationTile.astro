@@ -1,7 +1,7 @@
 ---
 /**
  * Integration tile (one component for every integration card): icon in a 48px washed square (or the LISSA logo),
- * title, a small blue line (examples or kind), text, and an optional status pill.
+ * with an optional status pill on the right of that row (centred on the icon), then title, a small blue line (examples or kind) and text.
  * Used on the Integrations page (Systems, Services) and in "What it connects to" on every use case page.
  * Hover: fill only (washed card, blue icon box, icon redraws in place). Nothing moves.
  */
@@ -23,21 +23,24 @@ interface Props {
 const { icon, title, examples, text, status, logo = false, delay = 0, class: className = '' } = Astro.props;
 ---
 <li class:list={['tile tile--hover it-tile', className]} data-reveal="drawer" data-spot style={`--d:${delay}ms`}>
-  {logo
-    ? <LissaLogo />
-    : <span class="ic-box" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={integrationIcons[icon]} pathLength="1" /></svg></span>}
+  <div class="it-top">
+    {logo
+      ? <LissaLogo />
+      : <span class="ic-box" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={integrationIcons[icon]} pathLength="1" /></svg></span>}
+    {status && <StatusPill status={status} class="tile-pill" />}
+  </div>
   <div class="title-body">
     <h3>{title}</h3>
     {examples && <p class="ex">{examples}</p>}
     <p>{text}</p>
-    {status && <StatusPill status={status} class="tile-pill" />}
   </div>
 </li>
 
 <style>
   .it-tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
   .it-tile h3 { margin: 0; }
-  .it-tile :global(.tile-pill) { align-self: flex-start; justify-self: start; margin-top: var(--spacing-gap-text-md); }
+  /* Top row: icon box on the left, status pill on the right, centred on the icon box. */
+  .it-top { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-text-lg); }
   .ic-box { display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-action-washed); transition: background-color var(--dur) var(--ease); }
   .ic-box svg { stroke: var(--icon-action-strong); transition: stroke var(--dur-fast) var(--ease); }
   .it-tile:hover .ic-box { background: var(--surface-action-default); }
