@@ -14,8 +14,8 @@ interface Props {
   /** Accessible label of the default locker. */
   visualLabel?: string;
   locale?: string;
-  /** A 3D device instead of the locker (Lost device: a phone in lost mode). */
-  device?: 'lost-phone';
+  /** A 3D use case scene instead of the locker: the use case slug (see Device3D / hero-device.ts). */
+  device?: string;
 }
 const { id, label, title, intro, primary, secondary, visual = true, visualLabel = 'Spind', locale = Astro.currentLocale, device } = Astro.props;
 const primaryHref = lp(locale, Astro.props.primaryHref ?? '/contact');

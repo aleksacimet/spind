@@ -1,16 +1,17 @@
 ---
 /**
- * 3D device (three.js, scripts/hero-device.ts), same clay look as the 3D lockers. Fills its parent box.
- * kind 'lost-phone': a white phone floating in lost mode with blue location pings under it (Lost device use case).
+ * 3D use case scene (three.js, scripts/hero-device.ts), same clay look as the 3D lockers. Fills its parent box.
+ * kind: the use case slug (lost-device, faulty-device-swap, temporary-device, eou-rollout, onboarding, offboarding,
+ * multi-site); each has its own scene, see hero-device.ts.
  */
 interface Props {
   label: string;
-  kind?: 'lost-phone';
+  kind?: string;
   surface?: 'light' | 'dark';
   /** dropped: lying screen up on the floor, as if it fell. float: upright, floating above the pings. */
   pose?: 'dropped' | 'float';
 }
-const { label, kind = 'lost-phone', surface = 'dark', pose = 'dropped' } = Astro.props;
+const { label, kind = 'lost-device', surface = 'dark', pose = 'dropped' } = Astro.props;
 ---
 <div class="device3d" data-device-3d={kind} data-surface={surface} data-label={label} data-pose={pose}></div>
 
