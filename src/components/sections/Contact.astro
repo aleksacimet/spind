@@ -1,5 +1,6 @@
 ---
 import ContactForm from '../ContactForm.astro';
+import Device3D from '../Device3D.astro';
 import { getContent, contact } from '../../content/site';
 const { locale, page = false } = Astro.props as { locale?: string; page?: boolean };
 const t = getContent(locale ?? Astro.currentLocale);
@@ -13,6 +14,7 @@ const t = getContent(locale ?? Astro.currentLocale);
         {page ? <h1 id="contact-title" data-split>{t.contact.title}</h1> : <h2 id="contact-title" data-split>{t.contact.title}</h2>}
         <p class="intro">{t.contact.intro}</p>
       </div>
+      {page && <div class="contact-stage"><Device3D kind="contact" label={t.contact.title} surface="dark" /></div>}
       <address class="person">
         <img class="photo" src={contact.photo} alt={contact.name} width="56" height="56" loading="lazy" />
         <span class="details">
@@ -46,6 +48,7 @@ const t = getContent(locale ?? Astro.currentLocale);
     .contact-form { width: 700px; } /* 7 columns */
   }
   /* Figma 33:133: title and intro at the top, person card at the bottom (space between). */
+  .contact-stage { width: 100%; max-width: 420px; aspect-ratio: 4 / 3; }
   .head { display: flex; flex-direction: column; gap: var(--spacing-gap-text-md); }
   .contact-info { justify-content: space-between; }
   .person {

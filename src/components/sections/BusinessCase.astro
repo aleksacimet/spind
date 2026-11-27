@@ -1,5 +1,6 @@
 ---
 import { lp, numberLocale } from '../../i18n';
+import Device3D from '../Device3D.astro';
 import { getContent } from '../../content/site';
 const { locale, page = false } = Astro.props as { locale?: string; page?: boolean };
 const t = getContent(locale ?? Astro.currentLocale);
@@ -20,9 +21,12 @@ const h = (n: number) => Math.round(n).toLocaleString(numberLocale(Astro.current
 <section id="business-case" class:list={['section bc glow-band on-accent', { 'glow-band--page': page }]} data-hero aria-labelledby="bc-title" data-section="business-case">
   <div class="space-glow" aria-hidden="true"></div>
   <div class="container">
+  <div class:list={['bc-top', { 'bc-top--page': page }]}>
   <header class="bc-head" data-reveal>
     {page ? <h1 id="bc-title" data-split>{b.title}</h1> : <h2 id="bc-title" data-split>{b.title}</h2>}
   </header>
+  {page && <div class="bc-stage"><Device3D kind="business-case" label={b.title} surface="dark" /></div>}
+  </div>
   <form class="calc" data-calc onsubmit="return false" aria-label={b.title}>
     <fieldset class="calc-inputs tile glow-panel" data-reveal="drawer">
       <legend class="label">{b.inputsTitle}</legend>
@@ -105,6 +109,12 @@ const h = (n: number) => Math.round(n).toLocaleString(numberLocale(Astro.current
   /* Dark band, same look as the contact form section. */
   .bc { padding-block: var(--spacing-padding-section-xl); }
   .bc.glow-band--page { padding-top: var(--hero-top); }
+  .bc-stage { width: 100%; max-width: 384px; aspect-ratio: 7 / 5; margin-bottom: var(--spacing-gap-general-section-sm); }
+  @media (min-width: 960px) {
+    .bc-top--page { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-gap-general-section-md); }
+    .bc-top--page .bc-head { margin-bottom: var(--spacing-gap-general-section-sm); }
+  }
+  @media (min-width: 1280px) { .bc-stage { max-width: 512px; } }
   .bc-head { display: grid; gap: var(--spacing-gap-text-md); margin-bottom: var(--spacing-gap-general-section-sm); max-width: 640px; }
   .bc-head h1, .bc-head h2 { color: var(--text-neutral-onsurface); }
   .bc-head h1 { font-size: var(--fs-page); line-height: var(--lh-page); letter-spacing: -0.03em; }

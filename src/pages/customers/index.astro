@@ -4,6 +4,7 @@
  * Built when showStories is true. While flags.exampleProof is on, everything here is fictional and labelled "Example".
  */
 import DrawerHead from '../../components/DrawerHead.astro';
+import Device3D from '../../components/Device3D.astro';
 import Base from '../../layouts/Base.astro';
 import StoryCard from '../../components/StoryCard.astro';
 import { getContent } from '../../content/site';
@@ -16,9 +17,12 @@ const industries = [...new Set(stories.map((s) => s.industry))];
   <section class="space page-hero" aria-labelledby="cs-title" data-hero>
     <div class="space-glow" aria-hidden="true"></div>
     <header class="container cs-hero">
-      <h1 id="cs-title">{c.heroTitle}</h1>
-      <p class="intro">{c.intro}</p>
-      <p class="note">{c.exampleNote}</p>
+      <div class="cs-copy">
+        <h1 id="cs-title">{c.heroTitle}</h1>
+        <p class="intro">{c.intro}</p>
+        <p class="note">{c.exampleNote}</p>
+      </div>
+      <div class="cs-stage"><Device3D kind="customers" label={c.title} surface="dark" /></div>
     </header>
   </section>
 
@@ -56,7 +60,14 @@ const industries = [...new Set(stories.map((s) => s.industry))];
 </script>
 
 <style>
-  .cs-hero { padding-top: var(--hero-top); padding-bottom: var(--hero-bottom); display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
+  .cs-hero { padding-top: var(--hero-top); padding-bottom: var(--hero-bottom); display: flex; flex-direction: column; gap: var(--spacing-gap-general-section-md); }
+  .cs-copy { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
+  .cs-stage { width: 100%; max-width: 384px; aspect-ratio: 7 / 5; }
+  @media (min-width: 960px) {
+    .cs-hero { flex-direction: row; align-items: center; justify-content: space-between; }
+    .cs-copy { max-width: 600px; }
+  }
+  @media (min-width: 1280px) { .cs-stage { width: 512px; max-width: none; } }
   .cs-hero h1 { font-size: var(--fs-title); line-height: var(--lh-title); letter-spacing: -0.02em; }
   .cs-hero .intro { max-width: 560px; color: var(--text-neutral-ondark); }
   .note { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-gap-text-md) var(--spacing-gap-text-lg); color: var(--text-neutral-placeholder-ondark); }

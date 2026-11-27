@@ -497,6 +497,37 @@ const screens: Record<string, () => Texture> = {
       bar(W / 2 - 150, H * 0.34 + 334, 300, 18, 0.42);
       bar(W / 2 - 110, H - 56, 220, 12, 0.6);
     }),
+  // Phone: calling us (contact): an avatar in rings, call waves, the yellow call button.
+  calling: () =>
+    drawScreen(...PHONE_PX, (k) => {
+      const { ctx, W, H, bar, rr, icon } = k;
+      bar(64, 52, 78, 20, 0.7);
+      const cy = H * 0.32;
+      for (const [r, a] of [[230, 0.06], [180, 0.1], [130, 0.16]] as const) {
+        ctx.beginPath();
+        ctx.arc(W / 2, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(46, 142, 255, ${a})`;
+        ctx.fill();
+      }
+      ctx.beginPath();
+      ctx.arc(W / 2, cy, 96, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.fill();
+      icon('user', W / 2 - 54, cy - 54, 108, '#1C3658', 1.8);
+      bar(W / 2 - 170, cy + 280, 340, 40, 0.92);
+      bar(W / 2 - 110, cy + 350, 220, 18, 0.42);
+      for (let i = 0; i < 6; i++) {
+        const x = 110 + (i % 3) * ((W - 220) / 2);
+        const y = H * 0.66 + Math.floor(i / 3) * 120;
+        ctx.beginPath();
+        ctx.arc(x, y, 44, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.fill();
+      }
+      rr(W / 2 - 70, H - 250, 140, 140, 70, HL);
+      icon('call', W / 2 - 34, H - 214, 68, '#16191E', 2);
+      bar(W / 2 - 110, H - 56, 220, 12, 0.6);
+    }),
   // Phone: being wiped for return (offboarding).
   wipe: () =>
     drawScreen(...PHONE_PX, (k) => {
@@ -906,6 +937,9 @@ const TILE_ICON: Record<string, string> = {
   hr: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3.5 19a5.5 5.5 0 0 1 11 0M16 11a2.5 2.5 0 1 0 0-5M17 14.5a4.5 4.5 0 0 1 3.5 4.5',
   courier: 'M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6zM17 19a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z',
   service: 'M15 4a4 4 0 0 0-3.8 5.2L4 16.4 7.6 20l7.2-7.2A4 4 0 0 0 20 9l-2.5 2.5-3-3L17 6a4 4 0 0 0-2-2z',
+  hospital: 'M4 21V7l8-4 8 4v14zM10 21v-5h4v5M12 7.5v5M9.5 10h5',
+  warehouse: 'M3 21V9l9-5 9 5v12M7 21v-7h10v7M7 17.5h10',
+  office: 'M5 21V4h10v17M15 9h4v12M8 8h2M8 12h2M8 16h2M3 21h18',
 };
 function buildTile(M: Mats, name: string) {
   const g = new Group();
@@ -1271,7 +1305,103 @@ function sceneIntegrations(M: Mats): Built {
   return { root, span: (a) => Math.max(1.3, 2.45 / a), lookY: 0.4, elev: 18, restY: 0, maxX: 0.04, keyTarget: [0, 0.5, 0], tick: (t, r) => ticks.forEach((f) => f(t, r)) };
 }
 
+/**
+ * Business case: IT desk time per month as clay bars on a slab, today (tall) next to with Spind (short, blue capped),
+ * growing in on a loop; Otto stands beside them. Real metres.
+ */
+function sceneBusinessCase(M: Mats): Built {
+  const root = new Group();
+  const L = buildLocker({ modules: ['master'], screenDrawer: 2 });
+  L.root.position.set(-0.78, 0, -0.1);
+  L.root.rotation.y = 0.28;
+  root.add(L.root, floorSpot(2.8, 0.38));
+  const slab = mesh(new RoundedBoxGeometry(1.3, 0.035, 0.52, 4, 0.015), M.clay);
+  slab.position.set(0.45, 0.0175, 0.05);
+  root.add(slab);
+  const today = [0.5, 0.56, 0.6, 0.64, 0.7];
+  const spind = [0.2, 0.17, 0.15, 0.13, 0.11];
+  const barGeo = new RoundedBoxGeometry(0.11, 1, 0.11, 3, 0.012);
+  const capGeo = new RoundedBoxGeometry(0.112, 0.018, 0.112, 2, 0.008);
+  const capMat = new MeshStandardMaterial({ color: BLUE, emissive: BLUE, emissiveIntensity: 1.2, roughness: 0.4, toneMapped: false });
+  const bars: { m: Mesh; cap?: Mesh; h: number; d: number }[] = [];
+  today.forEach((h, i) => {
+    const x = -0.1 + i * 0.25;
+    const a = mesh(barGeo, M.oldClay);
+    a.position.set(x, 0, -0.07);
+    const b = mesh(barGeo, M.clay);
+    b.position.set(x + 0.06, 0, 0.12);
+    const cap = mesh(capGeo, capMat, false);
+    root.add(a, b, cap);
+    bars.push({ m: a, h, d: i * 0.08 }, { m: b, cap, h: spind[i], d: i * 0.08 + 0.04 });
+  });
+  const base = 0.035;
+  const set = (p: number) =>
+    bars.forEach(({ m, cap, h, d }) => {
+      const k = Math.max(0.001, Math.min(1, (p - d) / 0.35));
+      const e = 1 - Math.pow(1 - k, 3);
+      m.scale.y = h * e;
+      m.position.y = base + (h * e) / 2;
+      if (cap) cap.position.set(m.position.x, base + h * e + 0.006, m.position.z);
+    });
+  const run = runner(root, floorCurve([-0.45, 0.45], [0.3, 0.45], 0.1), { dots: 2, trail: 12, period: 2.4, size: 0.014 });
+  const PERIOD = 7;
+  return {
+    root,
+    span: (a) => Math.max(1.2, 2.3 / a),
+    lookY: 0.38,
+    elev: 20,
+    restY: -0.1,
+    maxX: 0.04,
+    keyTarget: [0, 0.4, 0],
+    tick: (t, reduce) => {
+      run(t, reduce);
+      const p = reduce ? 1 : Math.min(1, ((t % PERIOD) / PERIOD) * 1.6);
+      set(p);
+    },
+  };
+}
+
+/** Contact: a phone lying on the floor calling us (avatar, yellow call button), call rings rippling out. */
+function sceneContact(M: Mats): Built {
+  const root = new Group();
+  root.add(lyingPhone(M, screens.calling(), -0.42), floorSpot(2, 0.6));
+  const ping = pings(root, { r0: 0.8, r1: 1.18, period: 2.6 });
+  return { root, span: (a) => Math.max(1.75, 2.75 / a), lookY: 0.02, elev: 50, restY: 0, tick: (t, r) => ping(t, r) };
+}
+
+/** Case studies: three customers in different industries, each site on its own clay plinth with its Spind. */
+function sceneCustomers(M: Mats): Built {
+  const root = new Group();
+  const sites: [number, number, ModuleKey[], string, number][] = [
+    [-1.2, 0.05, ['master', 's24'], 'hospital', 0.35],
+    [0.05, -0.55, ['master', 'n8'], 'warehouse', 0],
+    [1.25, 0.1, ['master'], 'office', -0.35],
+  ];
+  const ticks: ((t: number, r: boolean) => void)[] = [];
+  const discGeo = new CylinderGeometry(0.62, 0.64, 0.04, 64);
+  sites.forEach(([x, z, mods, icon, ry], i) => {
+    const disc = mesh(discGeo, M.clay);
+    disc.position.set(x, 0.02, z);
+    const L = buildLocker({ modules: mods, screenDrawer: null, contact: false });
+    L.root.position.set(x, 0.04, z - 0.1);
+    L.root.rotation.y = ry;
+    const tile = buildTile(M, icon);
+    tile.scale.setScalar(1.6);
+    tile.position.set(x + (i === 2 ? -0.36 : 0.36), 0.04, z + 0.42);
+    tile.rotation.y = ry * 0.6;
+    root.add(disc, L.root, tile);
+    ticks.push(pings(root, { r0: 0.7, r1: 1.0, x, z, count: 2, offset: i * 0.33, strength: 0.55 }));
+  });
+  ticks.push(runner(root, floorCurve([-0.6, 0.35], [-0.45, -0.35], 0.15), { dots: 2, trail: 12, period: 2.8, size: 0.016 }));
+  ticks.push(runner(root, floorCurve([0.55, -0.35], [0.7, 0.4], 0.15), { dots: 2, trail: 12, period: 3.1, size: 0.016 }));
+  root.add(floorSpot(3.6, 0.3));
+  return { root, span: (a) => Math.max(1.5, 3.5 / a), lookY: 0.4, elev: 22, restY: 0, maxX: 0.04, keyTarget: [0, 0.4, 0], tick: (t, r) => ticks.forEach((f) => f(t, r)) };
+}
+
 const SCENES: Record<string, (M: Mats, pose: string) => Built> = {
+  'business-case': sceneBusinessCase,
+  contact: sceneContact,
+  customers: sceneCustomers,
   'lost-device': sceneLost,
   'faulty-device-swap': sceneFaulty,
   'temporary-device': sceneLoan,
