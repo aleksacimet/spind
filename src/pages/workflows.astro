@@ -18,7 +18,7 @@ const t = getContent(locale ?? Astro.currentLocale);
 const W = t.workflowsPage;
 ---
 <Base title={`${W.label} | Spind`} description={W.meta} locale={locale} darkHero>
-  <TemplateHero id="workflows-page" label={W.label} title={W.title} intro={W.intro} primary={W.primary} secondary={W.secondary} />
+  <TemplateHero id="workflows-page" label={W.label} title={W.title} intro={W.intro} primary={W.primary} secondary={W.secondary} device="workflows" visualLabel={W.title} />
   <HandoverSteps />
   <ActionMatrix />
   <Compare />

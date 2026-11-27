@@ -20,7 +20,7 @@ const t = getContent(locale ?? Astro.currentLocale);
 const P = t.platformPage;
 ---
 <Base title={`${P.label} | Spind`} description={P.meta} locale={locale} darkHero>
-  <TemplateHero id="platform-page" label={P.label} title={P.title} intro={P.intro} primary={P.primary} secondary={P.secondary} />
+  <TemplateHero id="platform-page" label={P.label} title={P.title} intro={P.intro} primary={P.primary} secondary={P.secondary} device="platform" visualLabel={P.title} />
   <Platform locale={locale} />
   <Features locale={locale} />
 

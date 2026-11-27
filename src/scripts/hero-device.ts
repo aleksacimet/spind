@@ -21,6 +21,7 @@
 import {
   CanvasTexture,
   CircleGeometry,
+  CylinderGeometry,
   DirectionalLight,
   ExtrudeGeometry,
   Group,
@@ -50,6 +51,8 @@ import {
 } from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { LOGO_H, LOGO_W } from '../components/logo-path';
+import { buildLocker, logoCanvas, LD as LK_D, LGAP as LK_GAP, LTOP, LW as LK_W, OTTO_LAPTOP, type ModuleKey } from './locker-model';
 
 /* ---------- Phone dimensions (scene units; the phone is the hero, so it's big) ---------- */
 const PW = 0.76; // width
@@ -330,7 +333,82 @@ function lapChrome(k: Kit) {
   for (let i = 0; i < 6; i++) bar(30, 84 + i * 46, 90 - (i % 3) * 18, 14, i === 1 ? 0.6 : 0.22);
 }
 
+const monPx = (w = 1280) => [w, Math.round((w * MON_SCREEN[1]) / MON_SCREEN[0])] as const;
 const screens: Record<string, () => Texture> = {
+  // Platform overview: a map with every site, live status tiles per locker, the activity log.
+  dashboard: () =>
+    drawScreen(...monPx(), (k) => {
+      const { ctx, W, H, bar, rr } = k;
+      lapChrome(k);
+      const x0 = 180;
+      bar(x0, 70, 260, 26, 0.9);
+      // Map card with sites.
+      const mw = (W - x0 - 40) * 0.56;
+      const mh = H - 150;
+      ctx.save();
+      ctx.beginPath();
+      ctx.roundRect(x0, 120, mw, mh, 22);
+      ctx.clip();
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      ctx.fillRect(x0, 120, mw, mh);
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+      ctx.lineWidth = 8;
+      for (let i = 0; i < 7; i++) {
+        ctx.beginPath();
+        ctx.moveTo(x0 + i * 120 - 80, 120);
+        ctx.lineTo(x0 + i * 120 + 60, 120 + mh);
+        ctx.stroke();
+      }
+      for (let i = 0; i < 4; i++) {
+        ctx.beginPath();
+        ctx.moveTo(x0, 170 + i * 110);
+        ctx.lineTo(x0 + mw, 150 + i * 110);
+        ctx.stroke();
+      }
+      const pins: [number, number, boolean][] = [[0.2, 0.3, false], [0.55, 0.22, false], [0.78, 0.55, true], [0.35, 0.72, false]];
+      for (const [px, py, hl] of pins) {
+        const X = x0 + mw * px;
+        const Y = 120 + mh * py;
+        for (const [r, a] of [[44, 0.14], [26, 0.26]] as const) {
+          ctx.beginPath();
+          ctx.arc(X, Y, r, 0, Math.PI * 2);
+          ctx.fillStyle = hl ? `rgba(255, 211, 105, ${a})` : `rgba(46, 142, 255, ${a})`;
+          ctx.fill();
+        }
+        ctx.beginPath();
+        ctx.arc(X, Y, 12, 0, Math.PI * 2);
+        ctx.fillStyle = hl ? HL : '#2E8EFF';
+        ctx.fill();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+      }
+      ctx.restore();
+      // Status tiles: drawers per locker, free and in use.
+      const sx = x0 + mw + 28;
+      const sw = W - sx - 40;
+      rr(sx, 120, sw, 250, 22, 'rgba(255,255,255,0.06)');
+      bar(sx + 24, 144, 150, 16, 0.6);
+      const cols = 6;
+      const cw = (sw - 48 - (cols - 1) * 10) / cols;
+      for (let r = 0; r < 4; r++)
+        for (let c = 0; c < cols; c++) {
+          const n = r * cols + c;
+          rr(sx + 24 + c * (cw + 10), 184 + r * 44, cw, 34, 8, n === 9 ? HL : n % 4 === 1 || n % 7 === 2 ? 'rgba(46,142,255,0.8)' : 'rgba(255,255,255,0.1)');
+        }
+      // Activity log.
+      rr(sx, 390, sw, H - 390 - 30, 22, 'rgba(255,255,255,0.06)');
+      for (let i = 0; i < 4; i++) {
+        const y = 420 + i * 52;
+        if (y > H - 70) break;
+        ctx.beginPath();
+        ctx.arc(sx + 40, y + 10, 10, 0, Math.PI * 2);
+        ctx.fillStyle = i === 0 ? HL : '#2E8EFF';
+        ctx.fill();
+        bar(sx + 66, y + 3, sw * 0.5 - i * 20, 14, 0.5);
+        bar(sx + sw - 110, y + 3, 70, 14, 0.25);
+      }
+    }),
   // Faulty: glitch bands and a warning.
   faulty: () =>
     drawScreen(...lapPx(), (k) => {
@@ -556,7 +634,10 @@ function materials() {
   const lens = new MeshPhysicalMaterial({ color: 0x14243a, roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0.02 });
   const camRing = new MeshStandardMaterial({ color: 0xd5d9de, metalness: 1, roughness: 0.3 });
   const groove = new MeshStandardMaterial({ color: 0xd3d7dd, roughness: 0.85 });
-  return { clay, oldClay, frame, glass, lens, camRing, groove };
+  const port = new MeshStandardMaterial({ color: 0x3a414b, roughness: 0.6 });
+  const pad = new MeshPhysicalMaterial({ color: 0xe2e5e9, roughness: 0.35, metalness: 0.3, clearcoat: 0.5, clearcoatRoughness: 0.2 });
+  const logoMat = (color: string) => new MeshStandardMaterial({ map: texture(logoCanvas(color, 512)), transparent: true, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2 });
+  return { clay, oldClay, frame, glass, lens, camRing, groove, port, pad, logo: logoMat('#b8c0ca'), logoLight: logoMat('#8f99a6') };
 }
 type Mats = ReturnType<typeof materials>;
 const mesh = (g: BufferGeometry, m: MeshStandardMaterial | MeshPhysicalMaterial | MeshBasicMaterial, shadows = true) => {
@@ -645,60 +726,83 @@ function lyingPhone(M: Mats, screenTex: Texture, spin: number, scale = 1, y = 0)
   return holder;
 }
 
-/* ---------- Laptop: hinge at the back, keyboard deck, lid open or closed ---------- */
+/* ---------- Laptop: hinge at the back, keyboard deck with speaker grilles, lid open or closed ---------- */
 let keyTex: Texture | null = null;
 function keyboardTexture() {
   if (keyTex) return keyTex;
-  const [c, ctx] = makeCanvas(1024, 400);
+  const [c, ctx] = makeCanvas(1280, 440);
   ctx.fillStyle = '#eceef1';
-  ctx.fillRect(0, 0, 1024, 400);
+  ctx.fillRect(0, 0, 1280, 440);
+  // Speaker grilles left and right of the keys: fine dot fields.
+  ctx.fillStyle = '#cdd2d8';
+  for (const x0 of [22, 1280 - 22 - 96])
+    for (let y = 26; y < 400; y += 14)
+      for (let x = x0; x < x0 + 96; x += 14) {
+        ctx.beginPath();
+        ctx.arc(x + 6, y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+  const k0 = 140;
+  const kw0 = 1280 - k0 * 2;
   const rows = [14, 14, 13, 12, 11];
-  const kh = 56;
+  const kh = 60;
   const gap = 12;
+  const key = (x: number, y: number, w: number, h: number) => {
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, 10);
+    ctx.fillStyle = '#d3d7dd';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(x + 2, y + 1, w - 4, h - 7, 9);
+    ctx.fillStyle = '#f6f7f8';
+    ctx.fill();
+  };
+  // Function row: shorter keys.
+  for (let i = 0; i < 14; i++) key(k0 + i * ((kw0 + gap) / 14), 18, (kw0 + gap) / 14 - gap, 34);
   rows.forEach((n, r) => {
-    const kw = (1024 - 40 - gap * (n - 1)) / n;
-    for (let i = 0; i < n; i++) {
-      const x = 20 + i * (kw + gap);
-      const y = 22 + r * (kh + gap) + (r === 4 ? 0 : 0);
-      ctx.beginPath();
-      ctx.roundRect(x, y, kw, kh, 10);
-      ctx.fillStyle = '#dde0e5';
-      ctx.fill();
-      ctx.beginPath();
-      ctx.roundRect(x + 3, y + 2, kw - 6, kh - 8, 8);
-      ctx.fillStyle = '#f3f4f6';
-      ctx.fill();
-    }
+    const kw = (kw0 - gap * (n - 1)) / n;
+    for (let i = 0; i < n; i++) key(k0 + i * (kw + gap), 64 + r * (kh + gap), kw, kh);
   });
-  // Space bar row.
-  ctx.beginPath();
-  ctx.roundRect(300, 22 + 5 * (kh + gap) - 4, 424, kh - 6, 10);
-  ctx.fillStyle = '#dde0e5';
-  ctx.fill();
+  key(k0 + kw0 * 0.3, 64 + 5 * (kh + gap) - 2, kw0 * 0.4, kh - 10); // space bar
   keyTex = texture(c);
   return keyTex;
 }
 function buildLaptop(M: Mats, o: { screen?: Texture; open?: boolean; angle?: number; body?: MeshStandardMaterial | MeshPhysicalMaterial }) {
-  const { screen, open = true, angle = 0.32, body = M.clay } = o;
+  const { screen, open = true, angle = 0.32, body = M.frame } = o;
   const lap = new Group();
-  const base = mesh(new RoundedBoxGeometry(LW, LT, LD, 4, 0.014), body);
+  const base = mesh(new RoundedBoxGeometry(LW, LT, LD, 5, 0.016), body);
   base.position.y = LT / 2;
   lap.add(base);
+  // Front lip: a shallow notch to lift the lid, a soft groove.
+  const notch = mesh(new RoundedBoxGeometry(0.16, 0.008, 0.01, 2, 0.004), M.groove, false);
+  notch.position.set(0, LT - 0.004, LD / 2 - 0.001);
+  lap.add(notch);
+  // Ports on the left side: two USB-C and a headphone jack, dark soft slots.
+  for (const [z, w] of [[-0.24, 0.05], [-0.15, 0.05], [0.2, 0.018]] as const) {
+    const p = mesh(new RoundedBoxGeometry(0.004, 0.012, w, 2, 0.004), M.port, false);
+    p.position.set(-LW / 2 - 0.0005, LT / 2, z);
+    lap.add(p);
+  }
   if (open) {
-    const keys = mesh(new PlaneGeometry(LW * 0.84, LD * 0.4), new MeshStandardMaterial({ map: keyboardTexture(), roughness: 0.8 }), false);
+    const keys = mesh(new PlaneGeometry(LW * 0.94, LD * 0.44), new MeshStandardMaterial({ map: keyboardTexture(), roughness: 0.7, metalness: 0.2 }), false);
     keys.rotation.x = -Math.PI / 2;
-    keys.position.set(0, LT + 0.0008, -LD * 0.14);
+    keys.position.set(0, LT + 0.0008, -LD * 0.15);
     lap.add(keys);
-    const pad = mesh(flatRound(0.46, 0.28, 0.03), M.groove, false);
+    const pad = mesh(flatRound(0.5, 0.3, 0.03), M.pad, false);
     pad.rotation.x = -Math.PI / 2;
-    pad.position.set(0, LT + 0.0008, LD * 0.26);
+    pad.position.set(0, LT + 0.0008, LD * 0.255);
     lap.add(pad);
   }
+  // Hinge barrel along the back edge.
+  const barrel = mesh(new CylinderGeometry(0.016, 0.016, LW * 0.78, 24), M.port, false);
+  barrel.rotation.z = Math.PI / 2;
+  barrel.position.set(0, LT, -LD / 2 + 0.012);
+  lap.add(barrel);
   // Lid pivots on the back edge.
   const hinge = new Group();
   hinge.position.set(0, LT, -LD / 2 + 0.01);
   lap.add(hinge);
-  const lid = mesh(new RoundedBoxGeometry(LW, LH, LL, 4, 0.009), body);
+  const lid = mesh(new RoundedBoxGeometry(LW, LH, LL, 5, 0.009), body);
   lid.position.set(0, LH / 2, open ? LL / 2 : -LL / 2 - 0.006);
   hinge.add(lid);
   if (open) {
@@ -706,6 +810,10 @@ function buildLaptop(M: Mats, o: { screen?: Texture; open?: boolean; angle?: num
     const glassFront = mesh(flatRound(LW - 0.03, LH - 0.03, 0.03), M.glass, false);
     glassFront.position.set(0, LH / 2, LL + 0.0008);
     hinge.add(glassFront);
+    // Webcam in the top bezel.
+    const cam = mesh(new CircleGeometry(0.008, 20), M.lens, false);
+    cam.position.set(0, LH - 0.032, LL + 0.0014);
+    hinge.add(cam);
     if (screen) {
       const scr = new Mesh(flatRound(LAP_SCREEN[0], LAP_SCREEN[1], 0.012), screenMat(screen, 1.05));
       scr.position.set(0, LH / 2 + 0.03, LL + 0.0016);
@@ -716,8 +824,9 @@ function buildLaptop(M: Mats, o: { screen?: Texture; open?: boolean; angle?: num
     }
   } else {
     hinge.rotation.x = Math.PI / 2;
-    // Small grey logo on the closed lid, like the lockers.
-    const logo = mesh(new CircleGeometry(0.06, 32), M.groove, false);
+    // Small grey Spind logo on the closed lid, quiet, like on the lockers.
+    const lw = 0.22;
+    const logo = new Mesh(new PlaneGeometry(lw, (lw * LOGO_H) / LOGO_W), M.logo);
     logo.position.set(0, LH / 2, -LL - 0.006 - 0.0008);
     logo.rotation.y = Math.PI;
     hinge.add(logo);
@@ -726,31 +835,108 @@ function buildLaptop(M: Mats, o: { screen?: Texture; open?: boolean; angle?: num
 }
 const CLOSED_H = LT + LL + 0.006;
 
-/* ---------- Mini Spind locker (multi-site) ---------- */
-function miniLocker(M: Mats) {
+/* ---------- Monitor (platform): thin panel on a clay stand ---------- */
+const MON_W = 0.76;
+const MON_H = 0.46;
+const MON_SCREEN: [number, number] = [MON_W - 0.03, MON_H - 0.055];
+function buildMonitor(M: Mats, tex: Texture) {
   const g = new Group();
-  const w = 0.42;
-  const h = 0.62;
-  const d = 0.26;
-  const body = mesh(new RoundedBoxGeometry(w, h, d, 4, 0.03), M.clay);
-  body.position.y = h / 2;
-  g.add(body);
-  // Drawer grooves: fine soft grey lines on the front.
-  for (let i = 1; i < 5; i++) {
-    const line = mesh(new PlaneGeometry(w - 0.06, 0.006), M.groove, false);
-    line.position.set(0, (h * i) / 5 - 0.02, d / 2 + 0.0008);
-    g.add(line);
-  }
-  const vline = mesh(new PlaneGeometry(0.006, h * 0.6), M.groove, false);
-  vline.position.set(0, h * 0.3 + 0.02, d / 2 + 0.0008);
-  g.add(vline);
-  // Screen with a blue glow.
-  const scr = new Mesh(new PlaneGeometry(0.12, 0.08), new MeshBasicMaterial({ color: 0x2e8eff, toneMapped: false }));
-  scr.position.set(-0.1, h - 0.11, d / 2 + 0.001);
+  const lift = 0.2;
+  const panel = mesh(new RoundedBoxGeometry(MON_W, MON_H, 0.02, 5, 0.008), M.frame);
+  panel.position.set(0, lift + MON_H / 2, 0);
+  g.add(panel);
+  const glassFront = mesh(flatRound(MON_W - 0.008, MON_H - 0.008, 0.008), M.glass, false);
+  glassFront.position.set(0, lift + MON_H / 2, 0.0108);
+  g.add(glassFront);
+  const scr = new Mesh(flatRound(MON_SCREEN[0], MON_SCREEN[1], 0.004), screenMat(tex, 1.05));
+  scr.position.set(0, lift + MON_H / 2 + 0.012, 0.0116);
   g.add(scr);
-  const strip = new Mesh(new PlaneGeometry(w - 0.08, 0.012), new MeshBasicMaterial({ color: 0x7ab8ff, toneMapped: false }));
-  strip.position.set(0, h - 0.03, d / 2 + 0.001);
-  g.add(strip);
+  const sh = sheen(MON_W - 0.008, MON_H - 0.008, 0.008, 0.9);
+  sh.position.set(0, lift + MON_H / 2, 0.0122);
+  g.add(sh);
+  // Small grey logo on the chin.
+  const lw = 0.05;
+  const logo = new Mesh(new PlaneGeometry(lw, (lw * LOGO_H) / LOGO_W), M.logoLight);
+  logo.position.set(0, lift + 0.016, 0.0118);
+  g.add(logo);
+  const neck = mesh(new RoundedBoxGeometry(0.07, lift + 0.12, 0.025, 3, 0.01), M.clay);
+  neck.position.set(0, (lift + 0.12) / 2, -0.03);
+  neck.rotation.x = -0.12;
+  g.add(neck);
+  const foot = mesh(new RoundedBoxGeometry(0.26, 0.012, 0.19, 4, 0.006), M.clay);
+  foot.position.set(0, 0.006, -0.05);
+  g.add(foot);
+  return g;
+}
+
+/* ---------- Employee badge (workflows) ---------- */
+function buildBadge(M: Mats) {
+  const g = new Group();
+  const card = mesh(new RoundedBoxGeometry(0.054, 0.0856, 0.0024, 3, 0.001), M.clay);
+  g.add(card);
+  const [c, ctx] = makeCanvas(256, 406);
+  ctx.fillStyle = '#f4f5f7';
+  ctx.fillRect(0, 0, 256, 406);
+  ctx.fillStyle = '#2E8EFF';
+  ctx.fillRect(0, 0, 256, 70);
+  ctx.beginPath();
+  ctx.arc(128, 170, 56, 0, Math.PI * 2);
+  ctx.fillStyle = '#d7dce2';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.roundRect(48, 258, 160, 22, 11);
+  ctx.fillStyle = '#b8c0ca';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.roundRect(72, 296, 112, 14, 7);
+  ctx.fillStyle = '#d7dce2';
+  ctx.fill();
+  ctx.drawImage(logoCanvas('#ffffff', 160), 84, 16, 88, 88 * (LOGO_H / LOGO_W));
+  const face = new Mesh(new PlaneGeometry(0.052, 0.0836), new MeshStandardMaterial({ map: texture(c), roughness: 0.6 }));
+  face.position.z = 0.0013;
+  g.add(face);
+  return g;
+}
+
+/* ---------- Integration tiles: clay blocks with a blue line icon ---------- */
+const TILE_ICON: Record<string, string> = {
+  mdm: 'M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6zM9 12l2 2 4-4',
+  itsm: 'M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4zM14 7v10',
+  identity: 'M3 6h18v12H3zM8.5 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM5.5 16.2c.5-1.4 1.6-2 3-2s2.5.6 3 2M14 10h4.5M14 13h3.5',
+  hr: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3.5 19a5.5 5.5 0 0 1 11 0M16 11a2.5 2.5 0 1 0 0-5M17 14.5a4.5 4.5 0 0 1 3.5 4.5',
+  courier: 'M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6zM17 19a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6z',
+  service: 'M15 4a4 4 0 0 0-3.8 5.2L4 16.4 7.6 20l7.2-7.2A4 4 0 0 0 20 9l-2.5 2.5-3-3L17 6a4 4 0 0 0-2-2z',
+};
+function buildTile(M: Mats, name: string) {
+  const g = new Group();
+  const s = 0.2;
+  const block = mesh(new RoundedBoxGeometry(s, s, 0.05, 5, 0.03), M.clay);
+  block.position.y = s / 2;
+  g.add(block);
+  const [c, ctx] = makeCanvas(256, 256);
+  ctx.fillStyle = '#f1f3f5';
+  ctx.fillRect(0, 0, 256, 256);
+  ctx.save();
+  ctx.translate(68, 56);
+  ctx.scale(120 / 24, 120 / 24);
+  ctx.strokeStyle = '#2E8EFF';
+  ctx.lineWidth = 1.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.stroke(new Path2D(TILE_ICON[name]));
+  ctx.restore();
+  ctx.beginPath();
+  ctx.roundRect(88, 200, 80, 10, 5);
+  ctx.fillStyle = '#cfd5dc';
+  ctx.fill();
+  const face = new Mesh(flatRound(s - 0.04, s - 0.04, 0.02), new MeshStandardMaterial({ map: texture(c), roughness: 0.75 }));
+  face.position.set(0, s / 2, 0.0252);
+  g.add(face);
+  // Status light: a small blue dot on top.
+  const dot = new Mesh(new CircleGeometry(0.008, 20), new MeshBasicMaterial({ color: BLUE, toneMapped: false }));
+  dot.rotation.x = -Math.PI / 2;
+  dot.position.set(s / 2 - 0.03, s + 0.0005, 0);
+  g.add(dot);
   return g;
 }
 
@@ -801,19 +987,47 @@ function sceneLost(M: Mats, pose: string): Built {
 /** Shared framing for the open-laptop scenes. */
 const lapFrame = { span: (a: number) => Math.max(1.75, 2.55 / a), lookY: 0.36, elev: 30, restY: -0.42, maxX: 0.05 };
 
+/** A Spind locker in scene units (k units per metre), with drawer `open` (index) out and lit. */
+function lockerAt(modules: ModuleKey[], k: number, open?: number, screenDrawer?: number) {
+  const L = buildLocker({ modules, screenDrawer: screenDrawer ?? (open !== undefined ? open + 1 : null), yellow: true });
+  L.root.scale.setScalar(k);
+  if (open !== undefined) L.setOpen(open, 1);
+  return L;
+}
+
+/** Swap: the faulty laptop in front, Otto behind with the laptop drawer out and the replacement in it. */
 function sceneFaulty(M: Mats): Built {
   const root = new Group();
+  const K = 2.5;
+  const L = lockerAt(['master'], K, OTTO_LAPTOP);
+  L.root.position.set(-0.6, 0, -0.7);
+  L.root.rotation.y = 0.32;
   const lap = buildLaptop(M, { screen: screens.faulty() });
-  lap.position.z = 0.05;
-  root.add(lap, floorSpot(2.6, 0.45));
-  // Two swap arrows chasing each other around the laptop.
+  lap.scale.setScalar(0.82);
+  lap.position.set(0.68, 0, 0.55);
+  lap.rotation.y = -0.42;
+  root.add(L.root, lap, floorSpot(3.6, 0.4));
+  // Two-way flow between drawer and laptop, and a small pair of swap arrows turning on the floor between them.
+  const out = runner(root, floorCurve([-0.3, 0.05], [0.45, 0.35], 0.2), { dots: 3, trail: 14, period: 2.4 });
+  const back = runner(root, floorCurve([0.35, 0.55], [-0.45, 0.25], 0.2), { dots: 3, trail: 14, period: 2.4 });
   const arrows = new Group();
-  for (const a of [0, Math.PI]) {
-    const m = flat(new Mesh(arcArrow(1.08, 0.045, a + 0.35, a + Math.PI - 0.45), blueMat(0.9)), 0.0012, -1);
-    arrows.add(m);
-  }
+  for (const a of [0, Math.PI]) arrows.add(flat(new Mesh(arcArrow(0.2, 0.024, a + 0.35, a + Math.PI - 0.5), blueMat(0.95)), 0.0014, -1));
+  arrows.position.set(0, 0, 0.32);
   root.add(arrows);
-  return { root, ...lapFrame, tick: (t, reduce) => (arrows.rotation.y = reduce ? 0.4 : t * 0.35) };
+  return {
+    root,
+    span: (a) => Math.max(2.7, 3.7 / a),
+    lookY: 0.9,
+    elev: 16,
+    restY: -0.12,
+    maxX: 0.04,
+    keyTarget: [0, 0.9, 0],
+    tick: (t, r) => {
+      out(t, r);
+      back(t, r);
+      arrows.rotation.y = r ? 0.3 : -t * 0.6;
+    },
+  };
 }
 
 function sceneLoan(M: Mats): Built {
@@ -826,8 +1040,7 @@ function sceneLoan(M: Mats): Built {
     const a = (i / N) * Math.PI * 2 - Math.PI / 2;
     const m = new Mesh(geo, blueMat(0.15));
     m.rotation.set(-Math.PI / 2, 0, -a + Math.PI / 2);
-    const big = i % 5 === 0;
-    m.scale.y = big ? 1.5 : 1;
+    m.scale.y = i % 5 === 0 ? 1.5 : 1;
     m.position.set(Math.cos(a) * 1.12, 0.0012, Math.sin(a) * 1.12);
     m.renderOrder = -1;
     root.add(m);
@@ -882,15 +1095,34 @@ function sceneRollout(M: Mats): Built {
   };
 }
 
+/** Starter kit: Otto behind with the laptop drawer out, the kit (laptop with a welcome, a phone) in front. */
 function sceneOnboarding(M: Mats): Built {
   const root = new Group();
+  const L = lockerAt(['master'], 2.5, OTTO_LAPTOP);
+  L.root.position.set(-0.72, 0, -0.75);
+  L.root.rotation.y = 0.3;
   const lap = buildLaptop(M, { screen: screens.welcome() });
-  lap.position.set(-0.18, 0, -0.08);
-  const phone = lyingPhone(M, screens.phoneWelcome(), -0.35, 0.62);
-  phone.position.set(0.86, 0, 0.42);
-  root.add(lap, phone, floorSpot(3, 0.42));
-  const ping = pings(root, { r0: 1.0, r1: 1.5, strength: 0.6, period: 4 });
-  return { root, span: (a) => Math.max(1.8, 2.75 / a), lookY: 0.3, elev: 32, restY: -0.3, maxX: 0.05, tick: (t, r) => ping(t, r) };
+  lap.scale.setScalar(0.8);
+  lap.position.set(0.45, 0, 0.4);
+  lap.rotation.y = -0.38;
+  const phone = lyingPhone(M, screens.phoneWelcome(), -0.5, 0.46);
+  phone.position.set(1.2, 0, 0.9);
+  root.add(L.root, lap, phone, floorSpot(3.4, 0.42));
+  const ping = pings(root, { r0: 0.85, r1: 1.25, x: 0.75, z: 0.6, strength: 0.6, period: 4 });
+  const run = runner(root, floorCurve([-0.45, 0.1], [0.2, 0.75], 0.15), { dots: 3, trail: 14 });
+  return {
+    root,
+    span: (a) => Math.max(2.7, 3.8 / a),
+    lookY: 0.85,
+    elev: 17,
+    restY: -0.12,
+    maxX: 0.04,
+    keyTarget: [0, 0.9, 0],
+    tick: (t, r) => {
+      ping(t, r);
+      run(t, r);
+    },
+  };
 }
 
 function sceneOffboarding(M: Mats): Built {
@@ -906,31 +1138,137 @@ function sceneOffboarding(M: Mats): Built {
   return { root, span: (a) => Math.max(1.55, 2.35 / a), lookY: 0.04, elev: 46, restY: 0, tick: (t, r) => ping(t, r) };
 }
 
-function sceneMultiSite(M: Mats): Built {
+/** Four branches, each with its own real Spind, linked by the partner network. Real metres. */
+function sceneMultiSite(): Built {
   const root = new Group();
-  const sites: [number, number][] = [[-0.95, -0.15], [0.05, -0.6], [0.98, 0.05], [-0.1, 0.62]];
+  const sites: [number, number, ModuleKey[]][] = [
+    [-1.25, -0.2, ['master', 's24']],
+    [0.15, -1.05, ['master']],
+    [1.35, -0.05, ['master', 'n8']],
+    [0.0, 0.95, ['master']],
+  ];
   const ticks: ((t: number, r: boolean) => void)[] = [];
-  sites.forEach(([x, z], i) => {
-    const l = miniLocker(M);
-    l.position.set(x, 0, z);
-    l.scale.setScalar(1.25);
-    l.rotation.y = -0.15 + (i % 2) * 0.1;
-    const spot = floorSpot(0.9, 0.45);
-    spot.position.set(x, 0.0008, z);
-    root.add(l, spot);
-    ticks.push(pings(root, { r0: 0.3, r1: 0.62, x, z, count: 2, period: 3.2, offset: i * 0.25, strength: 0.7 }));
+  sites.forEach(([x, z, mods], i) => {
+    const L = buildLocker({ modules: mods, screenDrawer: i === 3 ? 5 : null });
+    L.root.position.set(x, 0, z);
+    L.root.rotation.y = [0.35, 0.05, -0.35, 0.1][i];
+    const spot = floorSpot(1.6, 0.4);
+    spot.position.set(x, 0.0008, z + 0.3);
+    root.add(L.root, spot);
+    ticks.push(pings(root, { r0: 0.55, r1: 1.0, x, z: z + 0.25, count: 2, period: 3.2, offset: i * 0.25, strength: 0.6 }));
   });
-  // Routes: the partner network linking every site.
-  const links: [number, number, number][] = [[0, 1, 0.12], [1, 2, 0.12], [2, 3, 0.15], [3, 0, 0.12]];
-  links.forEach(([a, b, bend], i) => ticks.push(runner(root, floorCurve(sites[a], sites[b], bend), { dots: 2, trail: 16, period: 3 + i * 0.3, size: 0.024 })));
+  const P = sites.map(([x, z]) => [x, z + 0.42] as [number, number]);
+  const links: [number, number, number][] = [[0, 1, 0.18], [1, 2, 0.18], [2, 3, 0.2], [3, 0, 0.18]];
+  links.forEach(([a, b, bend], i) => ticks.push(runner(root, floorCurve(P[a], P[b], bend), { dots: 2, trail: 18, period: 3 + i * 0.3, size: 0.02 })));
+  return { root, span: (a) => Math.max(2.4, 4.4 / a), lookY: 0.2, elev: 30, restY: 0, keyTarget: [0, 0.4, 0], tick: (t, r) => ticks.forEach((f) => f(t, r)) };
+}
+
+/**
+ * Workflows: the employee taps a badge at Otto's reader (rings pulse out of it) and one drawer after another slides
+ * out lit blue and back in: pickup, return, swap, the five actions running on one locker. Real metres.
+ */
+function sceneWorkflows(M: Mats): Built {
+  const root = new Group();
+  const L = buildLocker({ modules: ['master', 's24'], screenDrawer: 4, yellow: true });
+  root.add(L.root, floorSpot(2.6, 0.38));
+  const ox = -(LK_W + LK_GAP) / 2; // Otto's centre
+  const readerX = ox - 0.24;
+  const readerY = LTOP - 0.06 - 0.125;
+  const badge = buildBadge(M);
+  badge.scale.setScalar(1.7);
+  badge.position.set(readerX + 0.02, readerY - 0.01, LK_D / 2 + 0.09);
+  badge.rotation.set(-0.1, 0.35, 0.18);
+  root.add(badge);
+  // Rings pulsing out of the reader.
+  const ringGeo = new RingGeometry(0.97, 1, 64);
+  const rings = Array.from({ length: 3 }, () => {
+    const m = new Mesh(ringGeo, blueMat());
+    m.position.set(readerX, readerY, LK_D / 2 + 0.008);
+    root.add(m);
+    return m;
+  });
+  // A walking path on the floor up to the locker.
+  const run = runner(root, floorCurve([-1.25, 1.15], [ox, LK_D / 2 + 0.18], -0.2), { dots: 3, trail: 20, period: 2.8, size: 0.014 });
+  // The drawer sequence: one of Otto's phone drawers, the laptop drawer, two of Lotte's.
+  const seq = [4, OTTO_LAPTOP, 10 + 7, 10 + 16];
+  const STEP = 2.6;
   return {
     root,
-    span: (a) => Math.max(1.8, 3.0 / a),
-    lookY: 0.22,
-    elev: 40,
-    restY: 0,
-    tick: (t, r) => ticks.forEach((f) => f(t, r)),
+    span: (a) => Math.max(1.05, 1.65 / a),
+    lookY: 0.47,
+    elev: 13,
+    restY: -0.38,
+    maxX: 0.05,
+    keyTarget: [0, 0.5, 0],
+    tick: (t, reduce, ambient) => {
+      run(t, reduce);
+      rings.forEach((m, i) => {
+        const p = reduce ? (i + 0.5) / 3 : ((t / 1.8 + i / 3) % 1);
+        const r = 0.03 + p * 0.07;
+        m.scale.set(r, r, 1);
+        (m.material as MeshBasicMaterial).opacity = (1 - p) * 0.8;
+      });
+      if (ambient) badge.position.z = LK_D / 2 + 0.09 + Math.sin(t * 1.6) * 0.008;
+      if (reduce) {
+        L.setOpen(seq[1], 1);
+        return;
+      }
+      const k = Math.floor(t / STEP) % seq.length;
+      const local = (t % STEP) / STEP;
+      // Out over 15%, hold, back in over 15%, then a short pause.
+      const ease = (x: number) => x * x * (3 - 2 * x);
+      const p = local < 0.15 ? ease(local / 0.15) : local < 0.7 ? 1 : local < 0.85 ? 1 - ease((local - 0.7) / 0.15) : 0;
+      seq.forEach((d) => d !== seq[k] && L.setOpen(d, 0));
+      L.setOpen(seq[k], p);
+    },
   };
+}
+
+/** Platform: one screen shows every site; three Spinds stand behind it, each reporting in along the floor. */
+function scenePlatform(M: Mats): Built {
+  const root = new Group();
+  const mon = buildMonitor(M, screens.dashboard());
+  mon.scale.setScalar(1.7);
+  mon.position.set(0, 0, 0.7);
+  root.add(mon);
+  const sites: [number, number, ModuleKey[], number][] = [
+    [-1.15, -0.55, ['master', 's24'], 0.35],
+    [0.05, -1.1, ['master', 'm124'], 0],
+    [1.15, -0.5, ['master'], -0.35],
+  ];
+  const ticks: ((t: number, r: boolean) => void)[] = [];
+  sites.forEach(([x, z, mods, ry], i) => {
+    const L = buildLocker({ modules: mods, screenDrawer: null });
+    L.root.position.set(x, 0, z);
+    L.root.rotation.y = ry;
+    root.add(L.root);
+    ticks.push(runner(root, floorCurve([x, z + 0.42], [0, 0.55], 0.15 * (i - 1)), { dots: 2, trail: 18, period: 2.6 + i * 0.35, size: 0.018 }));
+    ticks.push(pings(root, { r0: 0.5, r1: 0.85, x, z: z + 0.2, count: 2, offset: i * 0.3, strength: 0.5 }));
+  });
+  root.add(floorSpot(3.6, 0.35));
+  return { root, span: (a) => Math.max(1.7, 3.3 / a), lookY: 0.55, elev: 15, restY: 0, maxX: 0.04, keyTarget: [0, 0.6, 0], tick: (t, r) => ticks.forEach((f) => f(t, r)) };
+}
+
+/** Integrations: your systems and partners as clay tiles in an arc, each feeding the locker along the floor. */
+function sceneIntegrations(M: Mats): Built {
+  const root = new Group();
+  const L = buildLocker({ modules: ['master', 's24'], screenDrawer: 7 });
+  L.root.position.z = -0.45;
+  root.add(L.root, floorSpot(3, 0.38));
+  const names = ['mdm', 'itsm', 'identity', 'hr', 'courier', 'service'];
+  const ticks: ((t: number, r: boolean) => void)[] = [];
+  names.forEach((n, i) => {
+    const a = MathUtils.degToRad(200 + (i * 140) / (names.length - 1)); // a front arc, left to right
+    const x = Math.cos(a) * 1.15;
+    const z = 0.25 - Math.sin(a) * 0.75;
+    const tile = buildTile(M, n);
+    tile.position.set(x, 0, z);
+    tile.scale.setScalar(1.45);
+    tile.rotation.y = -x * 0.35;
+    root.add(tile);
+    ticks.push(runner(root, floorCurve([x, z - 0.06], [(x * 0.25), -0.12], 0.08 * (x > 0 ? 1 : -1)), { dots: 2, trail: 14, period: 2.2 + (i % 3) * 0.35, size: 0.012 }));
+  });
+  return { root, span: (a) => Math.max(1.3, 2.45 / a), lookY: 0.4, elev: 18, restY: 0, maxX: 0.04, keyTarget: [0, 0.5, 0], tick: (t, r) => ticks.forEach((f) => f(t, r)) };
 }
 
 const SCENES: Record<string, (M: Mats, pose: string) => Built> = {
@@ -941,6 +1279,9 @@ const SCENES: Record<string, (M: Mats, pose: string) => Built> = {
   onboarding: sceneOnboarding,
   offboarding: sceneOffboarding,
   'multi-site': sceneMultiSite,
+  workflows: sceneWorkflows,
+  platform: scenePlatform,
+  integrations: sceneIntegrations,
 };
 export const DEVICE_SCENES = Object.keys(SCENES);
 
