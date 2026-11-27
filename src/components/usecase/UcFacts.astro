@@ -1,0 +1,33 @@
+---
+/**
+ * Use case "At a glance": four facts in one row (for whom, devices, how it starts, where), so a reader sees in
+ * seconds whether the use case fits them. One component for every use case page. Information only, no hover.
+ */
+import DrawerHead from '../DrawerHead.astro';
+import { getContent } from '../../content/site';
+interface Props { items: { label: string; value: string }[] }
+const { items } = Astro.props;
+const t = getContent(Astro.currentLocale);
+---
+<section id="glance" class="section" aria-label={t.sectionLabels.glance}>
+  <div class="container">
+    <DrawerHead label={t.sectionLabels.glance} />
+    <dl class="tiles glance">
+      {items.map((f, i) => (
+        <div class="tile glance-cell" data-reveal="drawer" style={`--d:${i * 80}ms`}>
+          <dt class="overline">{f.label}</dt>
+          <dd>{f.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .glance { grid-auto-rows: auto; }
+  .glance-cell { grid-column: 1 / -1; grid-row: auto; display: flex; flex-direction: column; gap: var(--spacing-gap-text-md); min-height: 0; }
+  .glance-cell dt { color: var(--text-neutral-subtle); }
+  .glance-cell dd { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); color: var(--text-neutral-headings); }
+  @media (min-width: 640px) { .glance-cell { grid-column: span 4; } }
+  @media (min-width: 960px) { .glance-cell { grid-column: span 3; min-height: 136px; } }
+</style>

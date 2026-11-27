@@ -1,0 +1,53 @@
+---
+/**
+ * Use case "What changes": two columns, one for the IT team and one for employees, three benefits each with a check.
+ * Every use case is sold to IT and lived by employees, so both sides read their own column.
+ * One component for every use case page. Information only, no hover.
+ */
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+import { whoIcons } from '../../content/icons';
+type Item = { title: string; text: string };
+interface Props { title: string; it: Item[]; people: Item[] }
+const { title, it, people } = Astro.props;
+const S = getContent(Astro.currentLocale).solutions;
+const cols = [
+  { icon: 'it', label: S.forIt, items: it },
+  { icon: 'employee', label: S.forPeople, items: people },
+];
+---
+<Section id="benefits" title={title}>
+  <div class="tiles ben">
+    {cols.map((c, ci) => (
+      <div class="tile ben-col" data-reveal="drawer" style={`--d:${ci * 120}ms`}>
+        <div class="ben-head">
+          <span class="ben-icon" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={whoIcons[c.icon]} pathLength="1" /></svg></span>
+          <h3>{c.label}</h3>
+        </div>
+        <ul class="ben-list" role="list">
+          {c.items.map((b) => (
+            <li>
+              <svg class="ben-check" viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><path d="M5 11.5l4 4 8-9" /></svg>
+              <div class="title-body"><p class="ben-t">{b.title}</p><p>{b.text}</p></div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</Section>
+
+<style>
+  .ben { grid-auto-rows: auto; }
+  .ben-col { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
+  .ben-head { display: flex; align-items: center; gap: var(--spacing-gap-general-object-md); }
+  .ben-head h3 { margin: 0; font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: -0.01em; }
+  .ben-icon { flex: none; display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-action-washed); }
+  .ben-icon svg { stroke: var(--icon-action-default); }
+  .ben-list { display: grid; }
+  .ben-list li { display: flex; gap: var(--spacing-gap-general-object-md); align-items: flex-start; padding-block: var(--spacing-padding-container-sm); box-shadow: inset 0 var(--hair) 0 var(--border-neutral-default); }
+  .ben-check { flex: none; margin-top: 2px; fill: none; stroke: var(--icon-action-default); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }
+  .ben-check path { vector-effect: non-scaling-stroke; }
+  .ben-t { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); color: var(--text-neutral-headings) !important; }
+  @media (min-width: 960px) { .ben-col { grid-column: span 6; } }
+</style>

@@ -1,0 +1,59 @@
+---
+/**
+ * Use case "Customers": one anonymized story that uses this use case, as a blue quote tile (quote, role, Example
+ * badge) next to the story's three figures, with a link to the full story. Shown only while example proof is on and a
+ * story lists this use case. One component for every use case page.
+ */
+import Section from '../Section.astro';
+import IndustryMark from '../IndustryMark.astro';
+import { getContent, flags, showStories } from '../../content/site';
+import { lp } from '../../i18n';
+interface Props { slug: string }
+const { slug } = Astro.props;
+const t = getContent(Astro.currentLocale);
+const S = t.solutions;
+const stories = t.proof.stories;
+// Prefer a story where this use case comes first, else any story that lists it.
+const s = stories.find((x) => x.solutions[0] === slug) ?? stories.find((x) => x.solutions.includes(slug));
+const show = flags.exampleProof && showStories && !!s;
+---
+{show && s && (
+  <Section id="proof" title={S.proofTitle} link={{ label: S.proofLink, href: lp(Astro.currentLocale, `/customers/${s.slug}`) }}>
+    <div class="tiles proof">
+      <figure class="tile tile--accent proof-quote" data-reveal="drawer">
+        <IndustryMark industryKey={s.industryKey} label={s.company} class="proof-mark" />
+        <blockquote><p>“{s.quote.text}”</p></blockquote>
+        <figcaption>
+          <strong>{s.quote.role}</strong>
+          <span class="proof-badge">{t.customers.exampleBadge}</span>
+        </figcaption>
+      </figure>
+      <dl class="proof-metrics">
+        {s.metrics.map((m, i) => (
+          <div class="tile proof-metric" data-reveal="drawer" style={`--d:${120 + i * 90}ms`}><dt>{m.label}</dt><dd class="tabular">{m.value}</dd></div>
+        ))}
+      </dl>
+    </div>
+  </Section>
+)}
+
+<style>
+  .proof { grid-auto-rows: auto; }
+  .proof-metrics { display: contents; }
+  .proof-quote { grid-column: 1 / -1; grid-row: auto; margin: 0; display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-gap-general-group-lg); min-height: 0; }
+  .proof-quote :global(.ind-mark) { color: var(--text-neutral-onsurface); }
+  .proof-quote :global(.ind-box) { background: var(--surface-action-hover); }
+  .proof-quote :global(.ind-box svg) { stroke: var(--icon-neutral-onsurface); }
+  .proof-quote blockquote p { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: -0.01em; color: var(--text-neutral-onsurface); max-width: 36ch; }
+  .proof-quote figcaption { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-gap-text-lg); color: var(--text-neutral-onsurface); }
+  .proof-quote figcaption strong { font-family: var(--font-display); font-weight: 600; }
+  .proof-badge { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-family: var(--font-mono); font-weight: 600; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; background: var(--surface-action-hover); color: var(--text-neutral-onsurface); }
+  .proof-metric { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: var(--spacing-gap-text-md); }
+  .proof-metric dd { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-stat); line-height: 48px; letter-spacing: -0.03em; color: var(--text-neutral-headings); }
+  .proof-metric dt { color: var(--text-neutral-body); }
+  @media (min-width: 640px) { .proof-metric { grid-column: span 4; } .proof-metric:last-child { grid-column: 1 / -1; } }
+  @media (min-width: 960px) {
+    .proof-quote { grid-column: 1 / span 8; grid-row: 1 / span 3; min-height: 420px; }
+    .proof-metric, .proof-metric:last-child { grid-column: 9 / span 4; }
+  }
+</style>

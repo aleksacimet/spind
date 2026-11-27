@@ -1,8 +1,25 @@
 ---
+/**
+ * Use case page. Every use case tells the same story in the same order, each section is one shared component:
+ * hero (the promise) → at a glance (does it fit me) → the problem (a typical day today, who pays for it) →
+ * how it works (four steps, who does what) → activity log (what IT sees) → what changes (for IT, for employees) →
+ * what it connects to (systems and service partners) → customer story → questions → next step → more use cases.
+ * Structure follows what competitors do well (Cora: situation, how it works, advantages per side; NetLocker: starting
+ * situation and an audit-proof record of every handover).
+ */
 import Base from '../../layouts/Base.astro';
 import Section from '../../components/Section.astro';
 import TemplateHero from '../../components/TemplateHero.astro';
 import UseCaseCard from '../../components/UseCaseCard.astro';
+import UcFacts from '../../components/usecase/UcFacts.astro';
+import UcSituation from '../../components/usecase/UcSituation.astro';
+import UcSteps from '../../components/usecase/UcSteps.astro';
+import UcLog from '../../components/usecase/UcLog.astro';
+import UcBenefits from '../../components/usecase/UcBenefits.astro';
+import UcConnects from '../../components/usecase/UcConnects.astro';
+import UcProof from '../../components/usecase/UcProof.astro';
+import Faq from '../../components/sections/Faq.astro';
+import CtaBand from '../../components/sections/CtaBand.astro';
 import { getContent } from '../../content/site';
 
 export function getStaticPaths() {
@@ -14,23 +31,20 @@ const t = getContent(locale ?? Astro.currentLocale);
 const S = t.solutions;
 const s = S.items.find((i) => i.slug === Astro.params.slug)!;
 const others = S.items.filter((i) => i.slug !== s.slug);
+const facts = (['who', 'devices', 'start', 'where'] as const).map((k) => ({ label: S.facts[k], value: s.facts[k] }));
 ---
 <Base title={`${s.title} | Spind`} description={s.intro} locale={locale} darkHero>
-  <TemplateHero id="sol" title={s.heroTitle} intro={s.intro} primary={S.primary} secondary={S.secondary} visualLabel={`${s.title} ${S.visualLabel}`} />
+  <TemplateHero id="sol" label={`${S.label} · ${s.title}`} title={s.heroTitle} intro={s.intro} primary={S.primary} secondary={S.secondary} visualLabel={`${s.title} ${S.visualLabel}`} />
 
-  <Section id="flow" title={S.flowTitle}>
-    <ol class="tiles flow" role="list">
-      {s.steps.map((st, i) => (
-        <li class:list={['tile', { 'tile--accent': i === 2 }]} data-reveal="drawer" style={`--d:${i * 90}ms`}>
-          <span class="step-num tabular" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-          <div class="title-body">
-            <h3>{st.title}</h3>
-            <p>{st.text}</p>
-          </div>
-        </li>
-      ))}
-    </ol>
-  </Section>
+  <UcFacts items={facts} />
+  <UcSituation title={s.situation.title} scene={s.situation.scene} pains={s.situation.pains} />
+  <UcSteps title={S.flowTitle} steps={s.steps} />
+  <UcLog title={s.log.title} text={s.log.text} locker={s.log.locker} entries={s.log.entries} />
+  <UcBenefits title={S.benefitsTitle} it={s.benefits.it} people={s.benefits.people} />
+  <UcConnects items={s.connects} />
+  <UcProof slug={s.slug} />
+  <Faq locale={locale} id="uc-faq" title={S.faqTitle} items={s.faq} />
+  <CtaBand id="uc-cta" title={s.cta.title} text={s.cta.text} cta={S.primary} />
 
   <Section id="more" title={S.moreTitle}>
     <ul class="tiles more" role="list">
@@ -39,22 +53,9 @@ const others = S.items.filter((i) => i.slug !== s.slug);
       ))}
     </ul>
   </Section>
-
 </Base>
 
 <style>
   .tiles { grid-auto-rows: auto; }
-  .tiles .tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-text-md); }
-  .tiles .tile h3 { margin: 0; }
-  .step-num { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); color: var(--text-neutral-subtle); margin-bottom: var(--spacing-gap-general-object-md); }
-  .flow .tile--accent .step-num { color: var(--text-neutral-onsurface); }
-
   .more :global(.uc) { grid-row: auto; min-height: 160px; }
-
-  @media (min-width: 640px) {
-    .tiles .tile { grid-column: span 4; }
-  }
-  @media (min-width: 960px) {
-    .flow .tile { grid-column: span 3; min-height: 260px; }
-  }
 </style>

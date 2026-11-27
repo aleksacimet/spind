@@ -1,0 +1,90 @@
+---
+/**
+ * Use case "Activity log": the use case told as the entries IT sees in our application (time, event, detail), next to
+ * what is recorded every time. The entries appear one after another when the section comes into view.
+ * One component for every use case page. Information only, no hover.
+ */
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+interface Props {
+  title: string;
+  text: string;
+  locker: string;
+  entries: { time: string; event: string; detail: string }[];
+}
+const { title, text, locker, entries } = Astro.props;
+const S = getContent(Astro.currentLocale).solutions;
+---
+<Section id="log" title={title}>
+  <div class="tiles log">
+    <div class="tile log-copy" data-reveal="drawer">
+      <p class="log-text">{text}</p>
+      <div class="log-fields">
+        <p class="overline">{S.logFieldsLabel}</p>
+        <ul role="list">
+          {S.logFields.map((f) => (
+            <li><svg viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><path d="M5 11.5l4 4 8-9" /></svg>{f}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+    <div class="tile log-stage" data-reveal="drawer" style="--d:120ms">
+      <div class="log-card">
+        <div class="log-head">
+          <span class="log-title"><span class="log-dot" aria-hidden="true"></span>{S.logHead}</span>
+          <span class="log-locker">{locker}</span>
+        </div>
+        <ol class="log-rows" role="list">
+          {entries.map((e, i) => (
+            <li class="log-row" style={`--k:${i}`}>
+              <span class="log-time tabular">{e.time}</span>
+              <span class="log-event">{e.event}</span>
+              <span class="log-detail">{e.detail}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .log { grid-auto-rows: auto; }
+  .log-copy, .log-stage { grid-column: 1 / -1; grid-row: auto; min-height: 0; }
+  .log-copy { display: flex; flex-direction: column; justify-content: space-between; gap: var(--spacing-gap-general-group-lg); }
+  .log-text { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); color: var(--text-neutral-body) !important; max-width: 44ch; }
+  .log-fields .overline { color: var(--text-neutral-subtle); margin-bottom: var(--spacing-gap-text-lg); }
+  .log-fields ul { display: grid; gap: var(--spacing-gap-text-md); }
+  .log-fields li { display: flex; align-items: center; gap: var(--spacing-gap-text-lg); font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-headings); }
+  .log-fields svg { flex: none; fill: none; stroke: var(--icon-action-default); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }
+  .log-fields svg path { vector-effect: non-scaling-stroke; }
+
+  /* The log window: a white card on a grey stage (Ice/100, a step lighter than the How it works stage), like a panel in our application. */
+  .log-stage { display: flex; align-items: center; background: var(--neutral-100); }
+  .log-card { width: 100%; min-width: 0; background: var(--surface-neutral-default); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); }
+  .log-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-gap-general-object-md); padding: var(--spacing-padding-container-sm) var(--spacing-padding-container-md); box-shadow: inset 0 calc(var(--hair) * -1) 0 var(--border-neutral-default); }
+  .log-title { display: inline-flex; align-items: center; gap: var(--spacing-gap-text-md); font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-headings); }
+  .log-dot { width: 8px; height: 8px; border-radius: 50%; background: #2F9E6B; }
+  .log-locker { font-family: var(--font-mono); font-weight: 600; font-size: 12px; line-height: 16px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-neutral-subtle); text-align: right; }
+  .log-rows { display: grid; }
+  .log-row { display: grid; grid-template-columns: 80px minmax(0, 1fr); column-gap: var(--spacing-gap-general-object-md); row-gap: 2px; padding: var(--spacing-padding-container-xs) var(--spacing-padding-container-md); box-shadow: inset 0 calc(var(--hair) * -1) 0 var(--border-neutral-default); }
+  .log-row:last-child { box-shadow: none; }
+  .log-time { grid-row: span 2; font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 24px; color: var(--text-action-default); }
+  .log-event, .log-detail { min-width: 0; overflow-wrap: break-word; hyphens: auto; }
+  .log-event { font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 24px; color: var(--text-neutral-headings); }
+  .log-detail { font-size: 14px; line-height: 20px; color: var(--text-neutral-body); }
+  /* Newest entry first in focus: the last row is the one that just happened. */
+  .log-row:last-child { background: var(--surface-action-washed); }
+
+  /* Entries appear one by one when the panel opens. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .log-stage .log-row { opacity: 0; transform: translateY(8px); transition: opacity 400ms var(--ease), transform 500ms var(--ease-out); transition-delay: calc(600ms + var(--k) * 260ms); }
+    :global(.js) .log-stage.is-visible .log-row { opacity: 1; transform: none; }
+  }
+
+  @media (min-width: 960px) {
+    .log-copy { grid-column: 1 / span 5; min-height: 400px; }
+    .log-stage { grid-column: 6 / span 7; padding: var(--spacing-padding-section-xs) var(--spacing-padding-section-sm); }
+    .log-row { grid-template-columns: 104px minmax(0, 1fr); }
+  }
+</style>

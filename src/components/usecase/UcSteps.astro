@@ -1,0 +1,40 @@
+---
+/**
+ * Use case "How it works": four numbered step tiles, each tagged with who does the step (Employee, IT, Spind,
+ * Partner), so the reader sees where the IT team is no longer needed. The third step (the moment at the locker) is
+ * the blue accent tile. One component for every use case page.
+ */
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+interface Props { title: string; steps: { role: string; title: string; text: string }[] }
+const { title, steps } = Astro.props;
+const S = getContent(Astro.currentLocale).solutions;
+---
+<Section id="flow" title={title}>
+  <ol class="tiles flow" role="list">
+    {steps.map((st, i) => (
+      <li class:list={['tile', 'step', { 'tile--accent': i === 2 }]} data-reveal="drawer" style={`--d:${i * 90}ms`}>
+        <div class="step-top">
+          <span class="step-num tabular" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <span class="overline step-role">{S.roles[st.role]}</span>
+        </div>
+        <div class="title-body">
+          <h3>{st.title}</h3>
+          <p>{st.text}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+</Section>
+
+<style>
+  .flow { grid-auto-rows: auto; }
+  .step { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-text-md); }
+  .step h3 { margin: 0; }
+  .step-top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--spacing-gap-text-lg); margin-bottom: var(--spacing-gap-general-object-md); }
+  .step-num { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); color: var(--text-neutral-subtle); }
+  .step-role { color: var(--text-action-default); }
+  .tile--accent .step-num, .tile--accent .step-role { color: var(--text-neutral-onsurface); }
+  @media (min-width: 640px) { .step { grid-column: span 4; } }
+  @media (min-width: 960px) { .step { grid-column: span 3; min-height: 260px; } }
+</style>

@@ -55,6 +55,17 @@ export const integrationIcons: Record<string, string> = {
   access: 'M4 6h14v10H4zM7 10h4M7 13h2M15 9.5v3',
   filling: 'M4 4h14v15H4zM4 9h14M4 14h14M9 6.5h4M9 11.5h4M9 16.5h4',
   service: 'M14.5 3.5a4 4 0 0 0-4.9 5.4L3.5 15l3.5 3.5 6.1-6.1a4 4 0 0 0 5.4-4.9l-2.6 2.6-2.4-.6-.6-2.4z',
+  /* Service partners (Integrations > Services): the client's own partner, suppliers, repair. */
+  partner: 'M8 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 19c0-3.3 2.2-5.5 5-5.5M13 12h7v7h-7zM15 15.5h3',
+  supplier: 'M3 7l8-4 8 4v8l-8 4-8-4zM3 7l8 4 8-4M11 11v8',
+  repair: 'M18 11a7 7 0 0 1-12.5 4.3M4 11A7 7 0 0 1 16.5 6.7M16.5 3v3.7h-3.7M5.5 19v-3.7h3.7',
+};
+
+/** Use case pages: who pays for the problem (pain cards) and the two benefit columns. */
+export const whoIcons: Record<string, string> = {
+  employee: 'M11 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5 19c0-3.5 2.6-6 6-6s6 2.5 6 6',
+  it: 'M3 4h16v11H3zM8 19h6M11 15v4',
+  company: 'M4 19V4h9v15M13 9h5v10M7 7h3M7 10.5h3M7 14h3M15.5 12h0.5M15.5 15h0.5M2 19h18',
 };
 const all: Record<string, string> = { ...solutionIcons, ...productIcons };
 /** Icon for a menu link: its own icon key, else the slug of its /use-cases/<slug> or #section href. */

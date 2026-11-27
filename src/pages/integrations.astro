@@ -4,35 +4,46 @@ import Section from '../components/Section.astro';
 import TemplateHero from '../components/TemplateHero.astro';
 import SecurityBand from '../components/sections/SecurityBand.astro';
 import CtaBand from '../components/sections/CtaBand.astro';
-import LissaLogo from '../components/LissaLogo.astro';
-import GoLive from '../components/sections/GoLive.astro';
 import Faq from '../components/sections/Faq.astro';
+import IntgKinds from '../components/sections/IntgKinds.astro';
+import IntegrationTile from '../components/IntegrationTile.astro';
+import LabelTiles from '../components/LabelTiles.astro';
 import { getContent } from '../content/site';
 import { integrationIcons } from '../content/icons';
-import StatusPill from '../components/StatusPill.astro';
 
 const locale = Astro.currentLocale ?? 'en';
 const t = getContent(locale ?? Astro.currentLocale);
 const P = t.integrationsPage;
 const icon = (k: string) => integrationIcons[k];
-// The map's left column lists the customer's systems only: LISSA Asset is our application, shown in the middle.
-const mapSystems = P.systems.filter((s) => s.key !== 'lissa');
+// The map's left column: the customer's systems (software) and partners (people). LISSA Asset is our application, in the middle.
+const pick = <T extends { key: string }>(list: T[], keys: string[]) => keys.map((k) => list.find((x) => x.key === k)!).filter(Boolean);
+const mapGroups = [
+  { title: P.mapLeft, items: pick(P.systems, P.mapSystems) },
+  { title: P.mapPartners, items: pick(P.services, P.mapServices) },
+];
 ---
-<!-- Integrations page for enterprise IT (ideas from Cora's "REST APIs / Plugins / Data security" slide):
-     landscape map, systems, connection methods, security, rollout, FAQ, CTA. -->
+<!-- Integrations page. Two kinds of integration, kept apart: systems (software that exchanges data) and services
+     (people and companies at the locker, who need no software). Order: overview, map, systems, services, partner
+     access levels (REST API and webhooks are level 3), rollout stages, security, FAQ, CTA. -->
 <Base title={`${P.label} | Spind`} description={P.meta} locale={locale} darkHero>
   <TemplateHero id="ip" label={P.label} title={P.title} intro={P.intro} primary={P.primary} secondary={P.secondary} visual={false} />
 
-  <!-- Landscape map: your systems -> LISSA Asset -> Spind lockers at every site. Dots flow along the lines. -->
+  <IntgKinds />
+
+  <!-- Landscape map: your systems and your partners -> our application -> Spind lockers at every site. Dots flow along the lines. -->
   <Section id="map" title={P.mapTitle} intro={P.mapIntro}>
     <div class="map" data-reveal>
-      <div class="map-col">
-        <p class="label map-h">{P.mapLeft}</p>
-        <ul role="list" class="chips">
-          {mapSystems.map((s, i) => (
-            <li class="chip" style={`--k:${i}`}><svg class="line-icon" viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><path d={icon(s.key)} /></svg>{s.title}</li>
-          ))}
-        </ul>
+      <div class="map-col map-groups">
+        {mapGroups.map((g) => (
+          <div>
+            <p class="label map-h">{g.title}</p>
+            <ul role="list" class="chips">
+              {g.items.map((s, i) => (
+                <li class="chip" style={`--k:${i}`}><svg class="line-icon" viewBox="0 0 22 22" width="20" height="20" aria-hidden="true"><path d={icon(s.key)} /></svg>{s.short}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
       <div class="map-link" aria-hidden="true"><span></span><span></span><span></span></div>
       <div class="map-hub glow-band on-accent" data-hero>
@@ -56,50 +67,35 @@ const mapSystems = P.systems.filter((s) => s.key !== 'lissa');
     </div>
   </Section>
 
-  <Section id="systems" title={P.systemsTitle} intro={P.systemsIntro}>
+  <Section id="systems" title={P.systemsTitle}>
     <ul class="tiles sys" role="list">
       {P.systems.map((s, i) => (
-        <li class="tile tile--hover sys-item" data-reveal="drawer" data-spot style={`--d:${(i % 3) * 90}ms`}>
-          {'logo' in s && s.logo
-            ? <LissaLogo />
-            : <span class="ic-box" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={icon(s.key)} pathLength="1" /></svg></span>}
-          <div class="title-body">
-            <h3>{s.title}</h3>
-            <p class="ex">{s.examples}</p>
-            <p>{s.text}</p>
-            <StatusPill status={s.status} class="tile-pill" />
-          </div>
-        </li>
+        <IntegrationTile icon={s.key} title={s.title} examples={s.examples} text={s.text} status={s.status} logo={'logo' in s && !!s.logo} delay={(i % 4) * 80} />
       ))}
     </ul>
   </Section>
 
-  <Section id="methods" title={P.methodsTitle} intro={P.methodsIntro}>
-    <ul class="tiles four" role="list">
-      {P.methods.map((m, i) => (
-        <li class="tile tile--hover" data-reveal="drawer" data-spot style={`--d:${i * 80}ms`}>
-          <span class="ic-box" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={icon(m.key)} pathLength="1" /></svg></span>
-          <div class="title-body"><h3>{m.title}</h3><p>{m.text}</p><StatusPill status={m.status} class="tile-pill" /></div>
-        </li>
+  <!-- Services: people and companies who handle devices at the locker. No status pills: every partner can start at level 1. -->
+  <Section id="services" title={P.servicesTitle}>
+    <ul class="tiles svc" role="list">
+      {P.services.map((s, i) => (
+        <IntegrationTile icon={s.key} title={s.title} examples={s.examples} text={s.text} delay={(i % 3) * 90} class="svc-tile" />
       ))}
     </ul>
+  </Section>
+
+  <!-- How a partner connects: badge or code (no software), a login to our application, or system to system (REST API, webhooks). -->
+  <Section id="levels" title={P.levelsTitle}>
+    <LabelTiles items={P.levels} />
   </Section>
 
   <!-- Rollout order from Pera's integration proposal: stage 1 usable immediately, then identity/HR/ITSM, then Teams/MCP. -->
   <Section id="stages" title={P.stagesTitle}>
-    <ol class="tiles three" role="list">
-      {P.stages.map((st, i) => (
-        <li class:list={['tile', { 'tile--accent': i === 0 }]} data-reveal="drawer" style={`--d:${i * 90}ms`}>
-          <p class="label stage-label">{st.label}</p>
-          <div class="title-body"><h3>{st.title}</h3><p>{st.text}</p></div>
-        </li>
-      ))}
-    </ol>
+    <LabelTiles items={P.stages} />
   </Section>
 
   <SecurityBand title={P.securityTitle} items={P.security} />
 
-  <GoLive locale={locale} />
   <Faq locale={locale} id="integration-faq" title={P.faqTitle} items={P.faq} />
 
   <CtaBand id="ip-cta" title={P.ctaTitle} text={P.ctaText} cta={P.cta} />
@@ -134,25 +130,9 @@ const mapSystems = P.systems.filter((s) => s.key !== 'lissa');
   }
   @keyframes flow { to { background-position: 18px 0; } }
 
-  /* Tiles */
+  .map-groups { display: grid; gap: var(--spacing-gap-general-group-md); }
+  .chip { height: 48px; }
   .tiles { grid-auto-rows: auto; }
-  .tiles .tile { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
-  .tiles .tile h3 { margin: 0; }
-  .tiles .tile { position: relative; }
-  .tile :global(.tile-pill) { align-self: flex-start; justify-self: start; margin-top: var(--spacing-gap-text-md); }
-  .stage-label { color: var(--text-action-default); }
-  .tile--accent .stage-label { color: var(--text-neutral-onsurface); }
-  .ic-box { display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-action-washed); transition: background-color var(--dur) var(--ease); }
-  .ic-box svg { stroke: var(--icon-action-strong); transition: stroke var(--dur-fast) var(--ease); }
-  .tile:hover .ic-box { background: var(--surface-action-default); }
-  .tile:hover .ic-box svg { stroke: var(--icon-neutral-onsurface); }
-  .tile:hover .ic-box path { animation: icon-draw 300ms var(--ease-out); }
-  .ex { font-family: var(--font-display); font-weight: 600; font-size: 14px; line-height: 20px; color: var(--text-action-default) !important; }
-  @media (min-width: 640px) { .tiles .tile { grid-column: span 4; } }
-  @media (min-width: 960px) {
-    .sys .tile { grid-column: span 3; min-height: 240px; }
-    .four .tile { grid-column: span 3; min-height: 220px; }
-    .three .tile { grid-column: span 4; min-height: 200px; }
-  }
+  @media (min-width: 960px) { .svc :global(.svc-tile) { --span: 4; } }
 
 </style>

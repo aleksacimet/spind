@@ -66,6 +66,8 @@ input, textarea, [contenteditable] { caret-color: var(--surface-cta-default); }
 ::selection { background: var(--surface-cta-default); color: var(--text-cta-default); }
 ::-moz-selection { background: var(--surface-cta-default); color: var(--text-cta-default); }
 strong { font-weight: 600; }
+/* Overline (Geist Mono caps, same type as the drawer label strips): role tags, step owners, small kickers. */
+.overline { font-family: var(--font-mono); font-weight: 600; font-size: 13px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-action-default); }
 .accent-text { color: var(--text-action-default); }
 .tabular { font-variant-numeric: tabular-nums; }
 

@@ -1,0 +1,33 @@
+---
+/**
+ * Use case "What it connects to": the systems and service partners this use case relies on, as integration tiles
+ * (same component as the Integrations page). The small blue line says whether it is one of your systems or a
+ * service partner. Title, status and kind come from the Integrations page content, the text is per use case.
+ */
+import Section from '../Section.astro';
+import IntegrationTile from '../IntegrationTile.astro';
+import { getContent } from '../../content/site';
+import { lp } from '../../i18n';
+interface Props { items: { key: string; text: string }[] }
+const { items } = Astro.props;
+const t = getContent(Astro.currentLocale);
+const S = t.solutions;
+const P = t.integrationsPage;
+const resolved = items.map((it) => {
+  const sys = P.systems.find((s) => s.key === it.key);
+  const svc = P.services.find((s) => s.key === it.key);
+  const src = sys ?? svc!;
+  return { ...it, title: src.title, kind: sys ? P.kindSystem : P.kindService, status: sys ? sys.status : undefined, logo: !!(sys && 'logo' in sys && sys.logo) };
+});
+---
+<Section id="connects" title={S.connectsTitle} link={{ label: S.connectsLink, href: lp(Astro.currentLocale, '/integrations') }}>
+  <ul class="tiles conn" role="list">
+    {resolved.map((r, i) => (
+      <IntegrationTile icon={r.key} title={r.title} examples={r.kind} text={r.text} status={r.status} logo={r.logo} delay={i * 80} />
+    ))}
+  </ul>
+</Section>
+
+<style>
+  .conn { grid-auto-rows: auto; }
+</style>

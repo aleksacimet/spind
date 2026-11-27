@@ -1,0 +1,59 @@
+---
+/**
+ * Integrations overview: "Integration means two things". Two tiles side by side, Systems (software that exchanges
+ * data with our application) and Services (people and companies who handle devices at the locker), each with
+ * examples, what it needs, and a link down to its own section. This is the distinction the rest of the page follows.
+ */
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+import { integrationIcons } from '../../content/icons';
+const t = getContent(Astro.currentLocale);
+const P = t.integrationsPage;
+const all = [...P.systems, ...P.services];
+const short = (k: string) => all.find((x) => x.key === k)?.short ?? k;
+---
+<Section id="kinds" title={P.kindsTitle}>
+  <div class="tiles kinds">
+    {P.kinds.map((k, i) => (
+      <div class="tile kind" data-reveal="drawer" style={`--d:${i * 120}ms`}>
+        <div class="kind-top">
+          <span class="ic-box" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={integrationIcons[k.key]} pathLength="1" /></svg></span>
+          <p class="overline kind-label">{k.label}</p>
+        </div>
+        <div class="title-body">
+          <h3>{k.title}</h3>
+          <p>{k.text}</p>
+        </div>
+        <ul class="kind-chips" role="list">
+          {k.chips.map((c) => (
+            <li><svg viewBox="0 0 22 22" width="18" height="18" aria-hidden="true"><path d={integrationIcons[c]} /></svg>{short(c)}</li>
+          ))}
+        </ul>
+        <div class="kind-needs">
+          <p class="overline">{k.needsLabel}</p>
+          <p class="kind-needs-text">{k.needs}</p>
+        </div>
+        <a class="btn btn--secondary btn--sm kind-link" href={k.href}>{k.cta}<span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    ))}
+  </div>
+</Section>
+
+<style>
+  .kinds { grid-auto-rows: auto; }
+  .kind { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); }
+  .kind h3 { margin: 0; font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: -0.01em; }
+  .kind-top { display: flex; align-items: center; gap: var(--spacing-gap-general-object-md); }
+  .kind-label { color: var(--text-action-default) !important; }
+  .ic-box { display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-action-washed); }
+  .ic-box svg { stroke: var(--icon-action-strong); }
+  .kind-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-text-md); }
+  .kind-chips li { display: inline-flex; align-items: center; gap: var(--spacing-gap-text-md); height: 36px; padding: 0 var(--spacing-padding-container-xs); background: var(--surface-neutral-page); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); font-family: var(--font-display); font-weight: 600; font-size: 14px; line-height: 20px; color: var(--text-neutral-headings); }
+  .kind-chips svg { flex: none; fill: none; stroke: var(--icon-action-strong); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }
+  .kind-chips svg path { vector-effect: non-scaling-stroke; }
+  .kind-needs { margin-top: auto; padding-top: var(--spacing-padding-container-sm); box-shadow: inset 0 var(--hair) 0 var(--border-neutral-default); display: grid; gap: var(--spacing-gap-text-sm); }
+  .kind-needs .overline { color: var(--text-neutral-subtle) !important; }
+  .kind-needs-text { font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-headings) !important; }
+  .kind-link { align-self: flex-start; }
+  @media (min-width: 960px) { .kind { grid-column: span 6; min-height: 480px; } }
+</style>

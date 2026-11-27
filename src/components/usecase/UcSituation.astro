@@ -1,0 +1,59 @@
+---
+/**
+ * Use case "The problem": a dark story card (a typical day today, told as a short scene) next to three pain cards,
+ * one for each side that pays for the problem: the employee, the IT team and the company.
+ * One component for every use case page. Information only, no hover.
+ */
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+import { whoIcons } from '../../content/icons';
+interface Props {
+  title: string;
+  scene: string;
+  pains: { who: string; title: string; text: string }[];
+}
+const { title, scene, pains } = Astro.props;
+const S = getContent(Astro.currentLocale).solutions;
+---
+<Section id="situation" title={title}>
+  <div class="tiles sit">
+    <figure class="tile sit-scene" data-surface="dark" data-reveal="drawer">
+      <figcaption class="overline sit-label">{S.sceneLabel}</figcaption>
+      <blockquote><p>{scene}</p></blockquote>
+      <svg class="sit-clock" viewBox="0 0 22 22" width="28" height="28" aria-hidden="true"><path d="M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM11 7v4.5l3 2" /></svg>
+    </figure>
+    <ul class="sit-pains" role="list">
+      {pains.map((p, i) => (
+        <li class="tile pain" data-reveal="drawer" style={`--d:${120 + i * 90}ms`}>
+          <span class="pain-icon" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={whoIcons[p.who]} pathLength="1" /></svg></span>
+          <div class="title-body">
+            <p class="overline">{S.who[p.who]}</p>
+            <h3>{p.title}</h3>
+            <p>{p.text}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Section>
+
+<style>
+  .sit { grid-auto-rows: auto; }
+  .sit-pains { display: contents; }
+  .sit-scene { grid-column: 1 / -1; grid-row: auto; margin: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-lg); min-height: 320px; background: var(--surface-neutral-dark); border-color: transparent; box-shadow: none; }
+  .sit-label { color: var(--surface-cta-default); }
+  .sit-scene blockquote p { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: -0.01em; color: var(--text-neutral-onsurface); max-width: 34ch; }
+  .sit-clock { margin-top: auto; fill: none; stroke: var(--surface-cta-default); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }
+  .sit-clock path { vector-effect: non-scaling-stroke; }
+
+  .pain { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; gap: var(--spacing-gap-general-object-lg); align-items: flex-start; }
+  .pain h3 { margin: 0; }
+  .pain .overline { margin-bottom: var(--spacing-gap-text-sm); color: var(--text-action-default); }
+  .pain-icon { flex: none; display: grid; place-items: center; width: 48px; height: 48px; background: var(--surface-action-washed); }
+  .pain-icon svg { stroke: var(--icon-action-default); }
+
+  @media (min-width: 960px) {
+    .sit-scene { grid-column: 1 / span 6; grid-row: 1 / span 3; min-height: 0; }
+    .pain { grid-column: 7 / span 6; }
+  }
+</style>

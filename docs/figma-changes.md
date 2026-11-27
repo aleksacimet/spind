@@ -13,6 +13,40 @@ When a batch is built, move it from To build to Built and note the date.
 
 _Nothing waiting. Add new Figma changes here._
 
+## Built in code only, Figma still to update (2026-11-27, round 9)
+
+### Use case pages: one story, eleven sections, each a shared component
+
+Every use case page (all 7, English and German) now tells the same story in the same order. Ideas from competitors: Cora (initial situation, how it works, advantages split for IT and for end users, go-live, references) and NetLocker (the customer's starting situation, and a record of every handover: time, user, device, ticket).
+
+1. **Hero** (TemplateHero): label is now "USE CASE · <name>".
+2. **At a glance** (`usecase/UcFacts.astro`, label AT A GLANCE): four white cells, mono label + H4 value: For, Devices, Starts with, Where.
+3. **The problem** (`usecase/UcSituation.astro`, label THE PROBLEM): title per use case (e.g. "One broken laptop, two lost days"). Left half: dark story card (Ice/900) with a yellow mono label "A TYPICAL DAY TODAY", the scene in H3 white, a yellow clock icon at the bottom. Right half: three pain rows, each with a 48px washed icon tile and a blue mono tag for who pays: Employee, IT team, Company.
+4. **How it works** (`usecase/UcSteps.astro`): the 4 step tiles, now with who does the step in blue mono caps on the right of the number (Employee, IT, Spind, Partner). Step 3 stays the blue accent tile.
+5. **Activity log** (`usecase/UcLog.astro`, label ACTIVITY LOG): left tile with the text and "Recorded every time" (Person, Device and serial number, Locker and drawer, Date and time) with blue checks; right tile on Ice/100 with a white log card (green dot + "Activity log", locker name in mono caps, rows of time in blue mono / event / detail). The newest row is washed blue. Rows appear one by one when the section comes into view.
+6. **What changes** (`usecase/UcBenefits.astro`, label WHAT CHANGES): two columns, "For your IT team" and "For employees", 3 benefits each with a blue check and a hairline between them.
+7. **What it connects to** (`usecase/UcConnects.astro`, label INTEGRATIONS, "See all integrations" button on the right): integration tiles (new shared `IntegrationTile.astro`, same as on the Integrations page) with a small blue line "Your system" or "Service partner" and the status pill for systems.
+8. **How IT teams use it** (`usecase/UcProof.astro`, label CUSTOMERS, "Read the story" button): blue quote tile (industry mark, quote, role, EXAMPLE badge) + the story's three figures in white tiles. Only shown when a sample story lists the use case (faulty swap, temporary devices, onboarding, multi-site).
+9. **Questions about this use case** (Faq): 3 questions per use case.
+10. **Next step** (CtaBand): title and text per use case.
+11. **More use cases**: unchanged.
+
+New global class `.overline` (Geist Mono 600 13/16, 8% tracking, caps, blue) for role tags and kickers.
+
+### Integrations page: systems and services kept apart
+
+- Hero: "Spind works with your systems and your partners".
+- New **Integration means two things** (`sections/IntgKinds.astro`, label OVERVIEW): two tiles. Systems = "Software that talks to software" (chips MDM, Service desk, Identity and SSO, HR system, Microsoft Teams; needs: an interface on both sides). Services = "People who handle your devices" (chips Our field service, Your service partner, Couriers, Suppliers; needs: a badge, a code or a login, no software). Each ends with a secondary button that jumps to its section.
+- **How it fits together** map: the left column has two groups, YOUR SYSTEMS and YOUR PARTNERS (chips 48px tall now).
+- **Systems we connect**: software only (LISSA Asset, Badges and access, MDM, ITSM, Teams, Identity, HR, AI assistants), 4 per row. Field service moved out.
+- New **Services we work with** (label SERVICES): Spind field service, Your service partner, Logistics and couriers, Suppliers and staging, Repair and refurbishment, Your own IT and site staff. 3 per row, no status pills (every partner can start at level 1).
+- New **Every partner can work with Spind, with or without software** (label PARTNER ACCESS, shared `LabelTiles.astro`): Level 1 "A badge or a code" (blue accent, no software needed, Available), Level 2 "A login to our application" (Available), Level 3 "System to system" with REST API and Webhooks chips (On request). The old "How it connects and runs" section (REST API, Webhooks, Locker access, Filling model) is gone: access moved to Systems, filling to Services, API and webhooks to Level 3.
+- Rollout stages use the same `LabelTiles` component; stage 1 is now "Lockers, access and partners".
+- Go live timeline removed from this page (it is on the home page; the rollout stages cover the integration side).
+- FAQ: two new questions ("Our service partner has no software…", "Do we have to switch to your field service?").
+- Menu subtitle for Integrations: "Your systems and your partners".
+- German hero button shortened to "Integration besprechen" (the old label ran out of the button on phones).
+
 ## Built in code only, Figma still to update (2026-11-25, round 8)
 
 - How it works ("From request to device in 4 steps"):
