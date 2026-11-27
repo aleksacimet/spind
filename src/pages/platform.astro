@@ -1,11 +1,19 @@
 ---
+/**
+ * Platform: our application. The overview (mockup), what IT sees (features), who sees what (roles), security
+ * (anchor #security, linked from the Product menu), questions, next step, more of the product.
+ * The integrations teaser, Go live and the general FAQ stay on the home page, so nothing here repeats it.
+ */
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
 import TemplateHero from '../components/TemplateHero.astro';
 import Platform from '../components/sections/Platform.astro';
 import Features from '../components/sections/Features.astro';
-import Integrations from '../components/sections/Integrations.astro';
-import GoLive from '../components/sections/GoLive.astro';
+import SecurityBand from '../components/sections/SecurityBand.astro';
 import Faq from '../components/sections/Faq.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
+import ProductMore from '../components/sections/ProductMore.astro';
+import IntegrationTile from '../components/IntegrationTile.astro';
 import { getContent } from '../content/site';
 const locale = Astro.currentLocale ?? 'en';
 const t = getContent(locale ?? Astro.currentLocale);
@@ -15,7 +23,22 @@ const P = t.platformPage;
   <TemplateHero id="platform-page" label={P.label} title={P.title} intro={P.intro} primary={P.primary} secondary={P.secondary} />
   <Platform locale={locale} />
   <Features locale={locale} />
-  <Integrations locale={locale} />
-  <GoLive locale={locale} />
-  <Faq locale={locale} />
+
+  <!-- Who sees what: one icon tile per role (same tile as the integrations), the blue line says what they work with. -->
+  <Section id="roles" title={P.rolesTitle}>
+    <ul class="tiles roles" role="list">
+      {P.roles.map((r, i) => (
+        <IntegrationTile icon={r.key} title={r.title} examples={r.examples} text={r.text} delay={i * 80} />
+      ))}
+    </ul>
+  </Section>
+
+  <SecurityBand title={P.securityTitle} items={P.security} />
+  <Faq locale={locale} id="platform-faq" title={P.faqTitle} items={P.faq} />
+  <CtaBand id="pf-cta" title={P.ctaTitle} text={P.ctaText} cta={P.cta} />
+  <ProductMore current="platform" />
 </Base>
+
+<style>
+  .roles { grid-auto-rows: auto; }
+</style>

@@ -1,0 +1,91 @@
+---
+/**
+ * Workflows "How a handover runs": the four steps of How it works on the home page (Request, Identify, Open,
+ * Tracked), each opened up to show every option: where a request starts, what opens the drawer, the five actions
+ * and what is recorded, with the four request statuses at the end. Step 3 (the moment at the locker) is the blue
+ * accent tile, as on the use case pages. Information only, no hover.
+ */
+import Section from '../Section.astro';
+import StatusPill from '../StatusPill.astro';
+import { getContent } from '../../content/site';
+import { anyIcon } from '../../content/icons';
+const W = getContent(Astro.currentLocale).workflowsPage;
+const last = W.anatomy.length - 1;
+const statusKey = ['pending', 'done', 'cancelled', 'expired'];
+---
+<Section id="anatomy" title={W.anatomyTitle}>
+  <ol class="tiles hs" role="list">
+    {W.anatomy.map((s, i) => (
+      <li class:list={['tile', 'hs-step', { 'tile--accent': i === 2 }]} data-reveal="drawer" style={`--d:${i * 90}ms`}>
+        <div class="hs-top">
+          <span class="hs-num tabular" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <span class="overline hs-step-name">{s.step}</span>
+        </div>
+        <h3>{s.title}</h3>
+        <ul class="hs-list" role="list">
+          {s.items.map((it) => (
+            <li class="hs-item">
+              <span class="hs-ic" aria-hidden="true"><svg viewBox="0 0 22 22" width="20" height="20"><path d={anyIcon(it.icon)} /></svg></span>
+              <span class="hs-txt">
+                <span class="hs-label">{it.label}</span>
+                {'status' in it && it.status
+                  ? <StatusPill status={it.status} class="hs-pill" />
+                  : ('who' in it && it.who && <span class="hs-who">{it.who}</span>)}
+              </span>
+            </li>
+          ))}
+        </ul>
+        {s.note && <p class="hs-note">{s.note}</p>}
+        {i === last && (
+          <div class="hs-status">
+            <p class="overline">{W.statusLabel}</p>
+            <ul class="hs-chips" role="list">
+              {W.statuses.map((st, k) => <li class={`hs-chip hs-chip--${statusKey[k]}`}><span class="hs-dot" aria-hidden="true"></span>{st}</li>)}
+            </ul>
+          </div>
+        )}
+      </li>
+    ))}
+  </ol>
+</Section>
+
+<style>
+  .hs { grid-auto-rows: auto; }
+  .hs-step { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-md); }
+  .hs-step h3 { margin: 0; }
+  .hs-top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--spacing-gap-text-lg); margin-bottom: var(--spacing-gap-text-md); }
+  .hs-num { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); color: var(--text-neutral-subtle); }
+  .hs-step-name { color: var(--text-action-default); }
+
+  /* Options: icon square + label, with who does it (mono, subtle) or a status pill under the label. */
+  .hs-list { display: grid; gap: var(--spacing-gap-text-md); margin-top: var(--spacing-gap-text-md); }
+  .hs-item { display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: center; column-gap: var(--spacing-gap-text-lg); min-height: 44px; }
+  .hs-ic { display: grid; place-items: center; width: 36px; height: 36px; background: var(--surface-action-washed); }
+  .hs-ic svg { fill: none; stroke: var(--icon-action-strong); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }
+  .hs-ic svg path { vector-effect: non-scaling-stroke; }
+  .hs-txt { display: grid; justify-items: start; gap: 2px; min-width: 0; }
+  .hs-label { font-family: var(--font-display); font-weight: 600; font-size: 16px; line-height: 22px; color: var(--text-neutral-headings); }
+  .hs-who { font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-neutral-subtle); }
+  .hs-txt :global(.hs-pill) { height: 22px; padding: 0 8px; font-size: 11px; }
+  .hs-txt :global(.hs-pill .pill-dot) { width: 6px; height: 6px; }
+  .hs-note { margin-top: auto; padding-top: var(--spacing-padding-container-xs); box-shadow: inset 0 var(--hair) 0 var(--border-neutral-default); font-size: 15px; line-height: 22px; }
+
+  /* Request statuses at the end of the last step. */
+  .hs-status { margin-top: auto; padding-top: var(--spacing-padding-container-xs); box-shadow: inset 0 var(--hair) 0 var(--border-neutral-default); display: grid; gap: var(--spacing-gap-text-lg); }
+  .hs-status .overline { color: var(--text-neutral-subtle); }
+  .hs-chips { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-text-md); }
+  .hs-chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-neutral-headings); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); }
+  .hs-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--icon-neutral-subtle, #8A94A3); }
+  .hs-chip--pending .hs-dot { background: var(--icon-action-default); }
+  .hs-chip--done .hs-dot { background: #2F9E6B; }
+  .hs-chip--expired .hs-dot { background: var(--icon-status-error); }
+
+  /* Accent step (Open): white on blue. */
+  .tile--accent .hs-num, .tile--accent .hs-step-name, .tile--accent .hs-label { color: var(--text-neutral-onsurface); }
+  .tile--accent .hs-who { color: color-mix(in srgb, var(--neutral-white) 75%, transparent); }
+  .tile--accent .hs-ic { background: color-mix(in srgb, var(--neutral-white) 16%, transparent); }
+  .tile--accent .hs-ic svg { stroke: var(--icon-neutral-onsurface); }
+
+  @media (min-width: 640px) { .hs-step { grid-column: span 4; } }
+  @media (min-width: 960px) { .hs-step { grid-column: span 3; min-height: 520px; } }
+</style>

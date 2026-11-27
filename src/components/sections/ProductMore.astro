@@ -1,0 +1,33 @@
+---
+/**
+ * "More of the product": the other product pages as link cards (the same card as "More use cases"). Closes every
+ * product page, after the questions and the next step, so the Product section reads as one set of pages.
+ * current: the page it sits on, left out of the list.
+ */
+import Section from '../Section.astro';
+import UseCaseCard from '../UseCaseCard.astro';
+import { getContent } from '../../content/site';
+import { productIcons } from '../../content/icons';
+interface Props { current: 'locker' | 'platform' | 'workflows' | 'integrations' }
+const { current } = Astro.props;
+const t = getContent(Astro.currentLocale);
+const pages = [
+  { key: 'locker', href: '/locker', title: t.lockerPage.label, text: t.lockerPage.title, icon: productIcons.modules },
+  { key: 'platform', href: '/platform', title: t.platformPage.label, text: t.platformPage.title, icon: productIcons.platform },
+  { key: 'workflows', href: '/workflows', title: t.workflowsPage.label, text: t.workflowsPage.title, icon: productIcons.workflows },
+  { key: 'integrations', href: '/integrations', title: t.integrationsPage.label, text: t.integrationsPage.title, icon: productIcons.integrations },
+].filter((p) => p.key !== current);
+---
+<Section id="product-more" title={t.productMore.title}>
+  <ul class="tiles pm" role="list">
+    {pages.map((p, i) => (
+      <UseCaseCard href={p.href} icon={p.icon} title={p.title} text={p.text} delay={i * 60} />
+    ))}
+  </ul>
+</Section>
+
+<style>
+  .pm { grid-auto-rows: auto; }
+  .pm :global(.uc) { grid-row: auto; min-height: 160px; }
+  @media (min-width: 960px) { .pm :global(.uc) { grid-column: span 4; } }
+</style>

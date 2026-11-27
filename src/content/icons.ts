@@ -20,6 +20,7 @@ export const productIcons: Record<string, string> = {
   platform: 'M3 4h16v11H3zM8 19h6M11 15v4',
   workflows: 'M4 6h5v4H4zM13 12h5v4h-5zM9 8h2a2 2 0 0 1 2 2v4',
   integrations: 'M8 3v4M14 3v4M6 7h10v4a5 5 0 0 1-10 0zM11 16v3',
+  security: 'M11 2.5l7 3v5.5c0 4.2-3 7.3-7 8.5-4-1.2-7-4.3-7-8.5V5.5zM8 11l2 2 4-4',
   lifecycle: 'M18 11a7 7 0 0 1-12.5 4.3M4 11A7 7 0 0 1 16.5 6.7M16.5 3v3.7h-3.7M5.5 19v-3.7h3.7',
 };
 /** Integration icons (same 22px line style). */
@@ -72,6 +73,33 @@ const all: Record<string, string> = { ...solutionIcons, ...productIcons };
 export const iconFor = (item: { href: string; icon?: string }) => all[item.icon ?? item.href.replace('/use-cases/', '').replace('#', '')];
 /** Icon for a tile link, from its /use-cases/<slug> href. */
 export const iconForHref = (href: string) => solutionIcons[href.replace('/use-cases/', '')];
+
+/**
+ * Workflows page: where a request starts, how the drawer opens, the five actions and the record.
+ * Actions share one drawer shape (the tray at the bottom) so they read as a set.
+ */
+export const handoverIcons: Record<string, string> = {
+  app: 'M7 2.5h8v17H7zM10 16.5h2',
+  qr: 'M3 3h6v6H3zM13 3h6v6h-6zM3 13h6v6H3zM13 13h2v2h-2zM17 17h2v2h-2zM5.8 6h.4M15.8 6h.4M5.8 16h.4',
+  pin: 'M3 6h16v10H3zM7 11h.5M10.75 11h.5M14.5 11h.5',
+  pickup: 'M3 13h16v6H3zM11 3v8M7.5 6.5 11 3l3.5 3.5',
+  return: 'M3 13h16v6H3zM11 3v8M7.5 7.5 11 11l3.5-3.5',
+  swap: 'M4 7.5h13M14 4.5l3 3-3 3M18 14.5H5M8 11.5l-3 3 3 3',
+  fill: 'M3 13h16v6H3zM6 10h10M7.5 6.5h7M9 3h4',
+  empty: 'M3 13h16v6H3zM8 10l7-7M10 3h5v5',
+  check: 'M5 11.5l4 4 8-9',
+};
+
+/** Locker page: what every Spind has on board. */
+export const hardwareIcons: Record<string, string> = {
+  screen: 'M5 2.5h12v17H5zM8 5.5h6v6H8zM9.5 15h3',
+  badge: 'M3 7h10v9H3zM6 10.5h4M6 13h2M15.5 8.5a3.5 3.5 0 0 1 0 6M18 6.5a6.5 6.5 0 0 1 0 10',
+  qr: 'M3 3h6v6H3zM13 3h6v6h-6zM3 13h6v6H3zM13 13h2v2h-2zM17 17h2v2h-2zM5.8 6h.4M15.8 6h.4M5.8 16h.4',
+  light: 'M3 9h16v8H3zM9 13h4M11 2.5V5M6 4l1.5 1.8M16 4l-1.5 1.8',
+};
+
+/** Any icon by key, for components that mix sets (integration, handover and hardware icons). */
+export const anyIcon = (k: string) => integrationIcons[k] ?? handoverIcons[k] ?? hardwareIcons[k] ?? '';
 
 /** Platform feature cards (22×22 line icons, same style as the rest). */
 export const featureIcons: Record<string, string> = {

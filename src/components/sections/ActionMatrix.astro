@@ -1,0 +1,130 @@
+---
+/**
+ * Workflows "Five actions cover every use case": a table with the five actions as columns (icon, name, who, one line)
+ * and the seven use cases as rows (each a link to its page). A blue square marks the actions a use case uses.
+ * Phones: the five actions as a list, then one card per use case with its actions as chips.
+ * Hover: a row gets the washed fill (fill only, nothing moves).
+ */
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+import { anyIcon, solutionIcons } from '../../content/icons';
+import { lp } from '../../i18n';
+const t = getContent(Astro.currentLocale);
+const W = t.workflowsPage;
+const cases = t.solutions.items;
+---
+<Section id="actions" title={W.actionsTitle}>
+  <div class="mx" data-reveal>
+    <!-- Phones and tablets: the action definitions as a list (the table head is hidden there). -->
+    <ul class="mx-defs" role="list">
+      {W.actions.map((a) => (
+        <li class="mx-def">
+          <span class="mx-ic" aria-hidden="true"><svg viewBox="0 0 22 22" width="20" height="20"><path d={anyIcon(a.key)} /></svg></span>
+          <span class="mx-def-txt"><span class="mx-name">{a.title}</span><span class="mx-who">{a.who}</span><span class="mx-text">{a.text}</span></span>
+        </li>
+      ))}
+    </ul>
+    <table class="mx-table">
+      <caption class="sr-only">{W.actionsTitle}</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="mx-corner"><span class="overline">{W.actionsHead}</span></th>
+          {W.actions.map((a) => (
+            <th scope="col" class="mx-act">
+              <span class="mx-ic" aria-hidden="true"><svg viewBox="0 0 22 22" width="20" height="20"><path d={anyIcon(a.key)} /></svg></span>
+              <span class="mx-name">{a.title}</span>
+              <span class="mx-who">{a.who}</span>
+              <span class="mx-text">{a.text}</span>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {cases.map((u) => (
+          <tr>
+            <th scope="row" class="mx-case">
+              <a href={lp(Astro.currentLocale, `/use-cases/${u.slug}`)}>
+                <span class="mx-case-ic" aria-hidden="true"><svg viewBox="0 0 22 22" width="20" height="20"><path d={solutionIcons[u.slug]} /></svg></span>
+                {u.title}
+              </a>
+            </th>
+            {W.actions.map((a) => {
+              const on = (W.matrix[u.slug] ?? []).includes(a.key);
+              return (
+                <td class:list={['mx-cell', { on }]}>
+                  <span class="mx-mark" aria-hidden="true"></span>
+                  <span class="mx-sr">{on ? W.used : W.notUsed}</span>
+                  {on && <span class="mx-chip">{a.title}</span>}
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</Section>
+
+<style>
+  /* Rail to rail, standing on the section's bottom line, like the other card grids. */
+  .mx { margin-inline: calc(var(--inset) * -1); background: var(--surface-neutral-default); border-top: var(--hair) solid var(--border-neutral-default); }
+  .mx-ic, .mx-case-ic { display: grid; place-items: center; flex: none; width: 36px; height: 36px; background: var(--surface-action-washed); }
+  .mx svg { fill: none; stroke: var(--icon-action-strong); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }
+  .mx svg path { vector-effect: non-scaling-stroke; }
+  .mx-name { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 24px; color: var(--text-neutral-headings); }
+  .mx-who { font-family: var(--font-mono); font-weight: 600; font-size: 11px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-action-default); }
+  .mx-text { font-family: var(--font-body); font-weight: 400; font-size: 15px; line-height: 22px; color: var(--text-neutral-subtle); }
+
+  /* Definitions list (below 960px). */
+  .mx-defs { display: grid; }
+  .mx-def { display: flex; align-items: flex-start; gap: var(--spacing-gap-text-lg); padding: var(--card-pad-block) var(--card-inset); box-shadow: inset 0 calc(var(--hair) * -1) 0 var(--border-neutral-default); }
+  .mx-def-txt { display: grid; gap: 2px; }
+
+  .mx-table { width: 100%; border-collapse: collapse; text-align: left; }
+  .mx-case a { display: flex; align-items: center; gap: var(--spacing-gap-text-lg); font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 24px; color: var(--text-neutral-headings); text-decoration: none; transition: color var(--dur-fast) var(--ease); }
+  .mx-case a:hover, .mx-case a:focus-visible { color: var(--text-action-default); }
+  .mx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
+  /* Below 960px: one card per use case, its actions as chips. */
+  @media (max-width: 959px) {
+    .mx-table thead { display: none; }
+    .mx-table, .mx-table tbody { display: block; }
+    .mx-table tr { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-text-md); padding: var(--card-pad-block) var(--card-inset); box-shadow: inset 0 calc(var(--hair) * -1) 0 var(--border-neutral-default); }
+    .mx-table tbody tr:first-child { box-shadow: inset 0 calc(var(--hair) * -1) 0 var(--border-neutral-default), inset 0 var(--hair) 0 var(--border-neutral-strong); }
+    .mx-case { flex-basis: 100%; margin-bottom: var(--spacing-gap-text-sm); }
+    .mx-cell { display: none; }
+    .mx-cell.on { display: inline-flex; }
+    .mx-mark, .mx-sr { display: none; }
+    .mx-chip { display: inline-flex; align-items: center; height: 28px; padding: 0 10px; font-family: var(--font-mono); font-weight: 600; font-size: 12px; line-height: 16px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-action-default); background: var(--surface-action-washed); }
+  }
+
+  /* 960px and up: the table. Use case column 4 of 12 columns, each action 8/5 of a column. */
+  @media (min-width: 960px) {
+    .mx { border-top: 0; }
+    .mx-defs { display: none; }
+    .mx-table { table-layout: fixed; }
+    .mx-corner { width: calc(100% / 3); }
+    .mx-table th, .mx-table td { border-top: var(--hair) solid var(--border-neutral-default); border-left: var(--hair) solid var(--border-neutral-default); }
+    .mx-table tr > :first-child { border-left: 0; }
+    .mx-corner, .mx-act { vertical-align: top; padding: var(--card-pad-block) var(--card-inset) var(--spacing-padding-container-md); }
+    .mx-corner { vertical-align: bottom; }
+    .mx-corner .overline { color: var(--text-neutral-subtle); }
+    .mx-act { font-weight: 400; }
+    .mx-act > span { display: block; }
+    .mx-act .mx-ic { display: grid; margin-bottom: var(--spacing-gap-general-object-md); }
+    .mx-act .mx-who { margin-top: 2px; }
+    .mx-act .mx-text { margin-top: var(--spacing-gap-text-md); }
+    .mx-case { padding: 0 var(--card-inset); height: 72px; }
+    .mx-cell { position: relative; text-align: center; vertical-align: middle; }
+    .mx-chip { display: none; }
+    /* Used: the blue square of the label strips, 12px. Not used: a short grey dash. */
+    .mx-mark { display: inline-block; width: 16px; height: var(--hair); background: var(--border-neutral-strong); vertical-align: middle; }
+    .mx-cell.on .mx-mark { width: 12px; height: 12px; background: var(--surface-action-default); }
+    /* Row hover: washed fill across the row, the square turns to the signal colour. */
+    .mx-table tbody tr { transition: background-color var(--dur-fast) var(--ease); }
+    .mx-table tbody tr:hover, .mx-table tbody tr:focus-within { background: var(--surface-action-washed); }
+    .mx-table tbody tr:hover .mx-case-ic, .mx-table tbody tr:focus-within .mx-case-ic { background: var(--surface-action-default); }
+    .mx-table tbody tr:hover .mx-case-ic svg, .mx-table tbody tr:focus-within .mx-case-ic svg { stroke: var(--icon-neutral-onsurface); }
+    .mx-table tbody tr:hover .mx-case a { color: var(--text-action-default); }
+  }
+</style>

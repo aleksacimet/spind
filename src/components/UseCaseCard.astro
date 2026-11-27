@@ -2,16 +2,23 @@
 import { lp } from '../i18n';
 /**
  * Use case card (Figma "Use case card"): nav icon (same Icon/* set as the mega menu) in a 48px washed square,
- * title + body, arrow bottom right. Used on the home page (Workflows) and in "More use cases" on use case pages.
+ * title + body, arrow bottom right. Used in "More use cases" on use case pages and, with href + icon, as the page card
+ * in "More of the product" on the product pages (one link card for the whole site).
  */
 import { solutionIcons } from '../content/icons';
-interface Props { slug: string; title: string; text: string; delay?: number }
-const { slug, title, text, delay = 0 } = Astro.props;
+interface Props {
+  slug?: string; title: string; text: string; delay?: number;
+  /** Any page instead of a use case: site path (made local by lp) and a 22px line icon path. */
+  href?: string; icon?: string;
+}
+const { slug = '', title, text, delay = 0 } = Astro.props;
+const href = lp(Astro.currentLocale, Astro.props.href ?? `/use-cases/${slug}`);
+const icon = Astro.props.icon ?? solutionIcons[slug];
 ---
 <li class="tile uc" data-reveal="drawer" data-spot style={`--d:${delay}ms`}>
-  <span class="uc-icon" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={solutionIcons[slug]} pathLength="1" /></svg></span>
+  <span class="uc-icon" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={icon} pathLength="1" /></svg></span>
   <div class="title-body">
-    <h3><a class="uc-link" href={lp(Astro.currentLocale, `/use-cases/${slug}`)}>{title}</a></h3>
+    <h3><a class="uc-link" href={href}>{title}</a></h3>
     <p>{text}</p>
   </div>
   <span class="arrow" aria-hidden="true">→</span>

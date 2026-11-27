@@ -1,0 +1,51 @@
+---
+/**
+ * Integrations "Systems we connect, in three stages": one row per rollout stage, a stage tile (label, title, text and
+ * three small bars that fill up to the stage) followed by that stage's systems as integration tiles with their status.
+ * So the statuses read as a plan: available from day one, then what follows. The last row ends with a tile for
+ * systems that are not listed. Replaces the separate "Systems" and "Rollout stages" sections.
+ */
+import Section from '../Section.astro';
+import IntegrationTile from '../IntegrationTile.astro';
+import { getContent } from '../../content/site';
+import { lp } from '../../i18n';
+const P = getContent(Astro.currentLocale).integrationsPage;
+const rows = P.stages.map((st, i) => ({ ...st, n: i + 1, systems: P.systems.filter((s) => s.stage === i + 1) }));
+---
+<Section id="systems" title={P.systemsTitle}>
+  <ul class="tiles stg" role="list">
+    {rows.map((row, r) => (<>
+      <li class="tile stg-head" data-reveal="drawer" style={`--d:${r * 60}ms`}>
+        <p class="overline">{row.label}</p>
+        <div class="title-body"><h3>{row.title}</h3><p>{row.text}</p></div>
+        <span class="stg-bars" aria-hidden="true">{P.stages.map((_, k) => <span class:list={{ on: k < row.n }}></span>)}</span>
+      </li>
+      {row.systems.map((s, i) => (
+        <IntegrationTile icon={s.key} title={s.title} examples={s.examples} text={s.text} status={s.status} logo={'logo' in s && !!s.logo} delay={r * 60 + (i + 1) * 80} />
+      ))}
+      {r === rows.length - 1 && (
+        <li class="tile stg-more" data-reveal="drawer" style={`--d:${r * 60 + (row.systems.length + 1) * 80}ms`}>
+          <div class="title-body"><h3>{P.notListed.title}</h3><p>{P.notListed.text}</p></div>
+          <a class="btn btn--secondary btn--sm" href={lp(Astro.currentLocale, '/contact')}>{P.notListed.cta}<span class="arrow" aria-hidden="true">→</span></a>
+        </li>
+      )}
+    </>))}
+  </ul>
+</Section>
+
+<style>
+  .stg { grid-auto-rows: auto; }
+  .stg-head, .stg-more { grid-column: 1 / -1; grid-row: auto; min-height: 0; display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-md); }
+  .stg-head { background: var(--surface-action-washed); }
+  .stg-head h3, .stg-more h3 { margin: 0; }
+  .stg-head .overline { color: var(--text-action-default); }
+  /* Three short bars at the bottom: how far into the rollout this stage is. */
+  .stg-bars { margin-top: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; max-width: 120px; }
+  .stg-bars span { height: 4px; background: var(--primary-200, #CFE0FF); }
+  .stg-bars span.on { background: var(--surface-action-default); }
+  /* "Not listed": an open slot (no fill), the button carries the action. */
+  .stg-more { background: transparent; }
+  .stg-more .btn { align-self: flex-start; margin-top: auto; }
+  @media (min-width: 640px) { .stg-head, .stg-more { grid-column: span 4; } }
+  @media (min-width: 960px) { .stg-head, .stg-more { grid-column: span 3; min-height: 240px; } }
+</style>

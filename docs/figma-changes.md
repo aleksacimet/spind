@@ -13,6 +13,31 @@ When a batch is built, move it from To build to Built and note the date.
 
 _Nothing waiting. Add new Figma changes here._
 
+## Built in code only, Figma still to update (2026-11-27, round 10)
+
+### Product section: one job per page, nothing repeated from the home page
+
+Platform and Workflows used to repeat home page sections (How it works, Go live, the general FAQ, the integrations teaser), and Integrations showed the same list of systems three times (overview chips, map chips, tiles). Now every product page has one job and ends the same way: **questions → next step → More of the product** (new shared `sections/ProductMore.astro`: the other three product pages as Use case cards, icon + page name + hero title).
+
+**Product menu**: second column renamed **Software** (was "Platform", the same word as its first item). Items: Platform ("Every locker in one application"), Workflows ("Five actions behind every handover"), Integrations, and new **Security** ("ISO 27001, roles and audit trail", shield icon) → /platform#security. "Modules and sizes" got its icon back (it had none since it moved to /locker).
+
+**Integrations** (/integrations): hero → How it fits together → Systems by stage → Partners → Partner access → FAQ → Next step → More of the product.
+- **How it fits together** (`sections/IntgMap.astro`, replaces "Integration means two things" + the old map): one diagram, two lanes kept apart. Top: YOUR SYSTEMS · SOFTWARE (chips MDM, Service desk, Identity and SSO, HR system, Microsoft Teams; "What it needs: an interface on both sides") ── EXCHANGE DATA ──▶ **Our application** (dark hub, yellow S). Bottom: YOUR PARTNERS · PEOPLE (chips Our field service, Your service partner, Couriers, Suppliers; "What it needs: a badge, a code or a login") ── WORK AT THE LOCKER ──▶ **Spind lockers** (Headquarters, Branch offices, Plants and warehouses; "Employees open drawers with a badge, QR code or PIN"). Vertical link hub → lockers: REQUESTS, ROLES AND LOG. 3px dashed blue lines with a slow flow. Phones: one column, top to bottom.
+- **Systems we connect, in three stages** (`sections/IntgStages.astro`, replaces "Systems we connect" + "Roll it out in three stages"): one row per stage, a washed stage tile (STAGE n, title, text, three small bars filled up to the stage) + that stage's systems with their status pill. Stage 1 Ready from day one: LISSA Asset, Badges, MDM (all Available). Stage 2 Run from your own systems: Identity and SSO, HR, ITSM. Stage 3 Where employees already work: Teams, AI assistants + an open tile "Your system is not listed?" with "Ask our integration team →". The statuses now read as a plan.
+- **Partners who work at your lockers** (was "Services we work with") and **Partner access** levels: unchanged.
+- **Security band moved to Platform**; Integrations FAQ gets "Is Spind ready for our security review?".
+
+**Workflows** (/workflows): hero "Five actions run every handover" → How a handover runs → Five actions → Today vs Spind → FAQ → Next step → More of the product.
+- **Every handover runs through the same four steps** (`sections/HandoverSteps.astro`, label HOW A HANDOVER RUNS): the four steps of How it works opened up, one tile each. 01 Request: in the app, in Teams (On request pill), at the locker with a badge tap, in our application (IT), from your HR system (Pilot pill). 02 Identify: RFID badge, QR code, PIN, note "IT sets how long each code stays valid". 03 Open (blue accent tile): Pick up, Return, Swap (employee), Fill, Empty (IT or partner). 04 Tracked: person, device and serial, locker and drawer, date and time + "Every request is" chips PENDING (blue dot), DONE (green), CANCELLED (grey), EXPIRED (red). 36px washed icon squares, who in 11px mono caps.
+- **Five actions cover every use case** (`sections/ActionMatrix.astro`, label ACTIONS): a table. Columns = the five actions (icon, name, who, one line); rows = the seven use cases (icon + name, links to the page); a 12px blue square where a use case uses an action, a grey dash where not. Row hover: washed fill, the icon square turns blue. Phones: the five actions as a list, then one card per use case with its actions as blue chips. New action icons share one drawer tray shape (pick up ↑, return ↓, swap ⇄, fill = stack, empty = arrow out).
+- **Today vs Spind** is its own component now (`sections/Compare.astro`); the use case cards were removed from this page (the Use cases menu and the matrix cover them). `sections/Workflows.astro` and `sections/IntgKinds.astro` deleted.
+
+**Platform** (/platform): hero "Every locker, request and device in one application" → Every site in one overview (mockup) → What IT sees (features) → **Everyone sees only their own work** (new, label ROLES: Employees, IT team, Service partners, Companies on a shared site, as integration tiles with a blue line for what they work with) → **Security band** (id `security`, the menu links to it) → Platform FAQ (5) → Next step "See our application with your own sites" → More of the product.
+
+**Locker** (/locker): hero → Modules and sizes → **What every Spind has on board** (new, label HARDWARE: Touch screen, Badge reader, QR scanner, Drawer lights) → **What your site needs** (new, label ON SITE: Space, Connection, Installation, Service as four label tiles, "Rollout checklist →" button right of the title) → Locker FAQ (5) → Next step → More of the product.
+
+Shared component changes: `UseCaseCard` takes any `href` + `icon` (used for the product cards), `IntegrationTile` finds its icon in every icon set (used for roles and hardware), `LabelTiles` takes `span` (4 = three in a row, 3 = four), `SecurityBand` has an `id`. New icon sets in `icons.ts`: `handoverIcons`, `hardwareIcons`, `productIcons.security`. All copy in English and German (site.ts / site.de.ts). Hardware facts (drawer lights, PIN on the screen) come from the sample cases and the locker drawing: confirm with Pera.
+
 ## Built in code only, Figma still to update (2026-11-27, round 9)
 
 ### Use case pages: one story, eleven sections, each a shared component

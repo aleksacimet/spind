@@ -3,11 +3,12 @@
 import DrawerHead from '../DrawerHead.astro';
 import { getContent } from '../../content/site';
 import { integrationIcons } from '../../content/icons';
-interface Props { locale?: string; title: string; items: { key: string; title: string; text: string }[] }
-const { locale, title, items } = Astro.props;
+interface Props { locale?: string; id?: string; title: string; items: { key: string; title: string; text: string }[] }
+const { locale, id = 'security', title, items } = Astro.props;
 const t = getContent(locale ?? Astro.currentLocale);
 ---
-<section class="section sec-band glow-band on-accent" aria-labelledby="sec-title" data-hero>
+<!-- id "security": the Product menu links straight to it (/platform#security). -->
+<section id={id} class="section sec-band glow-band on-accent" aria-labelledby="sec-title" data-section={id} data-hero>
   <div class="space-glow" aria-hidden="true"></div>
   <div class="container">
     <DrawerHead label={t.sectionLabels.security} />

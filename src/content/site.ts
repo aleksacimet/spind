@@ -63,15 +63,17 @@ const en = {
             title: 'Spind locker',
             items: [
               { label: 'How it works', text: 'Request, identify, open, logged', href: '#how-it-works' },
-              { label: 'Modules and sizes', text: 'Start with one, grow as you go', href: '/locker' },
+              { label: 'Modules and sizes', text: 'Start with one, grow as you go', href: '/locker', icon: 'modules' },
             ],
           },
           {
-            title: 'Platform',
+            // Software: each page has one job (application, actions, connections), security has its own anchor.
+            title: 'Software',
             items: [
-              { label: 'Platform', text: 'Full control of every locker', href: '/platform', icon: 'platform' },
-              { label: 'Workflows', text: 'Today compared with Spind', href: '/workflows', icon: 'workflows' },
+              { label: 'Platform', text: 'Every locker in one application', href: '/platform', icon: 'platform' },
+              { label: 'Workflows', text: 'Five actions behind every handover', href: '/workflows', icon: 'workflows' },
               { label: 'Integrations', text: 'Your systems and your partners', href: '/integrations', icon: 'integrations' },
+              { label: 'Security', text: 'ISO 27001, roles and audit trail', href: '/platform#security', icon: 'security' },
             ],
           },
         ],
@@ -194,13 +196,20 @@ const en = {
     connects: 'Integrations',
     proof: 'Customers',
     'uc-faq': 'Frequently asked questions',
-    kinds: 'Overview',
     map: 'Architecture',
     systems: 'Systems',
     services: 'Services',
     levels: 'Partner access',
-    stages: 'Rollout stages',
     security: 'Security',
+    anatomy: 'How a handover runs',
+    actions: 'Actions',
+    roles: 'Roles',
+    hardware: 'Hardware',
+    'site-needs': 'On site',
+    'workflow-faq': 'Frequently asked questions',
+    'platform-faq': 'Frequently asked questions',
+    'locker-faq': 'Frequently asked questions',
+    'product-more': 'Product',
     contact: 'Contact',
     'business-case': 'Business case',
     stories: 'Customer stories',
@@ -242,19 +251,9 @@ const en = {
     fitHint: 'Hover a drawer to see what fits in it',
   },
 
+  /** "Today vs Spind" comparison (Compare.astro, Workflows page). */
   workflows: {
     compareTitle: 'What changes with Spind',
-    title: 'Built to save time and increase efficiency',
-    intro: '',
-    cards: [
-      { slug: 'faulty-device-swap', title: 'Faulty device swap', text: 'Take the replacement and leave the broken device, same day.' },
-      { slug: 'temporary-device', title: 'Temporary devices', text: 'Lend a device for a project and get it back on time.' },
-      { slug: 'lost-device', title: 'Lost device', text: 'A replacement waits in the locker while IT locks the lost one.' },
-      { slug: 'eou-rollout', title: 'EOU rollout', text: 'Return the old device and collect the new one.' },
-      { slug: 'onboarding', title: 'Onboarding', text: 'Day one starts at the locker, not at the IT desk.' },
-      { slug: 'offboarding', title: 'Offboarding return', text: 'Leavers return equipment any time, fully logged.' },
-    ],
-    more: 'Learn more',
     today: 'Today',
     withLead: 'With',
     withBrand: 'Spind',
@@ -268,7 +267,7 @@ const en = {
   },
 
   platform: {
-    title: 'Full control from one application',
+    title: 'Every site in one overview',
     intro: '',
     features: [
       { key: 'status', title: 'Live status', text: "Track every locker's availability" },
@@ -305,17 +304,56 @@ const en = {
     more: 'See all integrations',
   },
 
-  /** Template pages for Platform and Workflows (moved off the home page). */
+  /**
+   * Product pages (Product menu). Each page has one job and none repeats a home page section:
+   * - Locker: the hardware (modules, what is on board, what the site needs).
+   * - Platform: our application (overview, features, who sees what, security).
+   * - Workflows: the five actions every handover is built from, and which use case uses which.
+   * - Integrations: how your systems and your partners connect.
+   * Every product page ends the same way: questions, next step, "More of the product".
+   */
+  productMore: { title: 'More of the product' },
+
   platformPage: {
     label: 'Platform',
-    title: 'Every action under control',
-    intro: 'Every request is visible and traceable in the application that runs behind every Spind.',
-    meta: 'Live status, capacity, requests, code expiry, activity log and maps for every Spind locker in one application.',
+    title: 'Every locker, request and device in one application',
+    intro: 'IT creates requests, follows every handover and sees the stock of every locker, in the application that runs behind every Spind.',
+    meta: 'Our application for every Spind locker: live status, capacity, requests, code expiry, activity log, maps, roles and enterprise security.',
     primary: 'Book a demo',
     secondary: 'Calculate your business case',
     featuresTitle: 'What IT sees in our application',
+    /** Who sees what. "examples" is the small blue line: what each role works with. */
+    rolesTitle: 'Everyone sees only their own work',
+    roles: [
+      { key: 'roles', title: 'Employees', examples: 'Badge, QR code or PIN', text: 'Request a device in the app, in Teams or at the locker, and open only the drawer meant for them.' },
+      { key: 'lissa', title: 'IT team', examples: 'Our application', text: 'Creates requests, sets how long codes stay valid and follows every locker, site and handover.' },
+      { key: 'partner', title: 'Service partners', examples: 'Badge, code or login', text: 'See only their own sites, requests and history, and open only the drawers of their requests.' },
+      // TODO (Pera): tenant separation is the core of the campus case; confirm it explicitly before launch.
+      { key: 'tenant', title: 'Companies on a shared site', examples: 'Tenant separation', text: 'Each company sees only its own drawers, permissions and devices, even in one shared lobby.' },
+    ],
+    securityTitle: 'Built for enterprise security reviews',
+    security: [
+      { key: 'iso', title: 'ISO 27001 certified', text: 'Our information security management is certified to ISO 27001 by TÜV Austria.' },
+      { key: 'log', title: 'Full audit trail', text: 'Every fill, pickup, return and swap is logged with person, device, drawer and time.' },
+      { key: 'roles', title: 'Roles and permissions', text: 'IT, partners and site staff only see and do what their role allows.' },
+      // TODO (Pera): tenant separation is the core of the campus case; confirm it explicitly before launch.
+      { key: 'tenant', title: 'Tenant separation', text: 'On a shared site, each company sees only its own drawers, permissions and devices.' },
+      { key: 'eu', title: 'Data in the EU', text: 'Hosting and processing in the EU, in line with GDPR.' },
+      { key: 'shield', title: 'Security review support', text: 'We answer your questionnaire and join the call with your security team.' },
+    ],
+    faqTitle: 'Questions about the platform',
+    faq: [
+      { q: 'Where is our data stored?', a: 'In the EU, in line with GDPR, and our information security management is ISO 27001 certified by TÜV Austria.' },
+      { q: 'Can we prove who had which device and when?', a: 'Yes, every fill, pickup, return and swap is logged with person, device, drawer and time.' },
+      { q: 'Can a service partner see our other sites?', a: 'No, a partner sees only its own sites, requests and history, and opens only the drawers of its requests.' },
+      { q: 'Do we need a separate asset tool?', a: 'No, LISSA Asset is included, so every device in a drawer is an asset with its full history.' },
+      { q: 'Can several companies share one locker?', a: 'Yes, with tenant separation each company sees only its own drawers, permissions and devices.' },
+    ],
+    ctaTitle: 'See our application with your own sites',
+    ctaText: 'In a short demo we walk you through requests, statuses and the activity log, with your sites and devices as the example.',
+    cta: 'Book a demo',
   },
-  /** The locker itself, technically: modules, heights and drawer sizes. Modular: start with one module and grow. */
+  /** The locker itself, technically: modules, what is on board, what the site needs. Modular: start with one module and grow. */
   lockerPage: {
     label: 'Locker',
     title: 'Build your own Spind, one module at a time',
@@ -324,17 +362,127 @@ const en = {
     primary: 'Book a call',
     secondary: 'Calculate your business case',
     visualLabel: 'Spind locker with the Otto screen module and Lotte drawer module',
+    hardwareTitle: 'What every Spind has on board',
+    hardware: [
+      { key: 'screen', title: 'Touch screen', examples: 'On Otto', text: 'Guides every pickup, return and swap step by step, and takes the PIN when there is no badge.' },
+      { key: 'badge', title: 'Badge reader', examples: 'RFID', text: 'Reads the company badge your employees already carry, so most handovers need nothing else.' },
+      { key: 'qr', title: 'QR scanner', examples: 'From the app or a message', text: 'Scans the code an employee or a new hire receives with the request.' },
+      { key: 'light', title: 'Drawer lights', examples: 'On every drawer', text: 'A light shows which drawer to open, so the right device changes hands.' },
+    ],
+    siteTitle: 'What your site needs',
+    siteLink: 'Rollout checklist',
+    site: [
+      { label: 'Space', title: 'A spot people pass every day', text: 'Room for the modules you choose, all 850 mm high.' },
+      { label: 'Connection', title: 'Power and network', text: 'We check both with you at the chosen spot before the delivery date.' },
+      { label: 'Installation', title: 'Installed for you', text: 'Our field partner installs Spind and runs the first handovers with you.' },
+      { label: 'Service', title: 'Maintained for you', text: 'Our field partner maintains the lockers, and fills them unless your own IT does.' },
+    ],
+    faqTitle: 'Questions about the locker',
+    faq: [
+      { q: 'Which devices fit?', a: 'Phones up to an iPhone 17 Pro Max and laptops up to a MacBook Pro 16″, through drawer openings of 175 × 90 mm and 500 × 90 mm.' },
+      { q: 'Can we add modules later?', a: 'Yes, every Spind starts with Otto, and you add Lotte, Bruno or Greta whenever you need more drawers.' },
+      { q: 'What does the locker need on site?', a: 'A spot employees pass every day, with power and network, which we check with you before delivery.' },
+      { q: 'Who installs and maintains it?', a: 'Our field partner installs and maintains Spind, and fills it too unless your own IT team does.' },
+      { q: 'Is it really open around the clock?', a: 'Access and self-pickup work 24/7, while filling and emptying run on a fixed schedule.' },
+    ],
     ctaTitle: 'Plan the locker for your site',
     ctaText: 'Start with one module at one site, then add modules and sites as you need them. Tell us which devices you hand out and we suggest the first setup.',
     cta: 'Book a call',
   },
+  /**
+   * Workflows: the mechanics behind every use case. Every handover runs through the same four steps (anatomy, same
+   * names as How it works on the home page) and uses one or more of five actions (matrix: which use case uses which).
+   */
   workflowsPage: {
     label: 'Workflows',
-    title: 'Hand over devices without an appointment',
-    intro: 'Every pickup, return and swap runs 24/7 on our secure servers.',
-    meta: 'Spind workflows: faulty device swap, temporary devices, lost devices, EOU rollout, onboarding, offboarding and multi-site IT, compared with today.',
+    title: 'Five actions run every handover',
+    intro: 'Employees pick up, return and swap, IT and partners fill and empty, and each action is a request with a code, a drawer and a record.',
+    meta: 'How Spind handovers work: requests from the app, Teams, the locker or IT, badge, QR or PIN access, five actions and a full record, for every use case.',
     primary: 'Book a call',
     secondary: 'Calculate your business case',
+    anatomyTitle: 'Every handover runs through the same four steps',
+    /** One tile per step: options (icon key, label, who or a status pill), an optional note and the request statuses. */
+    anatomy: [
+      {
+        step: 'Request',
+        title: 'Starts where people already are',
+        items: [
+          { icon: 'app', label: 'In the app', who: 'Employee' },
+          { icon: 'teams', label: 'In Microsoft Teams', status: 'request' as IntegrationStatus },
+          { icon: 'access', label: 'At the locker, with a badge tap', who: 'Employee' },
+          { icon: 'lissa', label: 'In our application', who: 'IT' },
+          { icon: 'hr', label: 'From your HR system', status: 'pilot' as IntegrationStatus },
+        ],
+        note: '',
+      },
+      {
+        step: 'Identify',
+        title: 'Opens with what they already carry',
+        items: [
+          { icon: 'access', label: 'RFID company badge', who: '' },
+          { icon: 'qr', label: 'QR code from the request', who: '' },
+          { icon: 'pin', label: 'PIN for one request', who: '' },
+        ],
+        note: 'IT sets how long each code stays valid.',
+      },
+      {
+        step: 'Open',
+        title: 'The right drawer opens for one action',
+        items: [
+          { icon: 'pickup', label: 'Pick up', who: 'Employee' },
+          { icon: 'return', label: 'Return', who: 'Employee' },
+          { icon: 'swap', label: 'Swap', who: 'Employee' },
+          { icon: 'fill', label: 'Fill', who: 'IT or partner' },
+          { icon: 'empty', label: 'Empty', who: 'IT or partner' },
+        ],
+        note: '',
+      },
+      {
+        step: 'Tracked',
+        title: 'Every action goes on record',
+        items: [
+          { icon: 'check', label: 'Person', who: '' },
+          { icon: 'check', label: 'Device and serial number', who: '' },
+          { icon: 'check', label: 'Locker and drawer', who: '' },
+          { icon: 'check', label: 'Date and time', who: '' },
+        ],
+        note: '',
+      },
+    ],
+    statusLabel: 'Every request is',
+    statuses: ['Pending', 'Done', 'Cancelled', 'Expired'],
+    actionsTitle: 'Five actions cover every use case',
+    actionsHead: 'Use case',
+    actions: [
+      { key: 'pickup', title: 'Pick up', who: 'Employee', text: 'Takes the device waiting in the drawer.' },
+      { key: 'return', title: 'Return', who: 'Employee', text: 'Puts a device back into an empty drawer.' },
+      { key: 'swap', title: 'Swap', who: 'Employee', text: 'Takes the new device and leaves the old one.' },
+      { key: 'fill', title: 'Fill', who: 'IT or partner', text: 'Loads devices into drawers for open requests.' },
+      { key: 'empty', title: 'Empty', who: 'IT or partner', text: 'Collects returned and faulty devices.' },
+    ],
+    /** Which actions each use case uses (keys from actions, slugs from solutions.items), from the use case steps. */
+    matrix: {
+      'faulty-device-swap': ['swap', 'fill', 'empty'],
+      'temporary-device': ['pickup', 'return', 'fill'],
+      'lost-device': ['pickup', 'fill'],
+      'eou-rollout': ['swap', 'fill', 'empty'],
+      onboarding: ['pickup', 'fill'],
+      offboarding: ['return', 'empty'],
+      'multi-site': ['pickup', 'return', 'swap', 'fill', 'empty'],
+    } as Record<string, string[]>,
+    used: 'Used',
+    notUsed: 'Not used',
+    faqTitle: 'Questions about workflows',
+    faq: [
+      { q: 'Who can start a request?', a: 'Employees in the app, in Teams or with their badge at the locker, IT in our application, and in a later stage your HR system for joiners and leavers.' },
+      { q: 'Do employees need the app?', a: 'No, they can simply walk up to the locker and tap their badge, and Spind opens the right drawer.' },
+      { q: 'How long does a pickup code stay valid?', a: 'As long as IT sets for each request, and a code that runs out shows as expired in our application.' },
+      { q: 'Can someone else pick up or return a device?', a: 'Yes, IT can send the code to a manager or colleague, and the log shows who opened which drawer.' },
+      { q: 'What happens when a locker runs low?', a: 'Our application shows how many devices each locker has left, so it is filled before it runs empty.' },
+    ],
+    ctaTitle: 'Map your handovers with us',
+    ctaText: 'Tell us which devices change hands at which sites, and we show you which actions and use cases your first locker needs.',
+    cta: 'Book a call',
   },
 
   /**
@@ -356,55 +504,63 @@ const en = {
     /** Small blue line on integration tiles on the use case pages. */
     kindSystem: 'Your system',
     kindService: 'Service partner',
-    kindsTitle: 'Integration means two things',
-    kinds: [
+    /**
+     * "How it fits together": one diagram instead of an overview plus a map. Two lanes, kept apart: systems exchange
+     * data with our application, partners work at the lockers. Our application runs the lockers at every site.
+     */
+    mapTitle: 'How it fits together',
+    mapLanes: [
       {
-        key: 'api',
+        key: 'systems',
         label: 'Systems',
-        title: 'Software that talks to software',
-        text: 'Your MDM, service desk, identity provider and HR system exchange data with our application, so nobody types a request twice.',
-        needsLabel: 'What it needs',
-        needs: 'An interface on both sides, which we set up with your IT team.',
+        kind: 'Software',
+        title: 'Your systems',
+        text: 'Exchange data with our application, so nobody types a request twice.',
+        needs: 'An interface on both sides, set up with your IT team',
         chips: ['endpoint', 'servicedesk', 'sso', 'hr', 'teams'],
-        href: '#systems',
-        cta: 'Systems we connect',
       },
       {
-        key: 'partners',
+        key: 'services',
         label: 'Services',
-        title: 'People who handle your devices',
-        text: 'Field service, couriers, suppliers and your own site staff fill, empty and collect at the locker, each with a role that shows only their own work.',
-        needsLabel: 'What it needs',
-        needs: 'A badge, a code or a login, and no software of their own.',
+        kind: 'People',
+        title: 'Your partners',
+        text: 'Fill, empty and collect at the locker, each with a role that shows only their own work.',
+        needs: 'A badge, a code or a login, and no software of their own',
         chips: ['service', 'partner', 'logistics', 'supplier'],
-        href: '#services',
-        cta: 'Services we work with',
       },
     ],
-    mapTitle: 'How it fits together',
-    mapIntro: '',
-    mapLeft: 'Your systems',
-    mapPartners: 'Your partners',
+    needsLabel: 'What it needs',
+    /** Labels on the three connections of the diagram. */
+    mapData: 'Exchange data',
+    mapAccess: 'Work at the locker',
+    mapRun: 'Requests, roles and log',
     mapHub: 'Our application',
     mapHubText: 'Asset records, requests, roles and the full audit trail',
     mapRight: 'Spind lockers',
+    mapRightText: 'Employees open drawers with a badge, QR code or PIN.',
     sites: ['Headquarters', 'Branch offices', 'Plants and warehouses'],
-    mapSystems: ['endpoint', 'servicedesk', 'sso', 'hr', 'teams'],
-    mapServices: ['service', 'partner', 'logistics', 'supplier'],
-    systemsTitle: 'Systems we connect',
-    systemsIntro: '',
-    /** Software only. "short" is the name on the map and on the overview chips. */
+    /** Systems are shown by rollout stage (stages below): what works from day one, then what follows. */
+    systemsTitle: 'Systems we connect, in three stages',
+    /** Software only. "short" is the name on the diagram chips. "stage" is the rollout stage it belongs to. */
     systems: [
-      { key: 'lissa', title: 'LISSA Asset', short: 'LISSA Asset', examples: 'Included: asset management', text: 'Every device in a drawer is an asset with its full history.', logo: true, status: 'available' as IntegrationStatus },
-      { key: 'access', title: 'Badges and access', short: 'Badges', examples: 'Your RFID badges, QR code or PIN', text: 'Employees open drawers with the badge they already carry, or with a QR code or PIN.', status: 'available' as IntegrationStatus },
-      { key: 'endpoint', title: 'MDM and endpoints', short: 'MDM', examples: 'e.g. Microsoft Intune, Jamf', text: 'Devices are enrolled and secured through your MDM before and after the drawer.', status: 'available' as IntegrationStatus },
-      { key: 'servicedesk', title: 'ITSM and service desk', short: 'Service desk', examples: 'e.g. ServiceNow', text: 'Informed without a ticket, with CMDB sync instead of double maintenance.', status: 'request' as IntegrationStatus },
-      { key: 'teams', title: 'Microsoft Teams', short: 'Microsoft Teams', examples: 'LISSA agent', text: 'Employees ask in chat and receive a pickup code.', status: 'request' as IntegrationStatus },
-      { key: 'sso', title: 'Identity and SSO', short: 'Identity and SSO', examples: 'e.g. Microsoft Entra ID, Okta', text: 'Access with the corporate identity, permissions per employee.', status: 'pilot' as IntegrationStatus },
-      { key: 'hr', title: 'HR systems', short: 'HR system', examples: 'e.g. SAP SuccessFactors, Workday', text: 'Joiners and leavers set locker permissions automatically.', status: 'pilot' as IntegrationStatus },
-      { key: 'ai', title: 'AI assistants', short: 'AI assistants', examples: 'MCP server', text: 'Assistants trigger actions, like a replacement for drawer 4.', status: 'pilot' as IntegrationStatus },
+      { key: 'lissa', stage: 1, title: 'LISSA Asset', short: 'LISSA Asset', examples: 'Included: asset management', text: 'Every device in a drawer is an asset with its full history.', logo: true, status: 'available' as IntegrationStatus },
+      { key: 'access', stage: 1, title: 'Badges and access', short: 'Badges', examples: 'Your RFID badges, QR code or PIN', text: 'Employees open drawers with the badge they already carry, or with a QR code or PIN.', status: 'available' as IntegrationStatus },
+      { key: 'endpoint', stage: 1, title: 'MDM and endpoints', short: 'MDM', examples: 'e.g. Microsoft Intune, Jamf', text: 'Devices are enrolled and secured through your MDM before and after the drawer.', status: 'available' as IntegrationStatus },
+      { key: 'sso', stage: 2, title: 'Identity and SSO', short: 'Identity and SSO', examples: 'e.g. Microsoft Entra ID, Okta', text: 'Access with the corporate identity, permissions per employee.', status: 'pilot' as IntegrationStatus },
+      { key: 'hr', stage: 2, title: 'HR systems', short: 'HR system', examples: 'e.g. SAP SuccessFactors, Workday', text: 'Joiners and leavers set locker permissions automatically.', status: 'pilot' as IntegrationStatus },
+      { key: 'servicedesk', stage: 2, title: 'ITSM and service desk', short: 'Service desk', examples: 'e.g. ServiceNow', text: 'Informed without a ticket, with CMDB sync instead of double maintenance.', status: 'request' as IntegrationStatus },
+      { key: 'teams', stage: 3, title: 'Microsoft Teams', short: 'Microsoft Teams', examples: 'LISSA agent', text: 'Employees ask in chat and receive a pickup code.', status: 'request' as IntegrationStatus },
+      { key: 'ai', stage: 3, title: 'AI assistants', short: 'AI assistants', examples: 'MCP server', text: 'Assistants trigger actions, like a replacement for drawer 4.', status: 'pilot' as IntegrationStatus },
     ],
-    servicesTitle: 'Services we work with',
+    /** Rollout stages from Pera's integration proposal: the head tile of each row of systems. */
+    stages: [
+      { label: 'Stage 1', title: 'Ready from day one', text: 'Asset records, badge access and your MDM work as soon as the first locker is live.' },
+      { label: 'Stage 2', title: 'Run from your own systems', text: 'Identity, HR and your service desk set permissions and requests automatically.' },
+      { label: 'Stage 3', title: 'Where employees already work', text: 'Teams and AI assistants start requests by chat or voice.' },
+    ],
+    /** Last tile of the stage grid. */
+    notListed: { title: 'Your system is not listed?', text: 'Most likely we can still connect it through our REST API or webhooks, and we check it in the first workshop.', cta: 'Ask our integration team' },
+    servicesTitle: 'Partners who work at your lockers',
     /** People and companies at the locker. No status pill: every one of them can work at level 1 (badge or code). */
     services: [
       { key: 'service', title: 'Spind field service', short: 'Our field service', examples: 'Our partner network', text: 'Fills the drawers, collects faulty and returned devices and maintains the lockers.' },
@@ -420,24 +576,9 @@ const en = {
       { key: 'lissa', label: 'Level 2', title: 'A login to our application', text: 'The partner signs in and sees only its own sites, requests and history, nothing else.', note: 'Nothing to install', chips: [] as string[], status: 'available' as IntegrationStatus },
       { key: 'api', label: 'Level 3', title: 'System to system', text: 'If the partner runs its own dispatch or ticket system, requests and status updates flow through our REST API and webhooks.', note: 'For partners with their own software', chips: ['REST API', 'Webhooks'], status: 'request' as IntegrationStatus },
     ],
-    stagesTitle: 'Roll it out in three stages',
-    stages: [
-      { label: 'Stage 1', title: 'Lockers, access and partners', text: 'Lockers, badge access and your service partners at the locker. Usable immediately.' },
-      { label: 'Stage 2', title: 'Identity, HR and ITSM', text: 'Permissions and workflows run automatically from your own systems.' },
-      { label: 'Stage 3', title: 'Teams and AI assistants', text: 'Employees trigger everything by chat or voice, where they already work.' },
-    ],
-    securityTitle: 'Built for enterprise security reviews',
-    security: [
-      { key: 'iso', title: 'ISO 27001 certified', text: 'Our information security management is certified to ISO 27001 by TÜV Austria.' },
-      { key: 'log', title: 'Full audit trail', text: 'Every fill, pickup, return and swap is logged with person, device, drawer and time.' },
-      { key: 'roles', title: 'Roles and permissions', text: 'IT, partners and site staff only see and do what their role allows.' },
-      // TODO (Pera): tenant separation is the core of the campus case; confirm it explicitly before launch.
-      { key: 'tenant', title: 'Tenant separation', text: 'On a shared site, each company sees only its own drawers, permissions and devices.' },
-      { key: 'eu', title: 'Data in the EU', text: 'Hosting and processing in the EU, in line with GDPR.' },
-      { key: 'shield', title: 'Security review support', text: 'We answer your questionnaire and join the call with your security team.' },
-    ],
     faqTitle: 'Integration questions',
     faq: [
+      { q: 'Is Spind ready for our security review?', a: 'Yes, our information security management is ISO 27001 certified by TÜV Austria, data stays in the EU, and we answer your questionnaire and join the call with your security team.' },
       { q: 'Do we need to replace any of our systems?', a: 'No, your MDM, service desk and identity provider stay where they are and Spind connects to them.' },
       { q: 'Our service partner has no software. Can they still work with Spind?', a: 'Yes, they get a role and open the drawers of each request with a badge, QR code or PIN, so a phone is all they need.' },
       { q: 'Do we have to switch to your field service?', a: 'No, keep your own partner, use ours, or fill the lockers with your own IT team for a lower price.' },

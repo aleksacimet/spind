@@ -1,10 +1,19 @@
 ---
-/** The locker, technically: the 3D locker hero, Modules and sizes (moved here from the home page) and a closing call to action. */
+/**
+ * The locker, technically: the 3D locker hero, Modules and sizes, what every Spind has on board, what the site needs
+ * (with the rollout checklist), questions, next step, more of the product.
+ */
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
 import TemplateHero from '../components/TemplateHero.astro';
 import Modules from '../components/sections/Modules.astro';
+import Faq from '../components/sections/Faq.astro';
 import CtaBand from '../components/sections/CtaBand.astro';
+import ProductMore from '../components/sections/ProductMore.astro';
+import IntegrationTile from '../components/IntegrationTile.astro';
+import LabelTiles from '../components/LabelTiles.astro';
 import { getContent } from '../content/site';
+import { lp } from '../i18n';
 const locale = Astro.currentLocale ?? 'en';
 const t = getContent(locale ?? Astro.currentLocale);
 const L = t.lockerPage;
@@ -12,5 +21,24 @@ const L = t.lockerPage;
 <Base title={`${L.label} | Spind`} description={L.meta} locale={locale} darkHero>
   <TemplateHero id="locker-page" label={L.label} title={L.title} intro={L.intro} primary={L.primary} secondary={L.secondary} visualLabel={L.visualLabel} />
   <Modules locale={locale} />
+
+  <Section id="hardware" title={L.hardwareTitle}>
+    <ul class="tiles hw" role="list">
+      {L.hardware.map((h, i) => (
+        <IntegrationTile icon={h.key} title={h.title} examples={h.examples} text={h.text} delay={i * 80} />
+      ))}
+    </ul>
+  </Section>
+
+  <Section id="site-needs" title={L.siteTitle} link={{ label: L.siteLink, href: lp(locale, '/resources/rollout-checklist') }}>
+    <LabelTiles items={L.site} span={3} accentFirst={false} />
+  </Section>
+
+  <Faq locale={locale} id="locker-faq" title={L.faqTitle} items={L.faq} />
   <CtaBand id="locker-cta" locale={locale} title={L.ctaTitle} text={L.ctaText} cta={L.cta} />
+  <ProductMore current="locker" />
 </Base>
+
+<style>
+  .hw { grid-auto-rows: auto; }
+</style>

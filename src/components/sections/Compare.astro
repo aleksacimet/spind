@@ -1,22 +1,15 @@
 ---
+/**
+ * Today vs with Spind: one row per pair. Hover (or focus) a row: today is crossed out, the Spind side lights up.
+ * Its own section (label strip "Today vs Spind"). Used on the Workflows page.
+ */
 import Section from '../Section.astro';
 import { getContent } from '../../content/site';
-import UseCaseCard from '../UseCaseCard.astro';
 import Logo from '../Logo.astro';
 const t = getContent(Astro.currentLocale);
 const w = t.workflows;
 ---
-<Section id="workflows" title={w.title} intro={w.intro}>
-  <ul class="tiles wf" role="list" data-fit>
-    {w.cards.map((c, i) => (
-      <UseCaseCard slug={c.slug} title={c.title} text={c.text} delay={(i % 3) * 90 + Math.floor(i / 3) * 120} />
-    ))}
-  </ul>
-</Section>
-
-<!-- Today vs with Spind is its own section (own label strip, title and grid lines), so it no longer runs straight on from the use case cards. -->
 <Section id="compare" title={w.compareTitle}>
-  <!-- Today vs with Spind: one row per pair. Hover (or focus) a row: today is crossed out, the Spind side lights up. -->
   <div class="cmp" data-reveal="drawer">
     <div class="cmp-head" aria-hidden="true">
       <span class="cmp-h cmp-h--today">{w.today}</span>

@@ -2,16 +2,17 @@
 /**
  * Labelled tiles: a row of tiles, each with a small label (Stage 1, Level 2 ...), an optional icon, title, text,
  * optional small chips, a note and a status pill. The first tile can be the blue accent.
- * Used on the Integrations page for "Partner access" (levels) and "Rollout stages".
+ * Used on the Integrations page for "Partner access" (levels) and on the Locker page for "What your site needs".
+ * span: desktop columns per tile (4 = three in a row, 3 = four in a row).
  */
 import StatusPill from './StatusPill.astro';
 import { integrationIcons } from '../content/icons';
 import type { IntegrationStatus } from '../content/site';
 interface Item { label: string; title: string; text: string; key?: string; note?: string; chips?: string[]; status?: IntegrationStatus }
-interface Props { items: Item[]; accentFirst?: boolean }
-const { items, accentFirst = true } = Astro.props;
+interface Props { items: Item[]; accentFirst?: boolean; span?: number }
+const { items, accentFirst = true, span = 4 } = Astro.props;
 ---
-<ol class="tiles lt" role="list">
+<ol class="tiles lt" role="list" style={`--lt-span:${span}`}>
   {items.map((it, i) => (
     <li class:list={['tile', 'lt-tile', { 'tile--accent': accentFirst && i === 0 }]} data-reveal="drawer" style={`--d:${i * 90}ms`}>
       <div class="lt-top">
@@ -46,5 +47,5 @@ const { items, accentFirst = true } = Astro.props;
   .tile--accent .lt-note { color: var(--text-neutral-onsurface) !important; }
   .tile--accent .lt-foot { box-shadow: inset 0 var(--hair) 0 color-mix(in srgb, var(--neutral-white) 30%, transparent); }
   @media (min-width: 640px) { .lt-tile { grid-column: span 4; } }
-  @media (min-width: 960px) { .lt-tile { grid-column: span 4; min-height: 240px; } }
+  @media (min-width: 960px) { .lt-tile { grid-column: span var(--lt-span, 4); min-height: 240px; } }
 </style>

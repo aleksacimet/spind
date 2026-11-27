@@ -2,12 +2,13 @@
 /**
  * Integration tile (one component for every integration card): icon in a 48px washed square (or the LISSA logo),
  * with an optional status pill on the right of that row (centred on the icon), then title, a small blue line (examples or kind) and text.
- * Used on the Integrations page (Systems, Services) and in "What it connects to" on every use case page.
+ * Used on the Integrations page (Systems, Services), in "What it connects to" on every use case page, and as the
+ * icon card on the Platform (roles) and Locker (hardware) pages. The icon key is looked up in every icon set.
  * Hover: fill only (washed card, blue icon box, icon redraws in place). Nothing moves.
  */
 import LissaLogo from './LissaLogo.astro';
 import StatusPill from './StatusPill.astro';
-import { integrationIcons } from '../content/icons';
+import { anyIcon } from '../content/icons';
 import type { IntegrationStatus } from '../content/site';
 interface Props {
   icon: string;
@@ -26,7 +27,7 @@ const { icon, title, examples, text, status, logo = false, delay = 0, class: cla
   <div class="it-top">
     {logo
       ? <LissaLogo />
-      : <span class="ic-box" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={integrationIcons[icon]} pathLength="1" /></svg></span>}
+      : <span class="ic-box" aria-hidden="true"><svg class="line-icon" viewBox="0 0 22 22" width="24" height="24"><path d={anyIcon(icon)} pathLength="1" /></svg></span>}
     {status && <StatusPill status={status} class="tile-pill" />}
   </div>
   <div class="title-body">

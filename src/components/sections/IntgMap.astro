@@ -1,0 +1,140 @@
+---
+/**
+ * Integrations "How it fits together": one diagram that keeps the two kinds of integration apart.
+ * Top lane: your systems (software) exchange data with our application. Bottom lane: your partners (people) work at
+ * the Spind lockers with a badge, a code or a login. Between the two: our application runs the lockers at every site.
+ * Each lane says what it needs. Dashed connection lines with a slow flow (ambient, not on hover).
+ * Desktop: 3 columns (lane, connection, target) × 2 rows. Below 960px: one column, top to bottom.
+ */
+import Section from '../Section.astro';
+import { getContent } from '../../content/site';
+import { integrationIcons } from '../../content/icons';
+const P = getContent(Astro.currentLocale).integrationsPage;
+const all = [...P.systems, ...P.services];
+const short = (k: string) => all.find((x) => x.key === k)?.short ?? k;
+---
+<Section id="map" title={P.mapTitle}>
+  <div class="map" data-reveal>
+    {P.mapLanes.map((l) => (
+      <div class:list={['lane', `lane--${l.key}`]}>
+        <p class="overline lane-label">{l.label}<span aria-hidden="true"> · </span><span class="lane-kind">{l.kind}</span></p>
+        <div class="title-body">
+          <h3>{l.title}</h3>
+          <p>{l.text}</p>
+        </div>
+        <ul role="list" class="chips">
+          {l.chips.map((c, i) => (
+            <li class="chip" style={`--k:${i}`}><svg viewBox="0 0 22 22" width="18" height="18" aria-hidden="true"><path d={integrationIcons[c]} /></svg>{short(c)}</li>
+          ))}
+        </ul>
+        <div class="lane-needs">
+          <p class="overline">{P.needsLabel}</p>
+          <p class="lane-needs-text">{l.needs}</p>
+        </div>
+      </div>
+    ))}
+
+    <div class="link link--data" aria-hidden="true"><span class="link-label">{P.mapData}</span><span class="link-line"></span></div>
+    <div class="link link--access" aria-hidden="true"><span class="link-label">{P.mapAccess}</span><span class="link-line"></span></div>
+
+    <div class="hub glow-band on-accent" data-hero>
+      <div class="space-glow" aria-hidden="true"></div>
+      <svg class="hub-s" viewBox="0 0 1238 1371" width="48" height="53" aria-hidden="true"><rect width="1238" height="1371" fill="#FFD369"/><path d="M622.861 953.144C583.923 953.144 550.754 945.693 523.353 930.791C495.952 915.889 474.56 894.737 459.177 867.336C444.275 839.935 435.381 807.006 432.497 768.549L535.611 763.501C538.495 785.133 544.024 803.401 552.196 818.303C560.368 833.205 570.703 844.262 583.202 851.473C595.701 858.683 610.603 862.289 627.909 862.289C643.292 862.289 656.271 860.125 666.847 855.799C677.904 851.473 686.316 845.223 692.085 837.051C697.853 828.398 700.738 818.063 700.738 806.045C700.738 793.065 697.613 781.528 691.364 771.433C685.114 761.338 674.058 752.204 658.194 744.032C642.811 735.86 620.938 728.168 592.576 720.958C558.445 712.305 530.083 701.969 507.489 689.951C485.376 677.933 469.032 662.55 458.456 643.802C447.88 625.054 442.592 601.499 442.592 573.137C442.592 541.89 449.322 514.73 462.782 491.655C476.723 468.1 496.673 450.073 522.632 437.574C549.071 424.595 581.039 418.105 618.535 418.105C655.069 418.105 686.316 424.836 712.275 438.296C738.234 451.756 758.424 471.225 772.845 496.703C787.748 522.181 796.4 553.187 798.804 589.722L694.969 594.769C692.565 576.983 687.999 561.6 681.269 548.62C674.538 535.641 665.405 525.786 653.868 519.056C642.811 512.326 629.591 508.961 614.208 508.961C593.538 508.961 576.953 514.249 564.454 524.825C552.436 535.401 546.427 549.822 546.427 568.089C546.427 580.107 549.311 590.443 555.08 599.096C561.329 607.749 571.905 615.44 586.807 622.17C602.19 628.9 623.102 635.871 649.541 643.081C688.479 652.215 719.245 664.233 741.839 679.135C764.433 694.037 780.537 711.584 790.151 731.774C799.765 751.964 804.573 775.519 804.573 802.439C804.573 833.205 797.362 859.885 782.94 882.479C768.519 904.592 747.608 921.898 720.207 934.396C693.286 946.895 660.838 953.144 622.861 953.144Z" fill="#222831"/><path d="M291 595H194V1177H1044V953H947V1080H291V595ZM291 291V418H194V194H1044V763H947V291H291Z" fill-rule="evenodd" fill="#222831"/></svg>
+      <p class="hub-title">{P.mapHub}</p>
+      <p class="hub-text">{P.mapHubText}</p>
+    </div>
+
+    <div class="link link--run" aria-hidden="true"><span class="link-line"></span><span class="link-label">{P.mapRun}</span></div>
+
+    <div class="lockers">
+      <p class="overline lane-label">{P.mapRight}</p>
+      <ul role="list" class="sites">
+        {P.sites.map((s) => (
+          <li class="site">
+            <svg viewBox="0 0 44 32" width="44" height="32" aria-hidden="true"><rect x="1" y="1" width="20" height="30" rx="1" class="lk" /><rect x="23" y="1" width="20" height="30" rx="1" class="lk" /><rect x="5" y="5" width="12" height="8" rx="1.5" class="lk-scr" />{[0, 1, 2, 3, 4].map((r) => <line x1="25" x2="41" y1={6 + r * 5} y2={6 + r * 5} class="lk-ln" />)}</svg>
+            {s}
+          </li>
+        ))}
+      </ul>
+      <p class="lockers-text">{P.mapRightText}</p>
+    </div>
+  </div>
+</Section>
+
+<style>
+  /* One column below 960px: systems → data → application → run → lockers ← partners. */
+  .map {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'sys' 'data' 'hub' 'run' 'lock' 'acc' 'par';
+    background: var(--surface-neutral-default);
+    border-top: var(--hair) solid var(--border-neutral-default);
+  }
+  .lane--systems { grid-area: sys; }
+  .lane--services { grid-area: par; }
+  .link--data { grid-area: data; }
+  .link--access { grid-area: acc; }
+  .link--run { grid-area: run; }
+  .hub { grid-area: hub; }
+  .lockers { grid-area: lock; }
+
+  .lane, .lockers { display: flex; flex-direction: column; gap: var(--spacing-gap-general-object-md); padding: var(--card-pad-block) var(--card-inset); background: var(--surface-neutral-default); }
+  .lane h3 { margin: 0; }
+  .lane p:not(.overline) { color: var(--text-neutral-subtle); }
+  .lane-label { color: var(--text-action-default); }
+  .lane-kind { color: var(--text-neutral-subtle); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-text-md); }
+  .chip { display: inline-flex; align-items: center; gap: var(--spacing-gap-text-md); height: 40px; padding: 0 var(--spacing-padding-container-xs); background: var(--surface-neutral-page); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); font-family: var(--font-display); font-weight: 600; font-size: 15px; line-height: 20px; color: var(--text-neutral-headings); }
+  .chip svg { flex: none; fill: none; stroke: var(--icon-action-strong); stroke-width: var(--icon-stroke); stroke-linecap: round; stroke-linejoin: round; }
+  .chip svg path { vector-effect: non-scaling-stroke; }
+  .lane-needs { margin-top: auto; padding-top: var(--spacing-padding-container-xs); box-shadow: inset 0 var(--hair) 0 var(--border-neutral-default); display: grid; gap: var(--spacing-gap-text-sm); }
+  .lane-needs .overline { color: var(--text-neutral-subtle); }
+  .lane-needs-text { font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-headings) !important; }
+
+  .hub { display: grid; justify-items: center; align-content: center; text-align: center; gap: var(--spacing-gap-text-md); padding: var(--pad-block) var(--inset); min-height: 260px; }
+  .hub-title { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-h3); line-height: var(--lh-h3); color: var(--text-neutral-onsurface); margin-top: var(--spacing-gap-text-md); }
+  .hub-text { color: var(--text-neutral-ondark); max-width: 260px; }
+
+  .sites { display: grid; gap: var(--spacing-gap-text-md); }
+  .site { display: flex; align-items: center; gap: var(--spacing-gap-text-lg); height: 48px; padding: 0 var(--spacing-padding-container-xs); background: var(--surface-neutral-page); box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); font-family: var(--font-display); font-weight: 600; color: var(--text-neutral-headings); }
+  .site svg { flex: none; }
+  .lk { fill: var(--surface-neutral-default); stroke: var(--border-neutral-strong); stroke-width: var(--stroke); vector-effect: non-scaling-stroke; }
+  .lk-scr { fill: #1E2530; }
+  .lk-ln { stroke: var(--border-neutral-default); stroke-width: var(--stroke); vector-effect: non-scaling-stroke; }
+  .lockers-text { margin-top: auto; padding-top: var(--spacing-padding-container-xs); box-shadow: inset 0 var(--hair) 0 var(--border-neutral-default); color: var(--text-neutral-subtle); }
+
+  /* Connections: a 3px dashed line in the action blue with its label. Vertical in one column, horizontal on desktop. */
+  .link { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-gap-text-md); padding: var(--spacing-padding-container-xs) 0; }
+  .link-line { width: 3px; height: 48px; background: repeating-linear-gradient(180deg, var(--border-action-default) 0 10px, transparent 10px 18px); background-size: 3px 18px; }
+  .link-label { font-family: var(--font-mono); font-weight: 600; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-action-default); text-align: center; }
+  @media (prefers-reduced-motion: no-preference) {
+    .link-line { animation: flow-y 1.2s linear infinite; }
+  }
+  @keyframes flow-y { to { background-position: 0 18px; } }
+  @keyframes flow-x { to { background-position: 18px 0; } }
+
+  /* Lanes, hub and lockers each draw their own hairline frame on the white panel. */
+  .lane, .lockers { box-shadow: inset 0 0 0 var(--hair) var(--border-neutral-default); }
+  .lane-needs, .lockers-text { box-shadow: inset 0 var(--hair) 0 var(--border-neutral-default); }
+
+  @media (min-width: 960px) {
+    .map {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 2fr) minmax(0, 5fr);
+      grid-template-areas:
+        'sys  data hub'
+        '.    .    run'
+        'par  acc  lock';
+      padding: var(--card-pad-block) var(--card-inset);
+    }
+    .link--data, .link--access { flex-direction: column; justify-content: center; padding: 0 var(--spacing-padding-container-xs); }
+    .link--data .link-line, .link--access .link-line { width: 100%; height: 3px; background: repeating-linear-gradient(90deg, var(--border-action-default) 0 10px, transparent 10px 18px); background-size: 18px 3px; }
+    .link--run { flex-direction: row; justify-content: center; padding: 0; }
+    .link--run .link-line { height: 100%; min-height: 72px; }
+    .link--run .link-label { text-align: left; }
+    .hub { min-height: 0; }
+  }
+  @media (min-width: 960px) and (prefers-reduced-motion: no-preference) {
+    .link--data .link-line, .link--access .link-line { animation: flow-x 1.2s linear infinite; }
+    .link--access .link-line { animation-duration: 1.6s; }
+  }
+</style>
