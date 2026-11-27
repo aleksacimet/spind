@@ -2,9 +2,9 @@
  * Spind locker in real 3D (three.js). Used by Locker3D.astro: home hero, template page heroes, How it works.
  * Look: modern clay render. One matte light material, soft light and soft shadows, gaps are soft grooves (no dark
  * outlines), and a few techno accents that light up blue: drawer light strips, the reader ring, the screen.
- * Modules stand left to right as listed in data-modules: Otto (master: touch screen, readers, service panel with a
- * small grey logo), Lotte (s24: 24 small drawers), Bruno (n8: 8 wide drawers), Greta (m124: 12 small, then 4 wide),
- * and compact: one Otto with 8 drawers under the screen instead of the service panel (How it works).
+ * Modules stand left to right as listed in data-modules: Otto (master: touch screen, readers, a small grey logo,
+ * then 9 smartphone drawers and 1 laptop drawer), Lotte (s24: 24 small drawers), Bruno (n8: 8 wide
+ * drawers), Greta (m124: 12 small, then 4 wide). compact is an alias for master.
  *
  * - Mouse over the stage: the locker turns a little toward the pointer and springs back when it leaves.
  * - A drawer opens only while the mouse is over it (tap on touch screens): it pops out, its compartment lights blue,
@@ -786,15 +786,15 @@ export function initHeroLocker(stage: HTMLElement) {
     n8: [1, 1, 1, 1, 1, 1, 1, 1],
     m124: [3, 3, 3, 3, 1, 1, 1, 1],
   };
-  // compact: one Otto with 8 drawers under the screen instead of the service panel (How it works).
-  const COMPACT_ROWS = [3, 3, 1, 1];
+  // Otto (master): 9 smartphone drawers (3 x 3) and one laptop drawer below them, under the screen (per Pera, 27 Nov).
+  // compact is kept as an alias for the same module.
+  const MASTER_ROWS = [3, 3, 3, 1];
   const keys = (stage.dataset.modules || 'master,s24,n8').split(',').filter((k) => k === 'master' || k === 'compact' || ROWS[k]);
   const step = W + GAP;
   let nextDrawer = 1;
   keys.forEach((k, i) => {
     const x = (i - (keys.length - 1) / 2) * step; // centred on the turn axis
-    if (k === 'master') otto(x);
-    else if (k === 'compact') nextDrawer = otto(x, { rows: COMPACT_ROWS, first: nextDrawer });
+    if (k === 'master' || k === 'compact') nextDrawer = otto(x, { rows: MASTER_ROWS, first: nextDrawer });
     else nextDrawer = drawerModule(x, ROWS[k], nextDrawer);
   });
 

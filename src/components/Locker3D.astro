@@ -12,7 +12,7 @@ type ModuleKey = 'master' | 's24' | 'n8' | 'm124' | 'compact';
 interface Props {
   id: string;
   label: string;
-  /** Left to right: master = Otto (screen), s24 = Lotte, n8 = Bruno, m124 = Greta, compact = Otto with 8 drawers. */
+  /** Left to right: master = Otto (screen, 9 phone drawers, 1 laptop drawer), s24 = Lotte, n8 = Bruno, m124 = Greta, compact = same as master. */
   modules?: ModuleKey[];
   locale?: string;
   /** What the locker stands on: dark pages get a faint light pool on the floor instead of a shadow. */
@@ -23,10 +23,10 @@ interface Props {
 }
 const { id, label, modules = ['master', 's24', 'n8'], locale, surface = 'light', story, storyDrawer = 8 } = Astro.props;
 const t = getContent(locale ?? Astro.currentLocale);
-// The flat fallback drawing has no compact module: it shows the plain Otto there.
+// The flat fallback drawing has no compact module: compact is the same Otto.
 const flat = modules.map((m) => (m === 'compact' ? 'master' : m)) as Exclude<ModuleKey, 'compact'>[];
 // The flat drawing marks the story drawer per module: find which module drawer number storyDrawer falls in.
-const SIZES: Record<ModuleKey, number> = { master: 0, s24: 24, n8: 8, m124: 16, compact: 0 };
+const SIZES: Record<ModuleKey, number> = { master: 10, s24: 24, n8: 8, m124: 16, compact: 10 };
 let accent: { module: Exclude<ModuleKey, 'compact'>; index: number } | null = null;
 if (story) {
   let left = storyDrawer;

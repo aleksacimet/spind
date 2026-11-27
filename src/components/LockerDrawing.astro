@@ -3,7 +3,7 @@ import { LOGO_PATHS, LOGO_VIEWBOX } from './logo-path';
 /**
  * Front view of the Spind locker, drawn as SVG so it can animate.
  * Geometry is locked to the page grid: every module is 2 cells wide, the locker is 3 cells tall.
- * Modules: master, s24 (3 x 8), n8 (8 wide), m124 (3 x 4 small, then 4 wide).
+ * Modules: master (screen, then 3 x 3 small and 1 wide), s24 (3 x 8), n8 (8 wide), m124 (3 x 4 small, then 4 wide).
  */
 type ModuleKey = 'master' | 's24' | 'n8' | 'm124';
 
@@ -38,14 +38,27 @@ const H = 300; // total height = 3 cells
 const BH = 288; // body height
 const PAD = 6;
 const DG = 3;
+const MASTER_TOP = 150; // Otto's drawer field starts under the screen, readers, slot and logo
 const totalW = modules.length * MW + (modules.length - 1) * gap;
 
 type Drawer = { x: number; y: number; w: number; h: number; accent: boolean; order: number; n: number; kind: 'small' | 'wide' };
 
 function drawersFor(key: ModuleKey, ox: number): Drawer[] {
   const out: Drawer[] = [];
-  if (key === 'master') return out;
   const innerW = MW - PAD * 2;
+  const smallW0 = (innerW - DG * 2) / 3;
+  if (key === 'master') {
+    // Otto: 9 smartphone drawers (3 x 3) under the screen and one laptop drawer below them.
+    const top = MASTER_TOP;
+    const rowH = (BH - PAD - top - DG * 3) / 4;
+    for (let r = 0; r < 4; r++) {
+      const y = top + r * (rowH + DG);
+      if (r < 3) for (let c = 0; c < 3; c++) out.push({ x: ox + PAD + c * (smallW0 + DG), y, w: smallW0, h: rowH, accent: false, order: 0, n: 0, kind: 'small' });
+      else out.push({ x: ox + PAD, y, w: innerW, h: rowH, accent: false, order: 0, n: 0, kind: 'wide' });
+    }
+    if (accent && accent.module === key && out[accent.index]) out[accent.index].accent = true;
+    return out;
+  }
   const innerH = BH - PAD * 2;
   const rowH = (innerH - DG * 7) / 8;
   const smallW = (innerW - DG * 2) / 3;
@@ -165,14 +178,10 @@ const accentDrawer = all.find((d) => d.accent);
             <circle class="reader-lens" cx={m.ox + MW - 20} cy={cy} r="4.5" />
           </g>
           <rect class="slot" x={m.ox + 70} y={sy + sh + 14} width="60" height="3" rx="1.5" />
-          <rect class="service" x={m.ox + PAD} y="150" width={MW - PAD * 2} height={BH - 150 - PAD} />
-          {/* Spind logo on Otto's service panel: small and light grey, there but quiet. */}
-          <svg class="brand-logo" x={m.ox + 16} y="161" width="34" height="15" viewBox={LOGO_VIEWBOX} aria-hidden="true">
+          {/* Spind logo on Otto's frame between the slot and the drawers: small and light grey, there but quiet. */}
+          <svg class="brand-logo" x={m.ox + PAD + 2} y="132" width="28" height="12" viewBox={LOGO_VIEWBOX} aria-hidden="true">
             {LOGO_PATHS.map((p) => <path d={p.d} fill-rule={p.evenodd ? 'evenodd' : undefined} clip-rule={p.evenodd ? 'evenodd' : undefined} />)}
           </svg>
-          {[0, 1, 2, 3, 4, 5].map((k) => (
-            <line class="vent" x1={m.ox + 110} y1={178 + k * 12} x2={m.ox + 182} y2={178 + k * 12} />
-          ))}
         </g>
         );
       })()}
@@ -216,8 +225,6 @@ const accentDrawer = all.find((d) => d.accent);
   .locker :global(.dr-base) { fill: var(--icon-neutral-onsurface); stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
   .locker :global(.dr-fill) { opacity: 0; transition: opacity 150ms var(--ease); }
   .locker :global(.handle) { stroke: var(--icon-neutral-default); stroke-width: var(--hair); vector-effect: non-scaling-stroke; transition: stroke 150ms var(--ease); }
-  .locker :global(.service) { fill: var(--icon-neutral-onsurface); stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
-  .locker :global(.vent) { stroke: var(--surface-neutral-track); stroke-width: var(--hair); vector-effect: non-scaling-stroke; }
   .locker :global(.scanline) { fill: var(--illustration-light); opacity: 0; }
 
   /* Drawer states */
