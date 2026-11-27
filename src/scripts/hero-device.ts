@@ -43,11 +43,11 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 /* ---------- Phone dimensions (scene units; the phone is the hero, so it's big) ---------- */
 const PW = 0.76; // width
 const PH = 1.56; // height
-const PR = 0.14; // corner radius
-const PD = 0.09; // body depth (plus the soft edge on both sides)
-const GLASS_IN = 0.07; // the white clay rim around the front glass (both sides together)
-const SCREEN_IN = 0.115; // the screen inside the glass
-const BEVEL = 0.024;
+const PR = 0.12; // corner radius
+const PD = 0.034; // body depth (plus the soft edge on both sides): about 8 mm on a real phone, ~11% of the width
+const GLASS_IN = 0.014; // only a hairline of the frame shows around the front glass
+const SCREEN_IN = 0.05; // thin black bezel between glass edge and screen
+const BEVEL = 0.025;
 const FLOAT = 0.3; // gap between the phone and the floor
 
 /* Colours: same as the lockers */
@@ -309,7 +309,7 @@ export function initHeroDevice(stage: HTMLElement) {
     scene.add(pool);
   }
   const spot = new Mesh(
-    new PlaneGeometry(dropped ? 2.3 : 0.9, dropped ? 2.3 : 0.9),
+    new PlaneGeometry(dropped ? 2 : 0.9, dropped ? 2 : 0.9),
     new MeshBasicMaterial({ color: 0x5aa6ff, alphaMap: radial([[0, 1], [0.3, 0.4], [0.75, 0.06], [1, 0]]), transparent: true, opacity: 0.6, depthWrite: false, toneMapped: false })
   );
   spot.rotation.x = -Math.PI / 2;
@@ -332,7 +332,7 @@ export function initHeroDevice(stage: HTMLElement) {
   const setPings = (t: number) => {
     pings.forEach((m, i) => {
       const p = reduce ? (i + 0.5) / PINGS : ((t / PERIOD + i / PINGS) % 1);
-      const r = dropped ? 0.95 + p * 0.8 : 0.22 + p * 1.05;
+      const r = dropped ? 0.8 + p * 0.5 : 0.22 + p * 1.05;
       m.scale.set(r, r, 1);
       (m.material as MeshBasicMaterial).opacity = (reduce ? 0.5 : Math.sin(Math.PI * Math.min(1, p * 1.15))) * 0.85 * (1 - p * 0.6);
     });
@@ -340,7 +340,9 @@ export function initHeroDevice(stage: HTMLElement) {
 
   /* ---------- Materials ---------- */
   const clay = new MeshStandardMaterial({ color: CLAY, roughness: 0.78 });
-  const buttonMat = new MeshStandardMaterial({ color: 0xe3e6ea, roughness: 0.7 });
+  // Frame: light satin aluminium, so the thin edge catches the light like a real phone.
+  const frameMat = new MeshPhysicalMaterial({ color: 0xe6e9ed, metalness: 0.55, roughness: 0.32, clearcoat: 0.4, clearcoatRoughness: 0.3 });
+  const buttonMat = frameMat;
   const glass = new MeshPhysicalMaterial({ color: 0x0b0e13, roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05 });
   const lensMat = new MeshPhysicalMaterial({ color: 0x14243a, roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0.02 });
   const camRing = new MeshStandardMaterial({ color: 0xd5d9de, metalness: 1, roughness: 0.3 });
@@ -369,7 +371,7 @@ export function initHeroDevice(stage: HTMLElement) {
     curveSegments: 32,
   });
   bodyGeo.translate(0, 0, -PD / 2);
-  const body = mesh(bodyGeo, clay);
+  const body = mesh(bodyGeo, frameMat);
   phone.add(body);
   const FRONT = PD / 2 + BEVEL;
 
@@ -384,8 +386,8 @@ export function initHeroDevice(stage: HTMLElement) {
   screen.position.z = FRONT + 0.0016;
   phone.add(screen);
   // Camera island: a black pill at the top of the screen.
-  const island = mesh(new RoundedBoxGeometry(0.2, 0.054, 0.004, 3, 0.002), glass, false);
-  island.position.set(0, PH / 2 - SCREEN_IN / 2 - 0.05, FRONT + 0.0026);
+  const island = mesh(new RoundedBoxGeometry(0.17, 0.048, 0.003, 3, 0.0015), glass, false);
+  island.position.set(0, PH / 2 - SCREEN_IN / 2 - 0.045, FRONT + 0.0026);
   phone.add(island);
   // Soft diagonal reflection on the glass.
   {
@@ -409,7 +411,7 @@ export function initHeroDevice(stage: HTMLElement) {
   // Side buttons in clay: action and volume on the left, power on the right.
   const SIDE = PW / 2 + 0.002;
   const side = (x: number, y: number, h: number) => {
-    const b = mesh(new RoundedBoxGeometry(0.02, h, 0.05, 3, 0.009), buttonMat);
+    const b = mesh(new RoundedBoxGeometry(0.014, h, 0.03, 3, 0.006), buttonMat);
     b.position.set(x, y, 0);
     phone.add(b);
   };
@@ -420,32 +422,36 @@ export function initHeroDevice(stage: HTMLElement) {
 
   // Back: camera plateau with two lenses (seen when the phone turns).
   const BACK = -FRONT;
-  const plateau = mesh(new RoundedBoxGeometry(0.3, 0.3, 0.03, 4, 0.012), clay);
-  plateau.position.set(-PW / 2 + 0.05 + 0.15, PH / 2 - 0.05 - 0.15, BACK - 0.008);
+  const backPlate = mesh(flatRound(PW - GLASS_IN, PH - GLASS_IN, PR - GLASS_IN / 2), clay, false);
+  backPlate.position.z = BACK - 0.0008;
+  backPlate.rotation.y = Math.PI;
+  phone.add(backPlate);
+  const plateau = mesh(new RoundedBoxGeometry(0.3, 0.3, 0.02, 4, 0.01), clay);
+  plateau.position.set(-PW / 2 + 0.05 + 0.15, PH / 2 - 0.05 - 0.15, BACK - 0.006);
   phone.add(plateau);
   for (const [dx, dy] of [[-0.065, 0.065], [0.065, -0.065]] as const) {
     const ring = mesh(new RoundedBoxGeometry(0.11, 0.11, 0.02, 4, 0.05), camRing, false);
-    ring.position.set(plateau.position.x + dx, plateau.position.y + dy, BACK - 0.03);
+    ring.position.set(plateau.position.x + dx, plateau.position.y + dy, BACK - 0.02);
     phone.add(ring);
     const lens = mesh(new RoundedBoxGeometry(0.08, 0.08, 0.02, 4, 0.038), lensMat, false);
-    lens.position.set(plateau.position.x + dx, plateau.position.y + dy, BACK - 0.034);
+    lens.position.set(plateau.position.x + dx, plateau.position.y + dy, BACK - 0.024);
     phone.add(lens);
   }
 
   if (dropped) {
     // Screen up, spun a little in its own plane, resting on its back (the camera plateau lifts it a hair).
     phone.rotation.set(-Math.PI / 2, 0, 0.5);
-    phone.position.y = FRONT + 0.045;
+    phone.position.y = FRONT + 0.03;
   }
 
   /* ---------- Camera: the phone and its pings fill the stage ---------- */
   const camera = new PerspectiveCamera(18, 1.4, 0.5, 40);
   const lookY = dropped ? 0.02 : (FLOAT + PH) / 2 + 0.04;
   // Dropped: the camera looks down on the floor, like spotting it on the ground.
-  const CAM_ELEV = MathUtils.degToRad(dropped ? 40 : 11);
+  const CAM_ELEV = MathUtils.degToRad(dropped ? 52 : 11);
   const fit = () => {
     // The phone fills about 80% of the height; the stage stays wide enough for the pings at any width.
-    const span = dropped ? Math.max(2.25, 3.5 / camera.aspect) : Math.max(PH + FLOAT + 0.32, 2.7 / camera.aspect);
+    const span = dropped ? Math.max(1.55, 2.1 / camera.aspect) : Math.max(PH + FLOAT + 0.32, 2.7 / camera.aspect);
     const dist = span / 2 / Math.tan(MathUtils.degToRad(camera.fov / 2));
     camera.position.set(0, lookY + Math.sin(CAM_ELEV) * dist, Math.cos(CAM_ELEV) * dist);
     camera.lookAt(0, lookY, 0);

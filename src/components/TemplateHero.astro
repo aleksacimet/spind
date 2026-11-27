@@ -35,7 +35,7 @@ const secondaryHref = lp(locale, Astro.props.secondaryHref ?? '/business-case');
     </div>
     {visual && (
       <div class="tpl-visual">
-        <slot><div class="tpl-stage">{device ? <Device3D kind={device} label={visualLabel} surface="dark" /> : <Locker3D id={`tpl-${id}`} modules={['master', 's24']} label={visualLabel} locale={locale} surface="dark" />}</div></slot>
+        <slot><div class={device ? 'tpl-stage tpl-stage--device' : 'tpl-stage'}>{device ? <Device3D kind={device} label={visualLabel} surface="dark" /> : <Locker3D id={`tpl-${id}`} modules={['master', 's24']} label={visualLabel} locale={locale} surface="dark" />}</div></slot>
       </div>
     )}
   </div>
@@ -52,6 +52,8 @@ const secondaryHref = lp(locale, Astro.props.secondaryHref ?? '/business-case');
   .tpl-visual { width: 100%; max-width: 384px; }
   /* 3D locker box: the two modules fill about 85% of the width, with room to turn. */
   .tpl-stage { width: 100%; aspect-ratio: 7 / 5; }
+  /* 3D phone: a squarer box so the phone reads bigger. */
+  .tpl-stage--device { aspect-ratio: 1 / 1; }
   @media (min-width: 960px) {
     .tpl-grid { flex-direction: row; align-items: center; justify-content: space-between; }
     .tpl-copy { width: 600px; }
