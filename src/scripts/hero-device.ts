@@ -21,6 +21,7 @@
 import {
   CanvasTexture,
   CircleGeometry,
+  CatmullRomCurve3,
   CylinderGeometry,
   DirectionalLight,
   ExtrudeGeometry,
@@ -43,6 +44,8 @@ import {
   ShadowMaterial,
   SpotLight,
   SRGBColorSpace,
+  TorusGeometry,
+  TubeGeometry,
   Vector3,
   WebGLRenderer,
   type BufferGeometry,
@@ -421,6 +424,25 @@ const screens: Record<string, () => Texture> = {
       }
       ctx.fillStyle = 'rgba(255, 211, 105, 0.22)';
       ctx.fillRect(420, H * 0.71 - 4, 380, 4);
+      // Cracks from a knock in the lower right corner.
+      ctx.strokeStyle = 'rgba(230, 240, 255, 0.55)';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      const ox = W * 0.82;
+      const oy = H * 0.78;
+      for (const [a, len, kink] of [[3.5, 340, 0.3], [3.9, 260, -0.4], [4.4, 300, 0.25], [2.9, 220, -0.2], [5.0, 180, 0.35], [3.2, 140, 0.5]] as const) {
+        ctx.beginPath();
+        ctx.moveTo(ox, oy);
+        const mx = ox + Math.cos(a) * len * 0.5;
+        const my = oy + Math.sin(a) * len * 0.5;
+        ctx.lineTo(mx, my);
+        ctx.lineTo(mx + Math.cos(a + kink) * len * 0.5, my + Math.sin(a + kink) * len * 0.5);
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.arc(ox, oy, 26, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(230, 240, 255, 0.25)';
+      ctx.fill();
       const cx = 150 + (W - 150) / 2;
       badge(cx, H * 0.4, 62, 'warn');
       bar(cx - 150, H * 0.4 + 120, 300, 28, 0.9);
@@ -495,6 +517,39 @@ const screens: Record<string, () => Texture> = {
       bar(W / 2 - 190, H * 0.34 + 230, 380, 40, 0.92);
       bar(W / 2 - 220, H * 0.34 + 300, 440, 18, 0.42);
       bar(W / 2 - 150, H * 0.34 + 334, 300, 18, 0.42);
+      bar(W / 2 - 110, H - 56, 220, 12, 0.6);
+    }),
+  // Phone: the welcome sent before day one, a QR code and a PIN (onboarding).
+  qr: () =>
+    drawScreen(...PHONE_PX, (k) => {
+      const { ctx, W, H, bar, rr } = k;
+      bar(64, 52, 78, 20, 0.7);
+      bar(W / 2 - 170, 150, 340, 40, 0.92);
+      bar(W / 2 - 120, 214, 240, 18, 0.42);
+      const N = 21;
+      const s = 18;
+      const ox = (W - N * s) / 2;
+      const oy = 300;
+      rr(ox - 30, oy - 30, N * s + 60, N * s + 60, 28, '#ffffff');
+      let seed = 11;
+      const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+      ctx.fillStyle = '#0E1B2C';
+      for (let y = 0; y < N; y++)
+        for (let x = 0; x < N; x++) {
+          const fin = (x < 8 && y < 8) || (x > 12 && y < 8) || (x < 8 && y > 12);
+          if (!fin && rnd() > 0.5) ctx.fillRect(ox + x * s, oy + y * s, s, s);
+        }
+      for (const [fx, fy] of [[0, 0], [14, 0], [0, 14]]) {
+        ctx.fillStyle = '#0E1B2C';
+        ctx.fillRect(ox + fx * s, oy + fy * s, 7 * s, 7 * s);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(ox + (fx + 1) * s, oy + (fy + 1) * s, 5 * s, 5 * s);
+        ctx.fillStyle = '#0E1B2C';
+        ctx.fillRect(ox + (fx + 2) * s, oy + (fy + 2) * s, 3 * s, 3 * s);
+      }
+      // The PIN: four yellow boxes.
+      const py = oy + N * s + 80;
+      for (let i = 0; i < 4; i++) rr(W / 2 - 4 * 62 + 14 + i * 124, py, 96, 110, 20, HL);
       bar(W / 2 - 110, H - 56, 220, 12, 0.6);
     }),
   // Phone: calling us (contact): an avatar in rings, call waves, the yellow call button.
@@ -974,6 +1029,69 @@ function buildTile(M: Mats, name: string) {
   return g;
 }
 
+/* ---------- Search, return kit: magnifying glass, headset, charger ---------- */
+function buildMagnifier(M: Mats) {
+  const g = new Group();
+  const R = 0.42;
+  const rim = mesh(new TorusGeometry(R, 0.05, 24, 96), M.frame);
+  g.add(rim);
+  const lens = new Mesh(
+    new CircleGeometry(R - 0.02, 64),
+    new MeshPhysicalMaterial({ color: 0xd6e8ff, transparent: true, opacity: 0.22, roughness: 0.02, clearcoat: 1, clearcoatRoughness: 0.02, depthWrite: false })
+  );
+  g.add(lens);
+  const glint = new Mesh(new RingGeometry(R * 0.55, R * 0.62, 48, 1, 0.5, 1.1), new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35, depthWrite: false, toneMapped: false }));
+  glint.position.z = 0.002;
+  g.add(glint);
+  const collar = mesh(new CylinderGeometry(0.065, 0.075, 0.12, 32), M.frame);
+  collar.position.set(0, -R - 0.08, 0);
+  g.add(collar);
+  const handle = mesh(new CylinderGeometry(0.06, 0.068, 0.62, 32), M.clay);
+  handle.position.set(0, -R - 0.14 - 0.31, 0);
+  g.add(handle);
+  const cap = mesh(new CircleGeometry(0.068, 32), M.clay);
+  cap.rotation.x = Math.PI / 2;
+  cap.position.set(0, -R - 0.14 - 0.62, 0);
+  g.add(cap);
+  return g;
+}
+function buildHeadset(M: Mats) {
+  const g = new Group();
+  const band = mesh(new TorusGeometry(0.3, 0.035, 20, 64, Math.PI), M.clay);
+  band.position.y = 0.12;
+  g.add(band);
+  for (const side of [-1, 1]) {
+    const cup = mesh(new CylinderGeometry(0.12, 0.12, 0.08, 40), M.clay);
+    cup.rotation.z = Math.PI / 2;
+    cup.position.set(side * 0.3, 0.12, 0);
+    g.add(cup);
+    const pad = mesh(new CylinderGeometry(0.1, 0.1, 0.03, 40), M.groove);
+    pad.rotation.z = Math.PI / 2;
+    pad.position.set(side * 0.255, 0.12, 0);
+    g.add(pad);
+  }
+  return g;
+}
+function buildCharger(M: Mats) {
+  const g = new Group();
+  const brick = mesh(new RoundedBoxGeometry(0.24, 0.1, 0.24, 4, 0.03), M.clay);
+  brick.position.y = 0.05;
+  g.add(brick);
+  const curve = new CatmullRomCurve3([
+    new Vector3(0, 0.03, 0.12),
+    new Vector3(0.05, 0.02, 0.35),
+    new Vector3(0.3, 0.02, 0.45),
+    new Vector3(0.45, 0.02, 0.25),
+    new Vector3(0.4, 0.02, 0.05),
+  ]);
+  const cable = mesh(new TubeGeometry(curve, 64, 0.016, 10, false), M.clay);
+  g.add(cable);
+  const plug = mesh(new RoundedBoxGeometry(0.05, 0.03, 0.08, 2, 0.01), M.groove);
+  plug.position.set(0.4, 0.02, 0.03);
+  g.add(plug);
+  return g;
+}
+
 /* ---------- The scenes ---------- */
 type Built = {
   root: Group;
@@ -1014,8 +1132,29 @@ function sceneLost(M: Mats, pose: string): Built {
     };
   }
   root.add(lyingPhone(M, drawLostScreen(), 0.5), floorSpot(2, 0.6));
-  const ping = pings(root, { r0: 0.8, r1: 1.3 });
-  return { root, span: (a) => Math.max(1.55, 2.1 / a), lookY: 0.02, elev: 52, restY: 0, tick: (t, r) => ping(t, r) };
+  const ping = pings(root, { r0: 0.8, r1: 1.5 });
+  // Searching: a magnifying glass sweeps slowly over the phone, lens toward the camera.
+  const mag = buildMagnifier(M);
+  const holder = new Group();
+  holder.add(mag);
+  mag.scale.setScalar(0.85);
+  mag.rotation.set(-0.75, 0, -0.55);
+  root.add(holder);
+  const place = (t: number) => {
+    holder.position.set(0.32 + Math.cos(t * 0.6) * 0.22, 0.75 + Math.sin(t * 1.2) * 0.04, 0.25 + Math.sin(t * 0.6) * 0.16);
+  };
+  place(0.6);
+  return {
+    root,
+    span: (a) => Math.max(1.75, 2.35 / a),
+    lookY: 0.25,
+    elev: 46,
+    restY: 0,
+    tick: (t, r, ambient) => {
+      ping(t, r);
+      if (ambient) place(t);
+    },
+  };
 }
 
 /** Shared framing for the open-laptop scenes. */
@@ -1064,86 +1203,111 @@ function sceneFaulty(M: Mats): Built {
   };
 }
 
+/** Temporary device: the loan laptop out of Otto's laptop drawer, its loan time as a dial on the floor, the way back. */
 function sceneLoan(M: Mats): Built {
   const root = new Group();
-  root.add(buildLaptop(M, { screen: screens.loan() }), floorSpot(2.6, 0.4));
-  // A dial of ticks on the floor: the loan time filling up, then starting over.
-  const N = 60;
-  const geo = new PlaneGeometry(0.022, 0.1);
+  const L = lockerAt(['master'], 2.5, OTTO_LAPTOP);
+  L.root.position.set(-0.62, 0, -0.72);
+  L.root.rotation.y = 0.3;
+  const lap = buildLaptop(M, { screen: screens.loan() });
+  lap.scale.setScalar(0.78);
+  lap.position.set(0.62, 0, 0.5);
+  lap.rotation.y = -0.4;
+  root.add(L.root, lap, floorSpot(3.4, 0.38));
+  // The loan period: a dial of ticks around the laptop, filling up, then starting over.
+  const N = 48;
+  const R = 0.92;
+  const geo = new PlaneGeometry(0.02, 0.09);
   const ticks = Array.from({ length: N }, (_, i) => {
     const a = (i / N) * Math.PI * 2 - Math.PI / 2;
     const m = new Mesh(geo, blueMat(0.15));
     m.rotation.set(-Math.PI / 2, 0, -a + Math.PI / 2);
-    m.scale.y = i % 5 === 0 ? 1.5 : 1;
-    m.position.set(Math.cos(a) * 1.12, 0.0012, Math.sin(a) * 1.12);
+    m.scale.y = i % 4 === 0 ? 1.5 : 1;
+    m.position.set(0.62 + Math.cos(a) * R, 0.0012, 0.5 + Math.sin(a) * R);
     m.renderOrder = -1;
     root.add(m);
     return m;
   });
+  // Out of the drawer, and back in when the loan ends.
+  const out = runner(root, floorCurve([-0.32, 0.0], [0.05, 0.45], 0.15), { dots: 2, trail: 10, period: 2.4 });
+  const back = runner(root, floorCurve([0.1, 0.8], [-0.5, 0.2], 0.25), { dots: 2, trail: 12, period: 2.4 });
   const PERIOD = 9;
   return {
     root,
-    ...lapFrame,
+    span: (a) => Math.max(2.7, 3.7 / a),
+    lookY: 0.9,
+    elev: 17,
+    restY: -0.12,
+    maxX: 0.04,
+    keyTarget: [0, 0.9, 0],
     tick: (t, reduce) => {
       const p = reduce ? 0.72 : (t / PERIOD) % 1;
       const lit = p * N;
       ticks.forEach((m, i) => ((m.material as MeshBasicMaterial).opacity = i < lit ? (i > lit - 1.5 ? 1 : 0.8) : 0.14));
+      // Near the end of the loan the way back lights up (the reminder).
+      out(t, reduce);
+      back(t, reduce);
     },
   };
 }
 
+/**
+ * EOU rollout: one visit, two drawers. Otto and Bruno (8 wide drawers): the old laptop goes into one drawer,
+ * the new, ready one comes out of another. The old one waits in front (closed, greyer), the new one stands open with a check.
+ */
 function sceneRollout(M: Mats): Built {
   const root = new Group();
-  const S = 0.72;
-  // Old devices: three closed laptops stacked, slightly greyer.
-  const stack = new Group();
-  for (let i = 0; i < 3; i++) {
-    const l = buildLaptop(M, { open: false, body: M.oldClay });
-    l.position.y = i * (CLOSED_H + 0.01);
-    l.rotation.y = [0.08, -0.06, 0.14][i];
-    l.position.x = [0, 0.03, -0.02][i];
-    stack.add(l);
-  }
-  stack.scale.setScalar(S * 1.05);
-  stack.position.set(-0.72, 0, -0.15);
-  stack.rotation.y = 0.75;
-  // New device: open, ready.
+  const NEW = 10 + 2; // Bruno's third drawer: the new device
+  const OLD = 10 + 5; // Bruno's sixth drawer: waiting for the old one
+  const L = lockerAt(['master', 'n8'], 2.1, undefined, NEW + 1);
+  L.setOpen(NEW, 1);
+  L.setOpen(OLD, 0.75, false);
+  L.root.position.set(-0.15, 0, -0.85);
+  L.root.rotation.y = 0.12;
+  const old = buildLaptop(M, { open: false, body: M.oldClay });
+  old.scale.setScalar(0.72);
+  old.position.set(-0.95, 0, 0.55);
+  old.rotation.y = 0.5;
   const lap = buildLaptop(M, { screen: screens.ready() });
-  lap.scale.setScalar(S);
-  lap.position.set(0.62, 0, 0.2);
-  lap.rotation.y = -0.3;
-  root.add(stack, lap, floorSpot(3, 0.38));
-  const run = runner(root, floorCurve([-0.6, 0.25], [0.3, 0.62], -0.25), { dots: 4, trail: 18 });
-  const ping = pings(root, { r0: 0.55, r1: 0.95, x: 0.62, z: 0.2, count: 2, strength: 0.6 });
+  lap.scale.setScalar(0.72);
+  lap.position.set(0.92, 0, 0.55);
+  lap.rotation.y = -0.45;
+  root.add(L.root, old, lap, floorSpot(3.8, 0.38));
+  // Old in (left), new out (right).
+  const inRun = runner(root, floorCurve([-0.85, 0.2], [0.05, -0.35], -0.2), { dots: 3, trail: 14, period: 2.6 });
+  const outRun = runner(root, floorCurve([0.55, -0.35], [0.85, 0.2], -0.2), { dots: 3, trail: 14, period: 2.6 });
+  const ping = pings(root, { r0: 0.45, r1: 0.8, x: 0.92, z: 0.55, count: 2, strength: 0.6 });
   return {
     root,
-    span: (a) => Math.max(1.6, 2.9 / a),
-    lookY: 0.2,
-    elev: 34,
-    restY: -0.1,
-    maxX: 0.05,
+    span: (a) => Math.max(2.4, 4.0 / a),
+    lookY: 0.75,
+    elev: 18,
+    restY: -0.05,
+    maxX: 0.04,
+    keyTarget: [0, 0.8, 0],
     tick: (t, r) => {
-      run(t, r);
+      inRun(t, r);
+      outRun(t, r);
       ping(t, r);
     },
   };
 }
 
-/** Starter kit: Otto behind with the laptop drawer out, the kit (laptop with a welcome, a phone) in front. */
+/** Onboarding: the kit waits in Otto's laptop drawer; the new hire's phone shows the QR code and PIN sent before day one. */
 function sceneOnboarding(M: Mats): Built {
   const root = new Group();
   const L = lockerAt(['master'], 2.5, OTTO_LAPTOP);
   L.root.position.set(-0.72, 0, -0.75);
   L.root.rotation.y = 0.3;
   const lap = buildLaptop(M, { screen: screens.welcome() });
-  lap.scale.setScalar(0.8);
-  lap.position.set(0.45, 0, 0.4);
+  lap.scale.setScalar(0.78);
+  lap.position.set(0.42, 0, 0.32);
   lap.rotation.y = -0.38;
-  const phone = lyingPhone(M, screens.phoneWelcome(), -0.5, 0.46);
-  phone.position.set(1.2, 0, 0.9);
+  const phone = lyingPhone(M, screens.qr(), -0.45, 0.5);
+  phone.position.set(1.18, 0, 0.92);
   root.add(L.root, lap, phone, floorSpot(3.4, 0.42));
-  const ping = pings(root, { r0: 0.85, r1: 1.25, x: 0.75, z: 0.6, strength: 0.6, period: 4 });
-  const run = runner(root, floorCurve([-0.45, 0.1], [0.2, 0.75], 0.15), { dots: 3, trail: 14 });
+  const ping = pings(root, { r0: 0.35, r1: 0.7, x: 1.18, z: 0.92, strength: 0.7, period: 2.8, count: 2 });
+  const run = runner(root, floorCurve([-0.4, 0.05], [0.95, 0.75], 0.25), { dots: 3, trail: 18 });
   return {
     root,
     span: (a) => Math.max(2.7, 3.8 / a),
@@ -1159,17 +1323,51 @@ function sceneOnboarding(M: Mats): Built {
   };
 }
 
+/**
+ * Offboarding: everything comes back on the last day. An empty wide drawer stands open and lit; in front the leaver's
+ * kit waits to go in: the closed laptop with the phone (being wiped) on top, the headset, the charger. Rings draw in.
+ */
 function sceneOffboarding(M: Mats): Built {
   const root = new Group();
+  const L = lockerAt(['master', 'n8'], 2.1);
+  const D = 10 + 4;
+  L.setOpen(D, 1, false);
+  L.root.position.set(-0.2, 0, -0.9);
+  L.root.rotation.y = 0.1;
+  const kit = new Group();
   const lap = buildLaptop(M, { open: false });
-  lap.rotation.y = -0.22;
-  const phone = lyingPhone(M, screens.wipe(), 0.42, 0.8, CLOSED_H);
-  phone.position.set(0.12, 0, 0.06);
-  phone.rotation.y = -0.22;
-  root.add(lap, phone, floorSpot(2.6, 0.5));
-  // Rings drawing in: everything coming back.
-  const ping = pings(root, { r0: 0.95, r1: 1.45, inward: true, period: 3.6 });
-  return { root, span: (a) => Math.max(1.55, 2.35 / a), lookY: 0.04, elev: 46, restY: 0, tick: (t, r) => ping(t, r) };
+  lap.scale.setScalar(0.7);
+  lap.rotation.y = 0.25;
+  const phone = lyingPhone(M, screens.wipe(), 0.6, 0.36, CLOSED_H * 0.7);
+  phone.rotation.y = 0.25;
+  phone.position.set(0.05, 0, 0.04);
+  const headset = buildHeadset(M);
+  headset.position.set(0.95, 0, -0.05);
+  headset.rotation.y = -0.6;
+  const charger = buildCharger(M);
+  charger.position.set(-0.85, 0, 0.15);
+  charger.rotation.y = 0.5;
+  kit.add(lap, phone, headset, charger);
+  kit.scale.setScalar(1.35);
+  kit.position.set(0.05, 0, 0.62);
+  root.add(L.root, kit, floorSpot(3.6, 0.42));
+  // Into the drawer: dots from each item, rings drawing in toward the drawer front.
+  const ticks = [
+    runner(root, floorCurve([-0.7, 0.6], [0.15, -0.25], -0.2), { dots: 2, trail: 12, period: 2.6 }),
+    runner(root, floorCurve([0.1, 0.25], [0.3, -0.25], 0), { dots: 2, trail: 8, period: 2.2 }),
+    runner(root, floorCurve([0.95, 0.45], [0.45, -0.25], 0.2), { dots: 2, trail: 12, period: 2.6 }),
+    pings(root, { r0: 0.3, r1: 0.75, x: 0.32, z: -0.2, inward: true, period: 2.8, count: 3, strength: 0.6 }),
+  ];
+  return {
+    root,
+    span: (a) => Math.max(2.4, 3.9 / a),
+    lookY: 0.75,
+    elev: 20,
+    restY: -0.05,
+    maxX: 0.04,
+    keyTarget: [0, 0.8, 0],
+    tick: (t, r) => ticks.forEach((f) => f(t, r)),
+  };
 }
 
 /** Four branches, each with its own real Spind, linked by the partner network. Real metres. */
@@ -1414,6 +1612,9 @@ const SCENES: Record<string, (M: Mats, pose: string) => Built> = {
   integrations: sceneIntegrations,
 };
 export const DEVICE_SCENES = Object.keys(SCENES);
+/** Bleed of the canvas past the stage on each side, as a share of the stage size (keep in sync with Device3D.astro). */
+const BLEED_X = 0.6;
+const BLEED_Y = 0.45;
 
 export function initHeroDevice(stage: HTMLElement) {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1496,14 +1697,19 @@ export function initHeroDevice(stage: HTMLElement) {
     camera.position.set(0, S.lookY + Math.sin(CAM_ELEV) * dist, Math.cos(CAM_ELEV) * dist);
     camera.lookAt(0, S.lookY, 0);
   };
+  // The canvas bleeds past the stage (Device3D.astro: BLEED), so rings and glows run out into the hero, behind the
+  // text, and stop only at the hero's own edge. The subject stays framed in the stage box (view offset).
   const resize = () => {
     const w = stage.clientWidth;
     const h = stage.clientHeight;
     if (!w || !h) return;
-    renderer.setSize(w, h, false);
+    const cw = w * (1 + BLEED_X * 2);
+    const ch = h * (1 + BLEED_Y * 2);
+    renderer.setSize(cw, ch, false);
     camera.aspect = w / h;
-    camera.updateProjectionMatrix();
     fit();
+    camera.setViewOffset(w, h, -w * BLEED_X, -h * BLEED_Y, cw, ch);
+    camera.updateProjectionMatrix();
     kick();
   };
 

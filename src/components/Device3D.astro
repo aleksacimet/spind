@@ -22,11 +22,17 @@ const { label, kind = 'lost-device', surface = 'dark', pose = 'dropped' } = Astr
     height: 100%;
     touch-action: pan-y;
   }
+  /* The canvas bleeds past the box (60% left/right, 45% top/bottom, see BLEED in hero-device.ts) and sits behind the
+     hero text (z-index -1 inside the hero's isolated stacking context), so rings and glows have no box edge: only the
+     hero section's own edge clips them. It never takes the pointer, so the copy and buttons stay clickable. */
   .device3d :global(canvas) {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    left: -60%;
+    top: -45%;
+    width: 220%;
+    height: 190%;
+    z-index: -1;
+    pointer-events: none;
     display: block;
     opacity: 0;
     transition: opacity 700ms var(--ease);
