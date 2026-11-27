@@ -278,6 +278,14 @@ if (lockers3d.length) {
     .catch(() => lockers3d.forEach((el) => el.classList.add('is-fallback')));
 }
 
+/* ---------- 3D devices (Lost device hero), same clay look as the lockers ---------- */
+const devices3d = [...document.querySelectorAll<HTMLElement>('[data-device-3d]')];
+if (devices3d.length) {
+  import('./hero-device')
+    .then((m) => devices3d.forEach((el) => m.initHeroDevice(el)))
+    .catch(() => devices3d.forEach((el) => el.classList.add('is-fallback')));
+}
+
 /* ---------- Modules highlight ---------- */
 document.querySelectorAll<HTMLElement>('[data-modules]').forEach((figure) => {
   const buttons = [...figure.querySelectorAll<HTMLButtonElement>('[data-module-btn]')];

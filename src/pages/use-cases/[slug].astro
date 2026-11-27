@@ -34,7 +34,7 @@ const others = S.items.filter((i) => i.slug !== s.slug);
 const facts = (['who', 'devices', 'start', 'where'] as const).map((k) => ({ label: S.facts[k], value: s.facts[k] }));
 ---
 <Base title={`${s.title} | Spind`} description={s.intro} locale={locale} darkHero>
-  <TemplateHero id="sol" label={`${S.label} · ${s.title}`} title={s.heroTitle} intro={s.intro} primary={S.primary} secondary={S.secondary} visualLabel={`${s.title} ${S.visualLabel}`} />
+  <TemplateHero id="sol" label={`${S.label} · ${s.title}`} title={s.heroTitle} intro={s.intro} primary={S.primary} secondary={S.secondary} visualLabel={`${s.title} ${S.visualLabel}`} device={s.slug === 'lost-device' ? 'lost-phone' : undefined} />
 
   <UcFacts items={facts} />
   <UcSituation title={s.situation.title} scene={s.situation.scene} pains={s.situation.pains} />

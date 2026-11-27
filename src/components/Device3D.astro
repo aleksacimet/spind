@@ -1,0 +1,34 @@
+---
+/**
+ * 3D device (three.js, scripts/hero-device.ts), same clay look as the 3D lockers. Fills its parent box.
+ * kind 'lost-phone': a white phone floating in lost mode with blue location pings under it (Lost device use case).
+ */
+interface Props {
+  label: string;
+  kind?: 'lost-phone';
+  surface?: 'light' | 'dark';
+  /** dropped: lying screen up on the floor, as if it fell. float: upright, floating above the pings. */
+  pose?: 'dropped' | 'float';
+}
+const { label, kind = 'lost-phone', surface = 'dark', pose = 'dropped' } = Astro.props;
+---
+<div class="device3d" data-device-3d={kind} data-surface={surface} data-label={label} data-pose={pose}></div>
+
+<style>
+  .device3d {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    touch-action: pan-y;
+  }
+  .device3d :global(canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    transition: opacity 700ms var(--ease);
+  }
+  .device3d:global(.is-3d) :global(canvas) { opacity: 1; }
+</style>

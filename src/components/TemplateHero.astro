@@ -6,6 +6,7 @@ import { lp } from '../i18n';
  * turns toward the mouse like the home hero).
  */
 import Locker3D from './Locker3D.astro';
+import Device3D from './Device3D.astro';
 interface Props {
   id: string; label?: string; title: string; intro: string; primary: string; primaryHref?: string; secondary?: string; secondaryHref?: string;
   /** false: copy only, no visual on the right (Integrations page). */
@@ -13,8 +14,10 @@ interface Props {
   /** Accessible label of the default locker. */
   visualLabel?: string;
   locale?: string;
+  /** A 3D device instead of the locker (Lost device: a phone in lost mode). */
+  device?: 'lost-phone';
 }
-const { id, label, title, intro, primary, secondary, visual = true, visualLabel = 'Spind', locale = Astro.currentLocale } = Astro.props;
+const { id, label, title, intro, primary, secondary, visual = true, visualLabel = 'Spind', locale = Astro.currentLocale, device } = Astro.props;
 const primaryHref = lp(locale, Astro.props.primaryHref ?? '/contact');
 const secondaryHref = lp(locale, Astro.props.secondaryHref ?? '/business-case');
 ---
@@ -32,7 +35,7 @@ const secondaryHref = lp(locale, Astro.props.secondaryHref ?? '/business-case');
     </div>
     {visual && (
       <div class="tpl-visual">
-        <slot><div class="tpl-stage"><Locker3D id={`tpl-${id}`} modules={['master', 's24']} label={visualLabel} locale={locale} surface="dark" /></div></slot>
+        <slot><div class="tpl-stage">{device ? <Device3D kind={device} label={visualLabel} surface="dark" /> : <Locker3D id={`tpl-${id}`} modules={['master', 's24']} label={visualLabel} locale={locale} surface="dark" />}</div></slot>
       </div>
     )}
   </div>
